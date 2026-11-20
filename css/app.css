@@ -869,3 +869,7 @@ body.skupienie { padding-top: calc(var(--gora) + 52px); }
 .kontekst-zd small { display: block; color: var(--szary); font-size: .82rem; }
 .cz-graj { display: flex; gap: 6px; }
 .cz-slowo.czytane { background: color-mix(in srgb, var(--zloto) 45%, transparent); color: var(--tekst); border-radius: 6px; }
+.ku-lista { display: grid; gap: 8px; }
+.ku-flaga { font-size: 1.8rem; }
+.qr { display: grid; place-items: center; }
+.qr svg { width: min(260px, 70vw); height: auto; border-radius: 12px; background: #fff; padding: 6px; }

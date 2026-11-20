@@ -6,6 +6,7 @@ import { SLOWA_CODZIENNE_C } from './slowa-codzienne-c.js';
 import { SLOWA_CODZIENNE_D } from './slowa-codzienne-d.js';
 import { SLOWA_CODZIENNE_E } from './slowa-codzienne-e.js';
 import { SLOWA_ZAAWANSOWANE } from './slowa-zaawansowane.js';
+import { KULTURA } from './kultura.js';
 import { PRZYKLADY } from './przyklady.js';
 import { PRZYKLADY_2 } from './przyklady-2.js';
 import { WARIANTY, RODZAJ_WYJATKI, MNOGA } from './warianty.js';
@@ -27,7 +28,10 @@ export const OPIS_POZIOMU = {
   C2: { n: 'Biegły', o: 'Idiomy, język literacki i książkowy, precyzyjne czasowniki, niuanse rejestru.' },
 };
 
-const PAKIETY_SLOW = [SLOWA, SLOWA_CODZIENNE_A, SLOWA_CODZIENNE_B, SLOWA_CODZIENNE_C, SLOWA_CODZIENNE_D, SLOWA_CODZIENNE_E, SLOWA_ZAAWANSOWANE];
+// słówka z notatek o kulturze: temat „Kultura: …”
+const PAKIET_KULTURA = {};
+for (const k of KULTURA) { (PAKIET_KULTURA[k.p] ||= {})['Kultura: ' + k.t] = k.slowa; TEMATY_ES['Kultura: ' + k.t] = 'Cultura: ' + k.tEs; }
+const PAKIETY_SLOW = [SLOWA, SLOWA_CODZIENNE_A, SLOWA_CODZIENNE_B, SLOWA_CODZIENNE_C, SLOWA_CODZIENNE_D, SLOWA_CODZIENNE_E, SLOWA_ZAAWANSOWANE, PAKIET_KULTURA];
 const PAKIETY_ZWROTOW = [ZWROTY];
 
 const ROD = { el: 'm', la: 'f', los: 'mpl', las: 'fpl' };

@@ -22,8 +22,10 @@ import { widokUkladania } from './ui/uloz.js';
 import { widokWyzwan } from './ui/wyzwania.js';
 import { widokLekcjiDnia } from './ui/lekcja-dnia.js';
 import { widokRozmowy } from './ui/rozmowa.js';
+import { widokKultury } from './ui/kultura.js';
 import { xpZaOcene, poziomGracza, noweOdznaki } from './postep.js';
-import { HISP, t as T, ustawJezyk } from './jezyk.js';
+import { HISP, JEZYK, KLUCZ_JEZYKA, t as T, ustawJezyk } from './jezyk.js';
+import { spakuj, rozpakuj, kodQr, ZNACZNIK, MAKS_QR } from './przenoszenie.js';
 import { kalendarz, najdluzszaSeria, liczOpanowane, seriaOpanowanych, najczesciejMylone } from './statystyki.js';
 import { plikIcs, pobierzIcs, plakietkaDostepna, wlaczPlakietke, ustawPlakietke } from './przypomnienia.js';
 
@@ -72,8 +74,9 @@ function sprawdzOdznaki() {
     toast(T(`🏅 Nowa odznaka: ${nowe[0].ik} ${nowe[0].n}`, `🏅 Nueva insignia: ${nowe[0].ik} ${nowe[0].n}`) + (nowe.length > 1 ? ` (+${nowe.length - 1})` : ''));
   }, 400);
 }
-window.addEventListener('pagehide', () => zapiszStan(stan));
-document.addEventListener('visibilitychange', () => { if (document.hidden) zapiszStan(stan); });
+let bezZapisu = false;   // po wczytaniu postępów innego profilu nie nadpisujemy ich przy zamykaniu strony
+window.addEventListener('pagehide', () => { if (!bezZapisu) zapiszStan(stan); });
+document.addEventListener('visibilitychange', () => { if (document.hidden && !bezZapisu) zapiszStan(stan); });
 
 // --- postęp poziomu: opanowanie słówek, czasowników i zwrotów (85%) + najlepszy egzamin (15%) ---
 const elementyPoziomu = p => [...SLOWKA, ...CZAS, ...ZWROTY_LISTA].filter(x => x.p === p);
@@ -199,6 +202,7 @@ const KAFELKI = [
   { id: 'uloz', ikona: IK('<rect x="3" y="5" width="7" height="5" rx="1.5"/><rect x="14" y="5" width="7" height="5" rx="1.5"/><rect x="7" y="14" width="10" height="5" rx="1.5"/>'), n: T('Ułóż zdanie', 'Ordena la frase'), o: T('Słowa w dobrej kolejności', 'Palabras en el orden correcto'), widok: widokUkladania },
   { id: 'rozmowa', ukryj: HISP, ikona: IK('<path d="M4 5h11a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2H9l-4 3v-3H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z"/><path d="M19 9h1a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-1v3l-3-3h-4"/>'), n: 'Rozmowa', o: 'Scenki z lektorem: kawiarnia, hotel, lekarz…', widok: widokRozmowy },
   { id: 'wyzwania', ikona: IK('<path d="M13 2 4 14h7l-1 8 9-12h-7z"/>'), n: T('Wyzwania', 'Retos'), o: T('Ekspres 60 s i bez błędu', 'Exprés 60 s y sin fallar'), widok: widokWyzwan },
+  { id: 'kultura', ukryj: HISP, ikona: IK('<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/>'), n: 'Kultura', o: 'Hiszpania i Ameryka Łacińska: zwyczaje i słówka', widok: widokKultury },
   { id: 'moje', ikona: IK('<path d="M12 3.5l2.6 5.3 5.9.9-4.25 4.1 1 5.85L12 16.9l-5.25 2.75 1-5.85L3.5 9.7l5.9-.9z"/>'), n: T('Moje słowa', 'Mis palabras'), o: T('Ulubione i ćwiczenie z nich', 'Favoritas y práctica'), widok: widokMoich },
   { id: 'odznaki', ukryj: true, n: T('Odznaki', 'Insignias'), widok: widokOdznak },
   { id: 'tydzien', ukryj: true, n: T('Twój tydzień', 'Tu semana'), widok: widokTygodnia },
@@ -295,6 +299,7 @@ function modalUstawien() {
       <div class="akcje-poziom">
         <button type="button" class="btn" id="u-eksport">${T('Eksportuj do pliku', 'Exportar a un archivo')}</button>
         <label class="btn" for="u-import-plik">${T('Importuj z pliku', 'Importar desde un archivo')}</label><input type="file" id="u-import-plik" accept="application/json,.json" hidden>
+        <button type="button" class="btn btn--akcent" id="u-przenies">${T('Przenieś na inny telefon', 'Pasar a otro móvil')}</button>
         <button type="button" class="btn btn--niebezpieczny" id="u-reset">${T('Wyzeruj postępy', 'Borrar el progreso')}</button>
       </div>
       <div id="u-reset-potw" hidden class="ostrzezenie"><p>${T('<b>Na pewno?</b> Usuniesz wszystkie powtórki, wyniki egzaminów i serię dni. Tego nie da się cofnąć (chyba że masz eksport).', '<b>¿Seguro?</b> Se borrarán todos los repasos, resultados de exámenes y la racha. No se puede deshacer (salvo que tengas una copia).')}</p>
@@ -355,6 +360,7 @@ function modalUstawien() {
       toast(T('Otwórz pobrany plik i stuknij „Dodaj wszystko”.', 'Abre el archivo descargado y toca «Añadir todo».'));
       return;
     }
+    if (t.closest('#u-przenies')) { arkuszPrzenoszenia(); return; }
     if (t.closest('#u-reset')) { $('#u-reset-potw', tresc).hidden = false; return; }
     if (t.closest('#u-reset-nie')) { $('#u-reset-potw', tresc).hidden = true; return; }
     if (t.closest('#u-reset-tak')) {
@@ -365,6 +371,54 @@ function modalUstawien() {
   }, sygnal);
 }
 function odswiezModuly() { zainicjowane.clear(); zainicjowane.add(stan.ui.zakladka); moduly[stan.ui.zakladka].poziom(); }
+
+// --- przenoszenie postępów na inne urządzenie (link / kod QR, bez serwera) ---
+async function arkuszPrzenoszenia() {
+  const el = otworzModal(T('Przenieś na inny telefon', 'Pasar a otro móvil'), `<div class="arkusz"><p class="male">${T('Przygotowuję link…', 'Preparando el enlace…')}</p></div>`);
+  const sygnal = { signal: sygnalModalu() };
+  try {
+    const dane = await spakuj({ ...stan, j: JEZYK });
+    const link = location.href.split('#')[0].split('?')[0] + ZNACZNIK + dane;
+    const qr = link.length <= MAKS_QR;
+    el.innerHTML = `<div class="arkusz">
+      <p>${T('Otwórz ten link na drugim urządzeniu (np. wyślij go sobie w Wiadomościach albo przez AirDrop) albo zeskanuj kod aparatem. Aplikacja zapyta, czy wczytać postępy.', 'Abre este enlace en el otro dispositivo (envíatelo por mensaje o AirDrop) o escanea el código con la cámara. La app preguntará si quieres cargar el progreso.')}</p>
+      <div class="qr" data-qr>${qr ? '' : `<p class="male">${T(`Postępów jest za dużo na kod QR (${link.length} znaków) – użyj linku.`, `Hay demasiado progreso para un código QR (${link.length} caracteres): usa el enlace.`)}</p>`}</div>
+      <input class="pole" data-pr-link readonly value="${esc(link)}" aria-label="Link" onfocus="this.select()">
+      <div class="akcje-poziom">${navigator.share ? `<button type="button" class="btn btn--akcent" data-pr-udostepnij>${T('Udostępnij link', 'Compartir enlace')}</button>` : ''}<button type="button" class="btn" data-pr-kopiuj>${T('Kopiuj link', 'Copiar enlace')}</button></div>
+      <p class="male">${T('Link zawiera Twoje postępy z tego urządzenia (bez danych osobowych). Nikomu nie jest wysyłany – tylko tam, gdzie go sam przekażesz.', 'El enlace contiene tu progreso de este dispositivo (sin datos personales). No se envía a ningún sitio: solo adonde tú lo mandes.')}</p></div>`;
+    if (qr) kodQr(link).then(svg => { const q = $('[data-qr]', el); if (q) q.innerHTML = svg; }).catch(() => {});
+    el.addEventListener('click', e => {
+      if (e.target.closest('[data-pr-kopiuj]')) {
+        if (!navigator.clipboard) { const i = $('[data-pr-link]', el); i.focus(); i.select(); toast(T('Zaznaczono link – skopiuj go.', 'Enlace seleccionado: cópialo.')); return; }
+        navigator.clipboard.writeText(link).then(() => toast(T('Skopiowano link.', 'Enlace copiado.')), () => toast(T('Nie udało się skopiować.', 'No se pudo copiar.')));
+      }
+      if (e.target.closest('[data-pr-udostepnij]')) navigator.share({ title: T('Moje postępy – Español', 'Mi progreso – Polaco'), url: link }).catch(() => {});
+    }, sygnal);
+  } catch (err) { el.innerHTML = `<p class="ostrzezenie">${T('Nie udało się przygotować linku.', 'No se pudo preparar el enlace.')}</p>`; }
+}
+async function sprawdzLinkPrzenoszenia() {
+  if (!location.hash.startsWith(ZNACZNIK)) return;
+  const dane = location.hash.slice(ZNACZNIK.length);
+  history.replaceState(null, '', location.pathname + location.search);
+  let obj;
+  try { obj = await rozpakuj(dane); } catch (e) { toast(T('Link z postępami jest uszkodzony.', 'El enlace de progreso está dañado.')); return; }
+  const ile = Object.keys(obj.srs || {}).length, dni = Object.keys(obj.dni || {}).length;
+  const el = otworzModal(T('Wczytać postępy?', '¿Cargar el progreso?'), `<div class="arkusz">
+    <p>${T(`Link zawiera ${ile} pozycji w powtórkach i ${dni} dni nauki. Wczytanie <b>zastąpi</b> postępy na tym urządzeniu.`, `El enlace contiene ${ile} elementos y ${dni} días de práctica. Al cargarlo se <b>sustituirá</b> el progreso de este dispositivo.`)}</p>
+    <div class="akcje-pion"><button type="button" class="btn btn--akcent btn--szeroki" data-pr-tak>${T('Wczytaj postępy', 'Cargar el progreso')}</button><button type="button" class="btn btn--szeroki" data-zamknij>${T('Anuluj', 'Cancelar')}</button></div></div>`);
+  el.addEventListener('click', e => {
+    if (!e.target.closest('[data-pr-tak]')) return;
+    try {
+      const j = obj.j === 'es' ? 'es' : 'pl'; delete obj.j;
+      const nowy = importuj(JSON.stringify(obj));
+      if (j === JEZYK) { Object.keys(stan).forEach(k => delete stan[k]); Object.assign(stan, nowy); zapiszStan(stan); }
+      else { bezZapisu = true; localStorage.setItem(j === 'es' ? 'pl-nauka-v1' : 'es-nauka-v2', JSON.stringify(nowy)); }
+      localStorage.setItem(KLUCZ_JEZYKA, j);
+      toast(T('Wczytano postępy.', 'Progreso cargado.'));
+      setTimeout(() => location.reload(), 500);
+    } catch (err) { toast(T('Nie udało się wczytać: ', 'No se pudo cargar: ') + err.message); }
+  }, { signal: sygnalModalu() });
+}
 
 // --- tryb skupienia: sama karta, bez kapsuły i docka ---
 function skupienie(wl) {
@@ -454,5 +508,7 @@ wyspa = zainicjujWyspe({
   maAkcje: k => k === 'cwiczenia' || (k === 'lista' ? !!LISTY[stan.ui.zakladka] : !['egzamin', 'cwiczenia'].includes(stan.ui.zakladka)),
 });
 requestAnimationFrame(() => document.body.classList.add('gotowe'));
+sprawdzLinkPrzenoszenia();
+window.addEventListener('hashchange', sprawdzLinkPrzenoszenia);
 // aplikacja na ekranie głównym i praca offline
 if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('sw.js').catch(() => {});
