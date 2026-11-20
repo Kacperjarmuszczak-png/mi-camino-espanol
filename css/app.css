@@ -930,3 +930,8 @@ html, body { overscroll-behavior-y: none; }
 .ga-lit--sp { border-color: transparent; background: none; min-width: 22px; color: var(--szary); }
 .ga-lit.ok { border-color: var(--ok); background: color-mix(in srgb, var(--ok) 25%, var(--pole)); }
 .ga-lit.zle { border-color: var(--zle); background: color-mix(in srgb, var(--zle) 25%, var(--pole)); }
+.rd-wiersz { display: grid; grid-template-columns: 110px 1fr; gap: 2px 8px; align-items: center; }
+.rd-wiersz .chip { grid-row: span 2; justify-self: start; font-size: .66rem; }
+.wl-form { display: grid; gap: 8px; }
+.notatka { justify-self: start; border: 1px dashed var(--linia); background: none; color: var(--szary); padding: 8px 12px; border-radius: 12px; font-size: .86rem; text-align: left; }
+.notatka--jest { border-style: solid; border-color: color-mix(in srgb, var(--zloto) 45%, transparent); color: var(--tekst); background: var(--pole); }

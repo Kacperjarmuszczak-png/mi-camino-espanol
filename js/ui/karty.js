@@ -158,6 +158,8 @@ export function silnikKart(root, cfg) {
       if (kt.length) h += `<div class="kontekst-lista"><p class="etykieta">${tr('W kontekście', 'En contexto')}</p>${kt.map(z => `<p class="kontekst-zd"><span>${esc(z.es)}${z.pl ? `<small>${esc(z.pl)}</small>` : ''}</span>${przyciskGlosu(z.es, tr('Posłuchaj zdania', 'Escuchar la frase'))}</p>`).join('')}</div>`;
     }
     if (x.kiedy) h += `<p class="kiedy"><b>Kiedy:</b> ${esc(x.kiedy)}</p>`;
+    const notatka = (app.stan.notatki || {})[x.id];
+    h += `<button type="button" class="notatka${notatka ? ' notatka--jest' : ''}" data-notatka="${esc(x.id)}">📝 ${notatka ? esc(notatka) : tr('Dodaj notatkę (skojarzenie, uwagę)', 'Añadir una nota (truco, comentario)')}</button>`;
     if (x.dialog && x.dialog.length) {
       h += `<div class="dialog">${x.dialog.map(l => `<p class="kwestia kwestia--${l.kto === 'A' ? 'a' : 'b'}"><span>${l.kto}</span>${podswietl(l.tekst)}</p>`).join('')}
         ${przyciskGlosu(x.dialog.map(l => bezGwiazdek(l.tekst)).join(' '), 'Posłuchaj dialogu')}</div>`;

@@ -32,6 +32,9 @@ import { widokLiczb } from './ui/liczby.js';
 import { widokShadowingu } from './ui/shadowing.js';
 import { widokAkcentow } from './ui/akcenty-swiata.js';
 import { widokAkcentu } from './ui/gdzie-akcent.js';
+import { widokRodzin, widokSynonimow } from './ui/rodziny.js';
+import { widokWlasnych } from './ui/wlasne.js';
+import { wczytajWlasne } from './wlasne.js';
 import { xpZaOcene, poziomGracza, noweOdznaki } from './postep.js';
 import { HISP, JEZYK, KLUCZ_JEZYKA, t as T, ustawJezyk } from './jezyk.js';
 import { spakuj, rozpakuj, kodQr, ZNACZNIK, MAKS_QR } from './przenoszenie.js';
@@ -39,6 +42,7 @@ import { kalendarz, najdluzszaSeria, liczOpanowane, seriaOpanowanych, najczescie
 import { plikIcs, pobierzIcs, plakietkaDostepna, wlaczPlakietke, ustawPlakietke } from './przypomnienia.js';
 
 const stan = wczytaj();
+wczytajWlasne(stan);
 const ZAKLADKI = ['slowka', 'egzamin', 'czasowniki', 'zwroty', 'tlumacz', 'cwiczenia'];
 if (!POZIOMY.includes(stan.ui.poziom)) stan.ui.poziom = 'A1';
 if (!ZAKLADKI.includes(stan.ui.zakladka)) stan.ui.zakladka = 'slowka';
@@ -219,6 +223,9 @@ const KAFELKI = [
   { id: 'wykreslanka', grupa: 'gry', ikona: IK('<rect x="3" y="3" width="18" height="18" rx="3"/><path d="M7 8h10M7 12h10M7 16h6"/><path d="M6 6l12 12" stroke-dasharray="2 2"/>'), n: T('Wykreślanka', 'Sopa de letras'), o: T('Znajdź ukryte słowa w siatce', 'Encuentra las palabras ocultas'), widok: widokWykreslanki },
   { id: 'rodzajnik', grupa: 'gry', ukryj: HISP, ikona: IK('<path d="M8 7l-5 5 5 5M16 7l5 5-5 5"/>'), n: 'El czy la?', o: 'Rodzajnik w 3 sekundy', widok: widokRodzajnika },
   { id: 'tilde', grupa: 'gram', ukryj: HISP, ikona: IK('<path d="M7 18 12 6l5 12M9 14h6M13 3l2-2"/>'), n: 'Gdzie akcent?', o: 'Zasady tildy i ćwiczenie', widok: widokAkcentu },
+  { id: 'rodziny', grupa: 'gram', ukryj: HISP, ikona: IK('<circle cx="12" cy="5" r="2.5"/><circle cx="5" cy="18" r="2.5"/><circle cx="12" cy="18" r="2.5"/><circle cx="19" cy="18" r="2.5"/><path d="M12 7.5v8M12 11H5v4.5M12 11h7v4.5"/>'), n: 'Rodziny wyrazów', o: 'trabajar → trabajo → trabajador', widok: widokRodzin },
+  { id: 'synonimy', grupa: 'gram', ukryj: HISP, ikona: IK('<path d="M4 9h12l-3-3M20 15H8l3 3"/>'), n: 'Synonimy i antonimy', o: 'empezar = comenzar, rápido ↔ lento', widok: widokSynonimow },
+  { id: 'wlasne', grupa: 'dzis', ikona: IK('<path d="M12 5v14M5 12h14"/><rect x="3" y="3" width="18" height="18" rx="4"/>'), n: T('Własne słówka', 'Mis palabras'), o: T('Dodaj swoje słowa do powtórek', 'Añade tus palabras a los repasos'), widok: widokWlasnych },
   { id: 'falszywi', grupa: 'gram', ikona: IK('<path d="M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18z"/><path d="M8 9.5c.5-1 1.5-1.5 2-1.5M14 8c.5 0 1.5.5 2 1.5M8.5 15.5c2-1.5 5-1.5 7 0"/>'), n: T('Fałszywi przyjaciele', 'Falsos amigos'), o: T('Embarazada to nie „zawstydzona”', '«Cena» no es la cena'), widok: widokFalszywych },
   { id: 'kultura', grupa: 'prakt', ukryj: HISP, ikona: IK('<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/>'), n: 'Kultura', o: 'Hiszpania i Ameryka Łacińska: zwyczaje i słówka', widok: widokKultury },
   { id: 'moje', grupa: 'dzis', ikona: IK('<path d="M12 3.5l2.6 5.3 5.9.9-4.25 4.1 1 5.85L12 16.9l-5.25 2.75 1-5.85L3.5 9.7l5.9-.9z"/>'), n: T('Moje słowa', 'Mis palabras'), o: T('Ulubione i ćwiczenie z nich', 'Favoritas y práctica'), widok: widokMoich },
@@ -438,6 +445,24 @@ async function sprawdzLinkPrzenoszenia() {
   }, { signal: sygnalModalu() });
 }
 
+// --- notatki do słówek ---
+function edytujNotatke(id, przycisk) {
+  const x = POD_ID.get(id), stara = (stan.notatki || {})[id] || '';
+  const el = otworzModal(T('Notatka', 'Nota') + (x ? ': ' + x.es : ''), `<div class="arkusz">
+    <textarea class="pole pole--tekst" data-nt-tekst rows="3" placeholder="${T('np. embarazada – pamiętaj o wpadce!', 'p. ej. cena = precio, ¡no la comida!')}">${esc(stara)}</textarea>
+    <div class="akcje-poziom"><button type="button" class="btn btn--akcent" data-nt-zapisz>${T('Zapisz', 'Guardar')}</button>${stara ? `<button type="button" class="btn btn--cichy" data-nt-usun>${T('Usuń notatkę', 'Eliminar nota')}</button>` : ''}</div></div>`);
+  setTimeout(() => { const t = $('[data-nt-tekst]', el); if (t) t.focus(); }, 50);
+  el.addEventListener('click', e => {
+    const zap = e.target.closest('[data-nt-zapisz]'), us = e.target.closest('[data-nt-usun]');
+    if (!zap && !us) return;
+    const tekst = us ? '' : $('[data-nt-tekst]', el).value.trim();
+    if (!stan.notatki) stan.notatki = {};
+    if (tekst) stan.notatki[id] = tekst; else delete stan.notatki[id];
+    app.zapisz(); zamknijModal();
+    if (przycisk && przycisk.isConnected) { przycisk.classList.toggle('notatka--jest', !!tekst); przycisk.textContent = '📝 ' + (tekst || T('Dodaj notatkę (skojarzenie, uwagę)', 'Añadir una nota (truco, comentario)')); }
+  }, { signal: sygnalModalu() });
+}
+
 // --- zdarzenia globalne ---
 document.addEventListener('click', e => {
   const t = e.target;
@@ -452,6 +477,7 @@ document.addEventListener('click', e => {
     return;
   }
   if (t.closest('[data-zamknij]')) return zamknijModal();
+  const nt = t.closest('[data-notatka]'); if (nt) return edytujNotatke(nt.dataset.notatka, nt);
   const cel = t.closest('[data-cel]');
   if (cel) { stan.ust.cel = +cel.dataset.cel; app.zapisz(); $$('[data-cel]').forEach(b => b.setAttribute('aria-pressed', b === cel)); rysujNaglowek(); return; }
 });

@@ -1,6 +1,6 @@
 // Service worker: aplikacja działa offline i można ją dodać do ekranu głównego.
 // Strategia „najpierw sieć”: online zawsze najnowsza wersja z GitHub Pages, bez sieci – ostatnia zapisana kopia.
-const WERSJA = 'e364a3a4f0';
+const WERSJA = '93122f7d60';
 const PAMIEC = 'espanol-' + WERSJA;
 const PLIKI = [
   './',
@@ -25,6 +25,7 @@ const PLIKI = [
   './js/dane/lekcje-gramatyki.js',
   './js/dane/przyklady-2.js',
   './js/dane/przyklady.js',
+  './js/dane/rodziny.js',
   './js/dane/rozmowy.js',
   './js/dane/slowa-codzienne-a.js',
   './js/dane/slowa-codzienne-b.js',
@@ -81,6 +82,7 @@ const PLIKI = [
   './js/ui/przypadki.js',
   './js/ui/pula.js',
   './js/ui/rodzajnik.js',
+  './js/ui/rodziny.js',
   './js/ui/rozmowa.js',
   './js/ui/shadowing.js',
   './js/ui/slowka.js',
@@ -89,11 +91,13 @@ const PLIKI = [
   './js/ui/tlumacz.js',
   './js/ui/uloz.js',
   './js/ui/wisielec.js',
+  './js/ui/wlasne.js',
   './js/ui/wspolne.js',
   './js/ui/wykreslanka.js',
   './js/ui/wyspa.js',
   './js/ui/wyzwania.js',
   './js/ui/zwroty.js',
+  './js/wlasne.js',
   './manifest.webmanifest',
   './style.js',
 ];
