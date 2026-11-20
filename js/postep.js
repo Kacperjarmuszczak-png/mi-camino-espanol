@@ -37,6 +37,7 @@ export const ODZNAKI = [
   { id: 'zdania20', ik: '🧩', n: tr('Architekt zdań', 'Arquitecto de frases'), o: tr('20 ułożonych zdań', '20 frases ordenadas'), w: z => (z.licz.zdania || 0) >= 20 },
   { id: 'rozmowa3', ik: '🗣️', n: tr('Rozmówca', 'Conversador'), o: tr('3 rozmowy do końca', '3 conversaciones completas'), w: z => (z.licz.rozmowa || 0) >= 3 },
   { id: 'mow50', ik: '🎙️', n: tr('Dobra wymowa', 'Buena pronunciación'), o: tr('50 słów wymówionych dobrze', '50 palabras bien pronunciadas'), w: z => (z.licz.mow || 0) >= 50 },
+  { id: 'falszywi3', ik: '🎭', n: tr('Bez wpadek', 'Sin meteduras de pata'), o: tr('3 quizy fałszywych przyjaciół', '3 tests de falsos amigos'), w: z => (z.licz.falszywi || 0) >= 3 },
   { id: 'czytanie10', ik: '📖', n: tr('Czytelnik', 'Lector'), o: tr('10 przeczytanych tekstów', '10 textos leídos'), w: z => (z.licz.czytanie || 0) >= 10 },
   { id: 'ekspres20', ik: '⚡', n: tr('Błyskawica', 'Relámpago'), o: tr('20 punktów w ekspresie', '20 puntos en el exprés'), w: z => (z.rekordy.ekspres || 0) >= 20 },
   { id: 'bezbledu20', ik: '🎯', n: tr('Snajper', 'Francotirador'), o: tr('20 bez błędu', '20 sin fallar'), w: z => (z.rekordy.bezbledu || 0) >= 20 },

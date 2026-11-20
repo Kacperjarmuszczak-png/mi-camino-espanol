@@ -873,3 +873,14 @@ body.skupienie { padding-top: calc(var(--gora) + 52px); }
 .ku-flaga { font-size: 1.8rem; }
 .qr { display: grid; place-items: center; }
 .qr svg { width: min(260px, 70vw); height: auto; border-radius: 12px; background: #fff; padding: 6px; }
+/* fałszywi przyjaciele */
+.fp-lista { display: grid; gap: 10px; }
+.fp-karta { display: grid; gap: 4px; padding: 14px 16px; border-radius: 20px; border: 1px solid var(--szklo-brzeg); background: linear-gradient(160deg, rgba(255,255,255,.12), rgba(255,255,255,.02) 58%), var(--pole); }
+.fp-karta p { margin: 0; }
+.fp-gora { display: flex; align-items: center; gap: 8px; }
+.fp-gora b { font-size: 1.25rem; }
+.fp-gora .glos { margin-left: auto; }
+.fp-nie { color: var(--zle); text-decoration: line-through; text-decoration-thickness: 1px; }
+.fp-tak { color: var(--ok); }
+.fp-prz { display: grid; grid-template-columns: 1fr auto; gap: 2px 8px; align-items: center; padding: 8px 10px; border-radius: 12px; background: var(--pole); font-size: .95rem; }
+.fp-prz small { grid-column: 1; color: var(--szary); }

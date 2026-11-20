@@ -23,6 +23,7 @@ import { widokWyzwan } from './ui/wyzwania.js';
 import { widokLekcjiDnia } from './ui/lekcja-dnia.js';
 import { widokRozmowy } from './ui/rozmowa.js';
 import { widokKultury } from './ui/kultura.js';
+import { widokFalszywych } from './ui/falszywi.js';
 import { xpZaOcene, poziomGracza, noweOdznaki } from './postep.js';
 import { HISP, JEZYK, KLUCZ_JEZYKA, t as T, ustawJezyk } from './jezyk.js';
 import { spakuj, rozpakuj, kodQr, ZNACZNIK, MAKS_QR } from './przenoszenie.js';
@@ -202,6 +203,7 @@ const KAFELKI = [
   { id: 'uloz', ikona: IK('<rect x="3" y="5" width="7" height="5" rx="1.5"/><rect x="14" y="5" width="7" height="5" rx="1.5"/><rect x="7" y="14" width="10" height="5" rx="1.5"/>'), n: T('Ułóż zdanie', 'Ordena la frase'), o: T('Słowa w dobrej kolejności', 'Palabras en el orden correcto'), widok: widokUkladania },
   { id: 'rozmowa', ukryj: HISP, ikona: IK('<path d="M4 5h11a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2H9l-4 3v-3H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z"/><path d="M19 9h1a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-1v3l-3-3h-4"/>'), n: 'Rozmowa', o: 'Scenki z lektorem: kawiarnia, hotel, lekarz…', widok: widokRozmowy },
   { id: 'wyzwania', ikona: IK('<path d="M13 2 4 14h7l-1 8 9-12h-7z"/>'), n: T('Wyzwania', 'Retos'), o: T('Ekspres 60 s i bez błędu', 'Exprés 60 s y sin fallar'), widok: widokWyzwan },
+  { id: 'falszywi', ikona: IK('<path d="M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18z"/><path d="M8 9.5c.5-1 1.5-1.5 2-1.5M14 8c.5 0 1.5.5 2 1.5M8.5 15.5c2-1.5 5-1.5 7 0"/>'), n: T('Fałszywi przyjaciele', 'Falsos amigos'), o: T('Embarazada to nie „zawstydzona”', '«Cena» no es la cena'), widok: widokFalszywych },
   { id: 'kultura', ukryj: HISP, ikona: IK('<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/>'), n: 'Kultura', o: 'Hiszpania i Ameryka Łacińska: zwyczaje i słówka', widok: widokKultury },
   { id: 'moje', ikona: IK('<path d="M12 3.5l2.6 5.3 5.9.9-4.25 4.1 1 5.85L12 16.9l-5.25 2.75 1-5.85L3.5 9.7l5.9-.9z"/>'), n: T('Moje słowa', 'Mis palabras'), o: T('Ulubione i ćwiczenie z nich', 'Favoritas y práctica'), widok: widokMoich },
   { id: 'odznaki', ukryj: true, n: T('Odznaki', 'Insignias'), widok: widokOdznak },
