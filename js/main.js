@@ -13,12 +13,15 @@ import { zainicjujSuwaki } from './ui/suwak.js';
 import { zainicjujWyspe } from './ui/wyspa.js';
 import { zakladkaCzasownikiPl } from './ui/czasowniki-pl.js';
 import { zakladkaTlumaczPl } from './ui/tlumacz-pl.js';
+import { zakladkaCwiczenia } from './ui/cwiczenia.js';
+import { widokGramatyki } from './ui/gramatyka.js';
+import { widokMoich } from './ui/moje.js';
 import { HISP, t as T, ustawJezyk } from './jezyk.js';
 import { kalendarz, najdluzszaSeria, liczOpanowane, seriaOpanowanych, najczesciejMylone } from './statystyki.js';
 import { plikIcs, pobierzIcs, plakietkaDostepna, wlaczPlakietke, ustawPlakietke } from './przypomnienia.js';
 
 const stan = wczytaj();
-const ZAKLADKI = ['slowka', 'egzamin', 'czasowniki', 'zwroty', 'tlumacz'];
+const ZAKLADKI = ['slowka', 'egzamin', 'czasowniki', 'zwroty', 'tlumacz', 'cwiczenia'];
 if (!POZIOMY.includes(stan.ui.poziom)) stan.ui.poziom = 'A1';
 if (!ZAKLADKI.includes(stan.ui.zakladka)) stan.ui.zakladka = 'slowka';
 
@@ -148,6 +151,17 @@ const moduly = {
   zwroty: zakladkaZwroty($('#z-zwroty'), app),
   tlumacz: (HISP ? zakladkaTlumaczPl : zakladkaTlumacz)($('#z-tlumacz'), app),
 };
+// --- dział Ćwiczenia (z górnej kapsuły) ---
+const IK = d => `<svg viewBox="0 0 24 24">${d}</svg>`;
+const cwiczListe = lista => { if (!lista.length) return; pokazZakladke('slowka', { przewin: true }); moduly.slowka.cwiczListe(lista); };
+const otworzTekst = i => { stan.ui.czTekst = i; stan.ui.zWidok = 'czytanie'; zainicjowane.delete('zwroty'); pokazZakladke('zwroty', { przewin: true }); };
+const KAFELKI = [
+  { id: 'gramatyka', ukryj: HISP, ikona: IK('<path d="M5 4h10l4 4v12H5z"/><path d="M15 4v4h4M8 12h8M8 16h5"/>'), n: 'Gramatyka', o: '16 lekcji: reguła, przykłady, ćwiczenie', widok: widokGramatyki },
+  { id: 'czytanie', ikona: IK('<path d="M4 6c3-1 5-1 8 1 3-2 5-2 8-1v12c-3-1-5-1-8 1-3-2-5-2-8-1z"/><path d="M12 7v12"/>'), n: T('Czytanie', 'Lectura'), o: T('Teksty z tłumaczeniem słów', 'Textos con traducción de palabras'), akcja: () => otworzTekst(stan.ui.czTekst ?? 0) },
+  { id: 'moje', ikona: IK('<path d="M12 3.5l2.6 5.3 5.9.9-4.25 4.1 1 5.85L12 16.9l-5.25 2.75 1-5.85L3.5 9.7l5.9-.9z"/>'), n: T('Moje słowa', 'Mis palabras'), o: T('Ulubione i ćwiczenie z nich', 'Favoritas y práctica'), widok: widokMoich },
+  { id: 'egzamin', ikona: IK('<path d="M9 4h6m-7 2h8a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2zm1 7 2 2 4-4"/>'), n: T('Egzamin', 'Examen'), o: T('Poziom, test poziomujący, temat', 'Nivel, prueba de nivel, tema'), akcja: () => pokazZakladke('egzamin', { przewin: true }) },
+];
+moduly.cwiczenia = zakladkaCwiczenia($('#z-cwiczenia'), app, { kafelki: KAFELKI, pasekXp: () => '', cwicz: cwiczListe, otworzTekst });
 app.otworzCzasownik = inf => {
   stan.ui.cWidok = 'tabela';
   zainicjowane.add('czasowniki');
@@ -157,6 +171,7 @@ app.otworzCzasownik = inf => {
 };
 const zainicjowane = new Set();
 function pokazZakladke(z, { przewin = false } = {}) {
+  if (document.body.classList.contains('skupienie') && z !== stan.ui.zakladka) skupienie(false);
   stan.ui.zakladka = z; app.zapisz();
   $$('#zakladki [data-z]').forEach(b => { const a = b.dataset.z === z; b.setAttribute('aria-selected', a); b.setAttribute('aria-current', a ? 'page' : 'false'); });
   ZAKLADKI.forEach(k => { $('#z-' + k).hidden = k !== z; });
@@ -193,6 +208,7 @@ function akcjaWyspy(k) {
   if (k === 'opcje') opcjeSekcji();
   else if (k === 'lista') slowniczek();
   else if (k === 'egzamin') pokazZakladke('egzamin', { przewin: true });
+  else if (k === 'cwiczenia') { if (stan.ui.zakladka === 'cwiczenia') moduly.cwiczenia.wroc(); else pokazZakladke('cwiczenia', { przewin: true }); }
 }
 
 // --- ustawienia ---
@@ -307,6 +323,16 @@ function modalUstawien() {
 }
 function odswiezModuly() { zainicjowane.clear(); zainicjowane.add(stan.ui.zakladka); moduly[stan.ui.zakladka].poziom(); }
 
+// --- tryb skupienia: sama karta, bez kapsuły i docka ---
+function skupienie(wl) {
+  document.body.classList.toggle('skupienie', wl);
+  let b = $('#skupienie-wyjdz');
+  if (wl && !b) {
+    document.body.insertAdjacentHTML('beforeend', `<button type="button" class="skupienie-wyjdz szklo" id="skupienie-wyjdz" data-skupienie>${T('Zakończ skupienie', 'Salir del modo concentración')} ✕</button>`);
+  } else if (!wl && b) b.remove();
+  if (wl) toast(T('Tryb skupienia. Esc albo przycisk u góry, żeby wyjść.', 'Modo concentración. Esc o el botón de arriba para salir.'));
+}
+
 // --- zdarzenia globalne ---
 document.addEventListener('click', e => {
   const t = e.target;
@@ -321,6 +347,7 @@ document.addEventListener('click', e => {
     return;
   }
   if (t.closest('[data-zamknij]')) return zamknijModal();
+  if (t.closest('[data-skupienie]')) return skupienie(!document.body.classList.contains('skupienie'));
   const cel = t.closest('[data-cel]');
   if (cel) { stan.ust.cel = +cel.dataset.cel; app.zapisz(); $$('[data-cel]').forEach(b => b.setAttribute('aria-pressed', b === cel)); rysujNaglowek(); return; }
 });
@@ -332,6 +359,7 @@ $('#ustawienia-btn').addEventListener('click', modalUstawien);
 
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape' && modalOtwarty()) { zamknijModal(); return; }
+  if (e.key === 'Escape' && document.body.classList.contains('skupienie')) { skupienie(false); return; }
   if (modalOtwarty() || e.metaKey || e.ctrlKey || e.altKey) return;
   const t = e.target;
   if (t.matches && t.matches('input, select, textarea, [contenteditable]')) return;
@@ -359,7 +387,7 @@ if (HISP) {
   document.title = 'Polaco JKF';
   const napisy = { slowka: 'Palabras', zwroty: 'Frases', czasowniki: 'Verbos', tlumacz: 'Traductor' };
   $$('#zakladki [data-z]').forEach(b => { $('span', b).textContent = napisy[b.dataset.z]; });
-  const akcje = { opcje: 'Opciones', lista: 'Diccionario', egzamin: 'Examen' };
+  const akcje = { opcje: 'Opciones', lista: 'Diccionario', cwiczenia: 'Práctica' };
   $$('#wyspa [data-wa]').forEach(b => { $('span', b).textContent = akcje[b.dataset.wa]; });
   $('#ustawienia-btn span').textContent = 'Ajustes';
   $('#zakladki').setAttribute('aria-label', 'Secciones');
@@ -367,7 +395,7 @@ if (HISP) {
   $('.pomin').textContent = 'Ir al contenido';
   $('#modal-zamknij').setAttribute('aria-label', 'Cerrar');
   $('#znaki').setAttribute('aria-label', 'Letras polacas');
-  [['#z-slowka', 'Palabras'], ['#z-egzamin', 'Examen'], ['#z-czasowniki', 'Verbos'], ['#z-zwroty', 'Frases'], ['#z-tlumacz', 'Traductor']].forEach(([s, n]) => $(s).setAttribute('aria-label', n));
+  [['#z-cwiczenia', 'Práctica'], ['#z-slowka', 'Palabras'], ['#z-egzamin', 'Examen'], ['#z-czasowniki', 'Verbos'], ['#z-zwroty', 'Frases'], ['#z-tlumacz', 'Traductor']].forEach(([s, n]) => $(s).setAttribute('aria-label', n));
 }
 zainicjujZnaki();
 zainicjujPolysk();
@@ -380,7 +408,7 @@ zainicjujArkusz();
 wyspa = zainicjujWyspe({
   sekcja: () => stan.ui.zakladka,
   akcja: akcjaWyspy,
-  maAkcje: k => k === 'egzamin' || (k === 'lista' ? !!LISTY[stan.ui.zakladka] : stan.ui.zakladka !== 'egzamin'),
+  maAkcje: k => k === 'cwiczenia' || (k === 'lista' ? !!LISTY[stan.ui.zakladka] : !['egzamin', 'cwiczenia'].includes(stan.ui.zakladka)),
 });
 requestAnimationFrame(() => document.body.classList.add('gotowe'));
 // aplikacja na ekranie głównym i praca offline

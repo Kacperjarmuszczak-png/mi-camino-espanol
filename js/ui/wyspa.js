@@ -13,7 +13,7 @@ const ZRODLA = {
   tlumacz: { et: tr('Kierunek', 'Dirección'), sel: '#t-kier [data-tk]' },
   egzamin: { et: tr('Zakres', 'Alcance'), sel: '#z-egzamin [data-ez]' },
 };
-const NAZWY = { slowka: tr('Słówka', 'Palabras'), zwroty: tr('Zwroty', 'Frases'), czasowniki: tr('Odmiana', 'Verbos'), tlumacz: tr('Tłumacz', 'Traductor'), egzamin: tr('Egzamin', 'Examen') };
+const NAZWY = { slowka: tr('Słówka', 'Palabras'), zwroty: tr('Zwroty', 'Frases'), czasowniki: tr('Odmiana', 'Verbos'), tlumacz: tr('Tłumacz', 'Traductor'), egzamin: tr('Egzamin', 'Examen'), cwiczenia: tr('Ćwiczenia', 'Práctica') };
 
 /**
  * @param {{ sekcja: () => string, akcja: (k: string) => void, maAkcje: (k: string) => boolean }} o

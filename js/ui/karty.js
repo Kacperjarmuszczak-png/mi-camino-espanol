@@ -162,7 +162,7 @@ export function silnikKart(root, cfg) {
   function naglowekKarty() {
     const { x, k } = S.karta;
     return `<div class="karta-gora"><small>${k === 'es' ? JEZ_CEL : JEZ_MOJ} · ${esc(x.t)}</small>
-      <span class="karta-gora-akcje">${przyciskGwiazdki(x.id, app.stan.ulub[x.id])}</span></div>`;
+      <span class="karta-gora-akcje"><button type="button" class="gwiazdka" data-skupienie aria-label="${tr('Tryb skupienia', 'Modo concentración')}" title="${tr('Tryb skupienia', 'Modo concentración')}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>${przyciskGwiazdki(x.id, app.stan.ulub[x.id])}</span></div>`;
   }
   function podpowiedz() {
     const { x, k } = S.karta, odp = odpowiedz();
