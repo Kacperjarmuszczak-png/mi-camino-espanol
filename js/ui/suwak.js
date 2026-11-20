@@ -6,7 +6,7 @@ const SELEKTOR = '.seg, #zakladki, #poziomy';
 const WIEKSZA = 1.28, MAX = 0.22;
 const ruchOgr = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-function soczewkaEfekt(lens) {
+export function soczewkaEfekt(lens) {
   const g = () => lens.firstElementChild;
   const s = { p: null, t: 0, v: 0, raf: 0 };
   const ustaw = () => {

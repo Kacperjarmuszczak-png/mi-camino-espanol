@@ -10,13 +10,14 @@ import { zakladkaCzasowniki } from './ui/czasowniki.js';
 import { zakladkaZwroty } from './ui/zwroty.js';
 import { zakladkaTlumacz } from './ui/tlumacz.js';
 import { zainicjujSuwaki } from './ui/suwak.js';
+import { zainicjujKule } from './ui/kula.js';
 
 const stan = wczytaj();
 const ZAKLADKI = ['slowka', 'egzamin', 'czasowniki', 'zwroty', 'tlumacz'];
 if (!POZIOMY.includes(stan.ui.poziom)) stan.ui.poziom = 'A1';
 if (!ZAKLADKI.includes(stan.ui.zakladka)) stan.ui.zakladka = 'slowka';
 
-let czasZapisu;
+let czasZapisu, kula = null;
 const app = {
   stan,
   dane: POD_ID,
@@ -122,6 +123,7 @@ function pokazZakladke(z, { przewin = false } = {}) {
   ZAKLADKI.forEach(k => { $('#z-' + k).hidden = k !== z; });
   if (!zainicjowane.has(z)) { zainicjowane.add(z); moduly[z].poziom(); }
   app.mowa.stop();
+  if (kula) kula.odswiez();
   if (przewin) $('#tresc').scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
 }
 function zmienPoziom(p) {
@@ -266,4 +268,8 @@ rysujNaglowek(); rysujPoziomy(); rysujInfo();
 pokazZakladke(stan.ui.zakladka);
 app.mowa.naZmiane(() => {});
 zainicjujSuwaki();
+kula = zainicjujKule({
+  aktywna: () => stan.ui.zakladka,
+  otworz: k => (k === 'ustawienia' ? modalUstawien() : pokazZakladke(k, { przewin: true })),
+});
 requestAnimationFrame(() => document.body.classList.add('gotowe'));
