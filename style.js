@@ -1,8 +1,9 @@
-// 20 stylów Liquid Glass. Ładowany w <head>, żeby zapisany styl był widoczny od pierwszej klatki.
+// 21 stylów Liquid Glass (domyślny: Burdeos – ciemny, bordowo-różowy). Ładowany w <head>, żeby zapisany styl był widoczny od pierwszej klatki.
 // t: ciemny (d) albo jasny (j); tlo: kolor bazowy; plamy: trzy kolory rozmytych plam pod szkłem;
 // a: kolor akcentu; tx: tekst; sz: tekst drugoplanowy.
 (() => {
   const S = [
+    { id: 'burdeos', n: 'Burdeos', t: 'd', tlo: '#14070b', plamy: ['#7a1838', '#d6467a', '#3d0d22'], a: '#ff8fb3', tx: '#fbeef2', sz: '#cfb2bc' },
     { id: 'las', n: 'Las', t: 'd', tlo: '#0c1712', plamy: ['#1f6a47', '#c9a24a', '#0f4a48'], a: '#e0bd74', tx: '#eef0e6', sz: '#aebcb1' },
     { id: 'aurora', n: 'Aurora', t: 'd', tlo: '#070f1c', plamy: ['#14b892', '#7b4dff', '#1c6dd0'], a: '#6ff3cf', tx: '#eaf6f4', sz: '#a3bcc4' },
     { id: 'ocean', n: 'Ocean', t: 'd', tlo: '#04142a', plamy: ['#0077b6', '#00b4d8', '#1e3fa0'], a: '#8be0ff', tx: '#e8f4ff', sz: '#a3bbd0' },
@@ -32,15 +33,18 @@
     const s = S.find(x => x.id === id) || S[0], g = SZKLO[s.t], r = document.documentElement;
     const v = { '--tlo': s.tlo, '--p1': s.plamy[0], '--p2': s.plamy[1], '--p3': s.plamy[2], '--zloto': s.a, '--tekst': s.tx, '--szary': s.sz,
       '--szklo': g.szklo, '--szklo-brzeg': g.brzeg, '--blask': g.blask, '--pole': g.pole, '--linia': g.linia, '--cien': g.cien,
-      '--ok': g.ok, '--zle': g.zle, '--uwaga': s.a, '--na-zlocie': g.na };
+      '--ok': g.ok, '--zle': g.zle, '--uwaga': s.t === 'd' ? '#f3c76b' : '#8a5a00', '--na-zlocie': g.na };
     for (const k in v) r.style.setProperty(k, v[k]);
     r.style.colorScheme = s.t === 'd' ? 'dark' : 'light';
     r.dataset.styl = s.id;
     const m = document.querySelector('meta[name="theme-color"]'); if (m) m.content = s.tlo;
     return s;
   }
-  let zapisany = 'las';
-  try { zapisany = JSON.parse(localStorage.getItem('es-nauka') || '{}').styl || 'las'; } catch (e) { /* brak dostępu */ }
+  let zapisany = 'burdeos';
+  try {
+    const v2 = JSON.parse(localStorage.getItem('es-nauka-v2') || 'null');
+    zapisany = (v2 && v2.ust && v2.ust.styl) || JSON.parse(localStorage.getItem('es-nauka') || '{}').styl || 'burdeos';
+  } catch (e) { /* brak dostępu */ }
   zastosuj(zapisany);
   window.STYLE = { lista: S, zastosuj };
 })();

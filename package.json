@@ -1,0 +1,9 @@
+{
+  "name": "espanol-jkf",
+  "private": true,
+  "type": "module",
+  "description": "Nauka hiszpańskiego A1–C2: statyczna aplikacja (GitHub Pages), bez kroku budowania.",
+  "scripts": {
+    "test": "node --test tests/*.test.js"
+  }
+}

@@ -3,116 +3,63 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#0f1a15">
-  <meta name="description" content="Nauka hiszpańskiego od A1 do C2: słówka, egzamin, odmiana czasowników i zwroty.">
+  <meta name="theme-color" content="#14070b">
+  <meta name="description" content="Nauka hiszpańskiego od A1 do C2: słówka z powtórkami, egzaminy, odmiana czasowników, zwroty i dialogi.">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>Español JKF</title>
   <script src="style.js"></script>
-  <link rel="stylesheet" href="styl.css">
+  <link rel="stylesheet" href="css/app.css">
+  <script type="module" src="js/main.js"></script>
 </head>
 <body>
+  <a class="pomin" href="#tresc">Przejdź do nauki</a>
   <header class="gora">
-    <h1>Español <span>JKF</span></h1>
-    <button type="button" class="ikona szklo" id="styl-btn" aria-label="Wybierz styl strony" aria-expanded="false" aria-controls="style-panel">
-      <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M12 3a9 9 0 0 0 0 18c1.1 0 1.8-.8 1.8-1.8 0-.5-.2-.9-.5-1.2-.3-.3-.5-.7-.5-1.2 0-1 .8-1.8 1.8-1.8H17a4 4 0 0 0 4-4c0-4.4-4-8-9-8zm-5.5 9a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm3-4a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm3 4a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"/></svg>
-    </button>
+    <div class="marka"><h1>Español</h1><span>JKF</span></div>
+    <div class="gora-akcje">
+      <button type="button" class="dzis szklo" id="dzis" aria-label="Dzisiejsza aktywność i seria dni">
+        <svg class="pierscien" viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="15" class="tor"/><circle cx="18" cy="18" r="15" class="wypelnienie" id="dzis-luk"/></svg>
+        <span class="dzis-tekst"><b id="dzis-ile">0</b><small id="dzis-cel">/20</small></span>
+        <span class="seria" id="seria" title="Seria dni z osiągniętym celem"></span>
+      </button>
+      <button type="button" class="ikona szklo" id="ustawienia-btn" aria-label="Ustawienia"></button>
+    </div>
   </header>
 
-  <section class="style-panel szklo" id="style-panel" hidden aria-label="Styl strony">
-    <div class="wiersz"><p class="etykieta">Styl Liquid Glass</p><button type="button" class="btn btn--male" id="styl-zamknij">Gotowe</button></div>
-    <div class="style-siatka" id="style-siatka"></div>
-  </section>
-
   <nav class="poziomy" id="poziomy" aria-label="Poziom"></nav>
-  <p class="opis" id="opis"></p>
+
+  <section class="poziom-info szklo" id="poziom-info" aria-live="polite"></section>
 
   <nav class="zakladki szklo" id="zakladki" aria-label="Sekcje">
-    <button type="button" data-z="slowka">Słówka</button>
-    <button type="button" data-z="egzamin">Egzamin</button>
-    <button type="button" data-z="czasowniki">Czasowniki</button>
-    <button type="button" data-z="zwroty">Zwroty</button>
+    <span class="kapsula" aria-hidden="true"></span>
+    <button type="button" data-z="slowka"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" d="M6 3h9l5 5v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2zm8 0v5h6M8 13h8M8 17h5"/></svg><span>Słówka</span></button>
+    <button type="button" data-z="egzamin"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" d="M9 4h6m-7 2h8a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2zm1 7 2 2 4-4"/></svg><span>Egzamin</span></button>
+    <button type="button" data-z="czasowniki"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" d="M4 6h16M4 12h10M4 18h13M17 10l3 2-3 2"/></svg><span>Czasowniki</span></button>
+    <button type="button" data-z="zwroty"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" d="M4 4h11a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H9l-4 3v-3H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zm16 5a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2h-1v3l-4-3h-3"/></svg><span>Zwroty</span></button>
   </nav>
 
-  <main>
-    <!-- SŁÓWKA -->
-    <section class="panel szklo" id="z-slowka">
-      <div class="wiersz">
-        <label class="wybor"><span>Temat</span><select id="f-temat"></select></label>
-        <div class="seg" id="f-kier" role="group" aria-label="Najpierw pokazuj">
-          <button type="button" data-k="es">ES → PL</button><button type="button" data-k="pl">PL → ES</button>
-        </div>
-      </div>
-      <div class="pasek" aria-hidden="true"><i id="f-pasek"></i></div>
-      <button type="button" class="fiszka" id="fiszka" aria-label="Odwróć kartę">
-        <small id="f-podp"></small>
-        <b id="f-slowo"></b>
-        <span id="f-odp" class="odp"></span>
-        <em id="f-hint">stuknij, żeby zobaczyć tłumaczenie</em>
-      </button>
-      <div class="wiersz">
-        <span class="male" id="f-licznik"></span>
-        <button type="button" class="glos" id="f-glos" aria-label="Posłuchaj wymowy"></button>
-      </div>
-      <div class="przyciski" id="f-przyciski">
-        <button type="button" class="btn" id="f-nie">Jeszcze nie</button>
-        <button type="button" class="btn btn--zloty" id="f-tak">Umiem</button>
-      </div>
-      <details class="lista-slow">
-        <summary>Lista słów</summary>
-        <input type="search" id="s-szukaj" placeholder="Szukaj po polsku albo po hiszpańsku" autocomplete="off" spellcheck="false" aria-label="Szukaj słowa">
-        <ul class="lista" id="s-lista"></ul>
-      </details>
-    </section>
-
-    <!-- EGZAMIN -->
-    <section class="panel szklo" id="z-egzamin" hidden>
-      <div id="e-tresc" aria-live="polite"></div>
-    </section>
-
-    <!-- CZASOWNIKI -->
-    <section class="panel szklo" id="z-czasowniki" hidden>
-      <div class="szukaj">
-        <input id="o-szukaj" type="search" list="o-lista" placeholder="Czasownik, np. tener albo „mieć”" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Szukaj czasownika">
-        <datalist id="o-lista"></datalist>
-        <button type="button" class="btn btn--male" id="o-losuj">Losuj</button>
-      </div>
-      <div>
-        <h2 id="o-bezok"></h2>
-        <p class="male" id="o-info"></p>
-      </div>
-      <div class="czasy" id="o-czasy" role="tablist" aria-label="Czas"></div>
-      <p class="male" id="o-opis"></p>
-      <table class="tabela" id="o-tabela"></table>
-
-      <div class="cwicz">
-        <p class="etykieta">Ćwiczenie</p>
-        <p class="zadanie" id="c-zadanie"></p>
-        <form class="szukaj" id="c-form" autocomplete="off">
-          <input id="c-wpis" type="text" placeholder="wpisz formę" autocapitalize="off" autocorrect="off" spellcheck="false" aria-label="Forma czasownika">
-          <button class="btn btn--zloty btn--male" id="c-sprawdz" type="submit">Sprawdź</button>
-        </form>
-        <div class="klawisze" id="c-klawisze"></div>
-        <p class="komunikat" id="c-komunikat" aria-live="polite"></p>
-        <p class="male">Seria: <b id="c-seria">0</b> · najlepsza: <b id="c-najlepsza">0</b></p>
-      </div>
-    </section>
-
-    <!-- ZWROTY -->
-    <section class="panel szklo" id="z-zwroty" hidden>
-      <label class="wybor"><span>Sytuacja</span><select id="z-temat"></select></label>
-      <ul class="lista" id="z-lista"></ul>
-    </section>
+  <main id="tresc">
+    <section class="panel szklo" id="z-slowka" aria-label="Słówka"></section>
+    <section class="panel szklo" id="z-egzamin" aria-label="Egzamin" hidden></section>
+    <section class="panel szklo" id="z-czasowniki" aria-label="Czasowniki" hidden></section>
+    <section class="panel szklo" id="z-zwroty" aria-label="Zwroty" hidden></section>
   </main>
 
-  <section class="glos-ustawienia szklo" id="glos-ustawienia">
-    <label class="wybor"><span>Głos</span><select id="glos-wybor" aria-label="Głos lektora"></select></label>
-    <p class="male" id="glos-rada" hidden>Żeby brzmiało jak Siri: na iPhonie otwórz Ustawienia → Dostępność → Treść mówiona → Głosy → Hiszpański → Hiszpania i pobierz <b>Mónica (Premium)</b> albo <b>Jorge (Rozszerzony)</b>. Potem odśwież stronę.</p>
-  </section>
+  <footer class="stopka">
+    <p class="tylko-desktop">Skróty: <kbd>spacja</kbd> odkryj / odsłuchaj · <kbd>1</kbd>–<kbd>4</kbd> ocena lub odpowiedź · <kbd>Enter</kbd> dalej · <kbd>←</kbd> <kbd>→</kbd> zakładki · <kbd>?</kbd> pomoc</p>
+    <p>Postęp zapisuje się tylko na tym urządzeniu. Kopię zapasową zrobisz w Ustawieniach (eksport).</p>
+  </footer>
 
-  <footer class="stopka">Postęp i wybrany głos zapisują się tylko na tym urządzeniu.</footer>
+  <div class="znaki szklo" id="znaki" hidden role="toolbar" aria-label="Znaki hiszpańskie"></div>
 
-  <script src="slowa.js"></script>
-  <script src="czasowniki.js"></script>
-  <script src="zwroty.js"></script>
-  <script src="app.js"></script>
+  <div class="modal" id="modal" hidden>
+    <div class="modal-tlo" data-zamknij></div>
+    <div class="modal-okno szklo" role="dialog" aria-modal="true" aria-labelledby="modal-tytul">
+      <div class="modal-gora"><h2 id="modal-tytul"></h2><button type="button" class="ikona ikona--mala" id="modal-zamknij" data-zamknij aria-label="Zamknij">✕</button></div>
+      <div class="modal-tresc" id="modal-tresc"></div>
+    </div>
+  </div>
+  <div class="toast szklo" id="toast" role="status" hidden></div>
+  <noscript><p class="noscript">Ta aplikacja potrzebuje włączonego JavaScriptu.</p></noscript>
 </body>
 </html>

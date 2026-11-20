@@ -2,7 +2,7 @@
 // Znaczniki: ie / ue / i / u - zmiana samogłoski w temacie (pensar → pienso, poder → puedo, pedir → pido, jugar → juego),
 // zc - conocer → conozco, z - vencer → venzo, í / ú - akcent (enviar → envío, continuar → continúo),
 // =baza - czasownik nieregularny (z przedrostkiem: obtener = ob + tener). Końcówka „se” = czasownik zwrotny.
-(() => {
+// Moduł: lista czasowników, odmiana w 7 czasach + tryb rozkazujący, klasyfikacja i podział formy na temat/końcówkę.
   const LISTA = `
 ser:być (cecha, kim się jest):=ser
 estar:być (stan, miejsce):=estar
@@ -491,6 +491,23 @@ reírse:śmiać się (z czegoś):=reír
     const perf = haber.map(h => h + ' ' + przed + part);
     const P = a => a.map(x => przed + x);
     let wynik = { presente: P(pres), perfecto: perf, indefinido: P(indef), imperfecto: P(imperf), futuro: P(fut), condicional: P(cond), subjuntivo: P(subj), part: przed + part, ger: przed + ger };
+    // tryb rozkazujący (imperativo): [yo –, tú, usted, nosotros, vosotros, ustedes]
+    if (!BEZ_ROZKAZU.has(rdzen)) {
+      const s3 = P(subj);
+      let tu = irr && IMP_TU[baza] !== undefined ? IMP_TU[baza] : pres[2];
+      if (przed && /^[^aeiouáéíóú]*[aeiou][^aeiouáéíóú]*n$/.test(tu)) tu = tu.replace(/[aeiou](?=[^aeiou]*$)/, m => ({ a: 'á', e: 'é', i: 'í', o: 'ó', u: 'ú' }[m]));
+      tu = przed + tu;
+      const vos = rdzen === 'ir' ? 'id' : rdzen.slice(0, -1) + 'd';
+      const nos = rdzen === 'ir' ? 'vamos' : s3[3];
+      let tw = [null, tu, s3[2], nos, vos, s3[5]];
+      let neg = [null, 'no ' + s3[1], 'no ' + s3[2], 'no ' + s3[3], 'no ' + s3[4], 'no ' + s3[5]];
+      if (zwrotny) {
+        tw = [null, akcentPrzedZaimkiem(tu) + 'te', akcentPrzedZaimkiem(s3[2]) + 'se', akcentPrzedZaimkiem(nos.replace(/s$/, '')) + 'nos',
+          rdzen === 'ir' ? 'idos' : (typ === 'ir' ? vos.slice(0, -2) + 'íos' : vos.slice(0, -1) + 'os'), akcentPrzedZaimkiem(s3[5]) + 'se'];
+        neg = [null, 'no te ' + s3[1], 'no se ' + s3[2], 'no nos ' + s3[3], 'no os ' + s3[4], 'no se ' + s3[5]];
+      }
+      wynik.imperativo = tw; wynik.imperativoNeg = neg;
+    }
     if (zwrotny) {
       for (const c of ['presente', 'perfecto', 'indefinido', 'imperfecto', 'futuro', 'condicional', 'subjuntivo']) wynik[c] = wynik[c].map((x, i) => ZAIMKI[i] + ' ' + x);
       wynik.ger = wynik.ger.replace(/ando$/, 'ándose').replace(/endo$/, 'éndose');
@@ -498,16 +515,145 @@ reírse:śmiać się (z czegoś):=reír
     return wynik;
   }
 
-  window.CZASOWNIKI = LISTA;
-  window.odmiana = odmiana;
-  window.CZASY = [
-    { k: 'presente', n: 'Presente', pl: 'czas teraźniejszy', o: 'Co robię teraz albo zwykle: hablo español.' },
-    { k: 'perfecto', n: 'Pretérito perfecto', pl: 'przeszły z „haber”', o: 'Co zrobiłem dziś, w tym tygodniu, w życiu: he comido.' },
-    { k: 'indefinido', n: 'Pretérito indefinido', pl: 'przeszły zakończony', o: 'Co zrobiłem wczoraj, w zeszłym roku: comí.' },
-    { k: 'imperfecto', n: 'Pretérito imperfecto', pl: 'przeszły ciągły', o: 'Jak było, co robiłem zwykle: comía.' },
-    { k: 'futuro', n: 'Futuro', pl: 'czas przyszły', o: 'Co zrobię: comeré.' },
-    { k: 'condicional', n: 'Condicional', pl: 'tryb przypuszczający', o: 'Co bym zrobił: comería.' },
-    { k: 'subjuntivo', n: 'Presente de subjuntivo', pl: 'tryb łączący', o: 'Po „quiero que”, „ojalá”, „para que”: quiero que comas.' },
-  ];
-  window.OSOBY = [['yo', 'ja'], ['tú', 'ty'], ['él / ella / usted', 'on / ona / Pan(i)'], ['nosotros', 'my'], ['vosotros', 'wy'], ['ellos / ustedes', 'oni / Państwo']];
-})();
+
+// --- tryb rozkazujący: nieregularne formy „tú” i akcent po dołączeniu zaimka ---
+const IMP_TU = { decir: 'di', hacer: 'haz', ir: 've', poner: 'pon', salir: 'sal', ser: 'sé', tener: 'ten', venir: 'ven', haber: null };
+const BEZ_ROZKAZU = new Set(['haber', 'soler', 'llover', 'nevar', 'doler', 'gustar', 'ocurrir', 'faltar', 'caber']);
+const MOCNE = 'aeo', SLABE = 'iuü', AKC = { a: 'á', e: 'é', i: 'í', o: 'ó', u: 'ú' };
+// Dodaje akcent, gdy po dołączeniu zaimka akcent padnie na trzecią sylabę od końca (levanta → levánta-te).
+export function akcentPrzedZaimkiem(slowo) {
+  if (/[áéíóú]/.test(slowo)) return slowo;
+  const jadra = [];          // [początek, koniec] grup samogłoskowych (sylab)
+  for (let i = 0; i < slowo.length; i++) {
+    const c = slowo[i];
+    if (!(MOCNE + SLABE).includes(c)) continue;
+    // „qu” i „gu” przed e/i: u jest nieme
+    if (c === 'u' && i > 0 && 'qg'.includes(slowo[i - 1]) && 'ei'.includes(slowo[i + 1] || '')) continue;
+    const ost = jadra[jadra.length - 1];
+    const poprz = slowo[i - 1];
+    if (ost && ost[1] === i - 1 && !(MOCNE.includes(c) && MOCNE.includes(poprz))) ost[1] = i;
+    else jadra.push([i, i]);
+  }
+  if (jadra.length < 2) return slowo;
+  const kon = slowo[slowo.length - 1];
+  const [p, k] = 'aeiouns'.includes(kon) ? jadra[jadra.length - 2] : jadra[jadra.length - 1];
+  let gdzie = -1;
+  for (let i = p; i <= k; i++) if (MOCNE.includes(slowo[i])) gdzie = i;
+  if (gdzie < 0) gdzie = k;
+  return slowo.slice(0, gdzie) + AKC[slowo[gdzie]] + slowo.slice(gdzie + 1);
+}
+
+// --- dane i opisy ---
+export const CZASOWNIKI = LISTA;
+export { odmiana };
+export const CZASY = [
+  { k: 'presente', n: 'Presente', pl: 'czas teraźniejszy', o: 'Co robię teraz albo zwykle: hablo español.' },
+  { k: 'perfecto', n: 'Pretérito perfecto', pl: 'przeszły z „haber”', o: 'Co zrobiłem dziś, w tym tygodniu, w życiu: he comido.' },
+  { k: 'indefinido', n: 'Pretérito indefinido', pl: 'przeszły zakończony', o: 'Co zrobiłem wczoraj, w zeszłym roku: comí.' },
+  { k: 'imperfecto', n: 'Pretérito imperfecto', pl: 'przeszły ciągły', o: 'Jak było, co robiłem zwykle: comía.' },
+  { k: 'futuro', n: 'Futuro simple', pl: 'czas przyszły', o: 'Co zrobię: comeré.' },
+  { k: 'condicional', n: 'Condicional', pl: 'tryb przypuszczający', o: 'Co bym zrobił: comería.' },
+  { k: 'subjuntivo', n: 'Presente de subjuntivo', pl: 'tryb łączący', o: 'Po „quiero que”, „ojalá”, „es importante que”: quiero que comas.' },
+  { k: 'imperativo', n: 'Imperativo', pl: 'tryb rozkazujący', o: 'Polecenia i prośby: ¡habla!, ¡come!, ¡siéntate!' },
+  { k: 'imperativoNeg', n: 'Imperativo negativo', pl: 'zakaz', o: 'Zakazy mają formę trybu łączącego: ¡no hables!, ¡no te sientes!' },
+];
+export const OSOBY = [['yo', 'ja'], ['tú', 'ty'], ['él / ella / usted', 'on / ona / Pan(i)'], ['nosotros / -as', 'my'], ['vosotros / -as', 'wy'], ['ellos / ellas / ustedes', 'oni / one / Państwo']];
+export const OSOBY_ROZKAZ = [null, ['tú', 'ty'], ['usted', 'Pan(i)'], ['nosotros', 'my (zróbmy)'], ['vosotros', 'wy'], ['ustedes', 'Państwo']];
+
+// --- klasyfikacja (do filtrów) ---
+export function grupa(v) {
+  const zwrotny = /se$/.test(v.inf) && v.inf !== 'ser';
+  const rdzen = zwrotny ? v.inf.slice(0, -2) : v.inf;
+  if (v.f.startsWith('=') || v.f === 'zc' || v.f === 'z') return 'nieregularny';
+  if (v.f === 'ie') return 'e-ie';
+  if (v.f === 'ue' || v.f === 'u') return 'o-ue';
+  if (v.f === 'i') return 'e-i';
+  return 'reg-' + rdzen.replace('í', 'i').slice(-2);
+}
+export const zwrotny = v => /se$/.test(v.inf) && v.inf !== 'ser';
+export const GRUPY = [
+  ['', 'Wszystkie'], ['reg-ar', 'Regularne -ar'], ['reg-er', 'Regularne -er'], ['reg-ir', 'Regularne -ir'],
+  ['nieregularny', 'Nieregularne'], ['e-ie', 'Oboczność e → ie'], ['o-ue', 'Oboczność o → ue'], ['e-i', 'Oboczność e → i'], ['zwrotny', 'Zwrotne (-se)'],
+];
+
+const pamiec = new Map();
+export function formy(v) {
+  if (!pamiec.has(v.inf)) pamiec.set(v.inf, odmiana(v.inf, v.f));
+  return pamiec.get(v.inf);
+}
+const pamiecReg = new Map();
+function regularne(inf) {
+  if (!pamiecReg.has(inf)) pamiecReg.set(inf, odmiana(inf, ''));
+  return pamiecReg.get(inf);
+}
+
+/**
+ * Dzieli formę na części do podświetlenia: zaimek/posiłkowy, temat, zmiana (nieregularność) i końcówka.
+ * @returns {{t: string, k: 'pre'|'temat'|'zmiana'|'konc'}[]}
+ */
+export function czesciFormy(v, czas, i, forma) {
+  if (!forma) return [];
+  const rdzen = zwrotny(v) ? v.inf.slice(0, -2) : v.inf;
+  // przedrostek: zaimki zwrotne, „no”, haber w perfecto
+  const m = forma.match(czas === 'perfecto' ? /^((?:(?:me|te|se|nos|os) )?(?:he|has|ha|hemos|habéis|han) )/ : /^((?:no )?(?:(?:me|te|se|nos|os) )?)/);
+  const pre = m ? m[1] : '';
+  const rdzenForma = forma.slice(pre.length);
+  let wzor;
+  try {
+    const r = regularne(rdzen);
+    wzor = czas === 'perfecto' ? r.part : r[czas] && r[czas][i];
+    if (czas === 'imperativoNeg' && wzor) wzor = wzor.replace(/^no /, '');
+  } catch (e) { wzor = null; }
+  const temat = czas === 'futuro' || czas === 'condicional' ? rdzen.replace('í', 'i') : rdzen.replace('í', 'i').slice(0, -2);
+  const czesci = [];
+  if (pre) czesci.push({ t: pre, k: 'pre' });
+  const f = rdzenForma;
+  if (wzor && f !== wzor) {
+    let p = 0; while (p < f.length && p < wzor.length && f[p] === wzor[p]) p++;
+    let s = 0; while (s < f.length - p && s < wzor.length - p && f[f.length - 1 - s] === wzor[wzor.length - 1 - s]) s++;
+    // końcówka regularna (np. -es) zostaje końcówką, reszta wspólnego zakończenia to temat
+    const dlKonc = wzor.startsWith(temat) ? Math.min(s, wzor.length - temat.length) : s;
+    const tp = Math.min(p, temat.length);
+    if (tp) czesci.push({ t: f.slice(0, tp), k: 'temat' });
+    if (p > tp) czesci.push({ t: f.slice(tp, p), k: 'konc' });
+    czesci.push({ t: f.slice(p, f.length - s), k: 'zmiana' });
+    if (s > dlKonc) czesci.push({ t: f.slice(f.length - s, f.length - dlKonc), k: 'temat' });
+    if (dlKonc) czesci.push({ t: f.slice(f.length - dlKonc), k: 'konc' });
+  } else {
+    let p = 0; while (p < f.length && p < temat.length && f[p] === temat[p]) p++;
+    if (p) czesci.push({ t: f.slice(0, p), k: 'temat' });
+    if (p < f.length) czesci.push({ t: f.slice(p), k: 'konc' });
+  }
+  return czesci.filter(c => c.t);
+}
+
+// --- objaśnienia reguł (do drillu i egzaminu) ---
+const KONC_OPIS = {
+  presente: { ar: '-o, -as, -a, -amos, -áis, -an', er: '-o, -es, -e, -emos, -éis, -en', ir: '-o, -es, -e, -imos, -ís, -en' },
+  indefinido: { ar: '-é, -aste, -ó, -amos, -asteis, -aron', er: '-í, -iste, -ió, -imos, -isteis, -ieron', ir: '-í, -iste, -ió, -imos, -isteis, -ieron' },
+  imperfecto: { ar: '-aba, -abas, -aba, -ábamos, -abais, -aban', er: '-ía, -ías, -ía, -íamos, -íais, -ían', ir: '-ía, -ías, -ía, -íamos, -íais, -ían' },
+  subjuntivo: { ar: '-e, -es, -e, -emos, -éis, -en', er: '-a, -as, -a, -amos, -áis, -an', ir: '-a, -as, -a, -amos, -áis, -an' },
+};
+export function regula(v, czas) {
+  const rdzen = zwrotny(v) ? v.inf.slice(0, -2) : v.inf;
+  const typ = rdzen.replace('í', 'i').slice(-2);
+  const z = [];
+  if (czas === 'perfecto') z.push('Pretérito perfecto = haber (he, has, ha, hemos, habéis, han) + imiesłów: -ado dla -ar, -ido dla -er/-ir.');
+  else if (czas === 'futuro') z.push('Futuro: do całego bezokolicznika dodajesz -é, -ás, -á, -emos, -éis, -án.');
+  else if (czas === 'condicional') z.push('Condicional: do całego bezokolicznika dodajesz -ía, -ías, -ía, -íamos, -íais, -ían.');
+  else if (czas === 'imperativo') z.push('Imperativo: tú = forma „él” z czasu teraźniejszego, vosotros = bezokolicznik z -d zamiast -r, usted/nosotros/ustedes = formy trybu łączącego. Zaimek dołączasz na końcu: siéntate.');
+  else if (czas === 'imperativoNeg') z.push('Zakaz: „no” + forma trybu łączącego, zaimek przed czasownikiem: no te sientes.');
+  else if (KONC_OPIS[czas]) z.push(`${CZASY.find(c => c.k === czas).n}, czasownik -${typ}: końcówki ${KONC_OPIS[czas][typ]}.`);
+  if (czas === 'subjuntivo') z.push('Temat bierzesz z formy „yo” czasu teraźniejszego (tengo → tenga, conozco → conozca).');
+  const baza = v.f.startsWith('=') ? v.f.slice(1) : '';
+  if (baza && baza !== rdzen) z.push(`Odmienia się jak „${baza}”${['tener', 'venir', 'poner', 'hacer', 'traer', 'ducir'].includes(baza) ? ' (z przedrostkiem)' : ''}.`);
+  else if (baza) z.push('Czasownik nieregularny: formy warto zapamiętać.');
+  if (['ie', 'ue', 'i', 'u'].includes(v.f) && ['presente', 'subjuntivo', 'imperativo', 'imperativoNeg'].includes(czas)) {
+    z.push({ ie: 'Zmiana e → ie', ue: 'Zmiana o → ue', i: 'Zmiana e → i', u: 'Zmiana u → ue' }[v.f] + ' w akcentowanym temacie (bez nosotros i vosotros).');
+  }
+  if (['ie', 'ue', 'i'].includes(v.f) && typ === 'ir' && (czas === 'indefinido' || czas === 'subjuntivo')) z.push('Czasowniki -ir ze zmianą tematu mają też e → i / o → u w 3. osobie indefinido i w nosotros/vosotros subjuntivo.');
+  if (v.f === 'zc') z.push('W 1. osobie: -zco (conozco), stąd subjuntivo -zca.');
+  if (v.f === 'í' || v.f === 'ú') z.push('Akcent na í / ú w formach z akcentowanym tematem (envío, continúo).');
+  if (zwrotny(v)) z.push('Czasownik zwrotny: me, te, se, nos, os, se przed formą.');
+  return z.join(' ');
+}
