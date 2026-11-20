@@ -1,6 +1,6 @@
 // Service worker: aplikacja działa offline i można ją dodać do ekranu głównego.
 // Strategia „najpierw sieć”: online zawsze najnowsza wersja z GitHub Pages, bez sieci – ostatnia zapisana kopia.
-const WERSJA = 'c904cb9ff2';
+const WERSJA = 'deaffff1ac';
 const PAMIEC = 'espanol-' + WERSJA;
 const PLIKI = [
   './',
@@ -20,6 +20,7 @@ const PLIKI = [
   './js/dane/gramatyka.js',
   './js/dane/index.js',
   './js/dane/lekcje-gramatyki.js',
+  './js/dane/przyklady-2.js',
   './js/dane/przyklady.js',
   './js/dane/rozmowy.js',
   './js/dane/slowa-codzienne-a.js',
@@ -36,6 +37,7 @@ const PLIKI = [
   './js/egzamin.js',
   './js/filtry.js',
   './js/jezyk.js',
+  './js/kontekst.js',
   './js/main.js',
   './js/mowa.js',
   './js/odmiana-pl.js',
@@ -57,6 +59,7 @@ const PLIKI = [
   './js/ui/egzamin.js',
   './js/ui/gramatyka.js',
   './js/ui/karty.js',
+  './js/ui/kontekst-dane.js',
   './js/ui/lekcja-dnia.js',
   './js/ui/lista.js',
   './js/ui/moje.js',

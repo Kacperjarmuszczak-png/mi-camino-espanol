@@ -40,11 +40,11 @@ export function widokCzytania(el, app) {
   function rysuj() {
     const lista = dostepne();
     const nr = lista.findIndex(x => x.i === ui.czTekst);
-    const tekstHtml = esc(T.tekst).replace(/[\p{L}]+/gu, w => `<span class="cz-slowo" data-cz="${esc(w)}">${w}</span>`);
+    const tekstHtml = T.tekst.replace(/[\p{L}]+|[^\p{L}]+/gu, (w, o) => (/\p{L}/u.test(w) ? `<span class="cz-slowo" data-cz="${esc(w)}" data-o="${o}">${esc(w)}</span>` : esc(w)));
     el.innerHTML = `<div class="czytanie">
       <div class="pigulki cz-lista" role="group" aria-label="${tr('Teksty', 'Textos')}">${lista.map((x, j) => `<button type="button" class="pigulka" data-czt="${x.i}" aria-pressed="${x.i === ui.czTekst}">${x.p} · ${j + 1}</button>`).join('')}</div>
       <article class="cz-tekst" lang="${HISP ? 'pl' : 'es'}">
-        <div class="cz-gora"><span class="chip">${T.p}</span>${przyciskGlosu(T.tekst, tr('Posłuchaj tekstu', 'Escuchar el texto'))}</div>
+        <div class="cz-gora"><span class="chip">${T.p}</span><span class="cz-graj"><button type="button" class="btn btn--male" data-cz-czytaj>▶ ${tr('Czytaj na głos', 'Leer en voz alta')}</button><button type="button" class="btn btn--male btn--cichy" data-cz-wolno>${tr('Wolniej', 'Más lento')}</button></span></div>
         <p>${tekstHtml}</p>
         <div class="cz-dymek" data-cz-dymek hidden></div>
         <p class="male">${tr('Stuknij słowo, żeby zobaczyć tłumaczenie.', 'Toca una palabra para ver la traducción.')}</p>
@@ -71,8 +71,21 @@ export function widokCzytania(el, app) {
       $('[data-cz-koniec]', el).innerHTML = `<p class="srodek"><b>${dobrze}/${T.q.length}</b> ${tr('poprawnych odpowiedzi', 'respuestas correctas')}</p>`;
     }
   }
+  // czytanie na głos z podświetlaniem bieżącego słowa (zdarzenia „boundary” syntezy mowy)
+  function czytaj(wolniej) {
+    const slowa = [...el.querySelectorAll('.cz-slowo')];
+    const zgas = () => slowa.forEach(s => s.classList.remove('czytane'));
+    zgas();
+    app.mowa.powiedz(T.tekst, { wolniej, granica: i => {
+      let akt = null;
+      for (const s of slowa) { if (+s.dataset.o <= i) akt = s; else break; }
+      zgas(); if (akt) akt.classList.add('czytane');
+    }, koniec: zgas });
+  }
   el.addEventListener('click', e => {
     const t = e.target;
+    if (t.closest('[data-cz-czytaj]')) return czytaj(false);
+    if (t.closest('[data-cz-wolno]')) return czytaj(true);
     const s = t.closest('[data-czt]'); if (s) { wybierz(+s.dataset.czt); el.scrollIntoView({ block: 'start', behavior: 'smooth' }); return; }
     const o = t.closest('[data-czo]'); if (o) return odpowiedz(+o.dataset.czq, +o.dataset.czo);
     const w = t.closest('[data-cz]');

@@ -43,7 +43,7 @@ export function utworzMowe(ust) {
     naZmiane: f => sluchacze.add(f),
     stop() { if (synt) synt.cancel(); },
     // tempo: mnożnik z ustawień (0.75 / 1 / 1.15); wolniej: dodatkowe spowolnienie
-    powiedz(tekst, { wolniej = false } = {}) {
+    powiedz(tekst, { wolniej = false, granica = null, koniec = null } = {}) {
       if (!synt || !tekst) return false;
       try {
         const zajety = synt.speaking || synt.pending;
@@ -53,6 +53,8 @@ export function utworzMowe(ust) {
         u.lang = wybrany ? wybrany.lang : CEL === 'pl' ? 'pl-PL' : (ust.wariant === 'latam' ? 'es-MX' : 'es-ES');
         if (wybrany) u.voice = wybrany;
         u.rate = Math.max(0.5, 0.95 * (ust.tempo || 1) * (wolniej ? 0.7 : 1));
+        if (granica) u.onboundary = e => { if (e.name !== 'sentence') granica(e.charIndex); };
+        if (koniec) { u.onend = koniec; u.onerror = koniec; }
         // po cancel() Safari potrafi „zgubić” od razu następną wypowiedź – krótka przerwa
         if (zajety) setTimeout(() => mow(u), 80); else mow(u);
         return true;

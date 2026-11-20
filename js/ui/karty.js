@@ -3,6 +3,7 @@ import { $, esc, IKONY, przyciskGlosu, przyciskGwiazdki, podswietl, bezGwiazdek,
 import { budujKolejke, poOcenie, status, doPowtorki } from '../srs.js';
 import { sprawdz, komunikat, ocenaZWyniku, tasuj, bezRodzajnika, czysc, warianty, ocenWymowe } from '../tekst.js';
 import { rozpoznawanieDostepne, sluchaj, przerwijSluchanie } from '../rozpoznawanie.js';
+import { kontekstSlowa } from './kontekst-dane.js';
 import { wWariancie, odpowiedziEs } from '../dane/index.js';
 import { t as tr, HISP, CEL } from '../jezyk.js';
 
@@ -151,6 +152,10 @@ export function silnikKart(root, cfg) {
     if (x.latam && x.latam.nota) h += `<p class="male">${esc(x.latam.nota)}</p>`;
     if (x.przyklad) {
       h += `<div class="przyklad"><p class="przyklad-es">${podswietl(x.przyklad.es)} ${przyciskGlosu(bezGwiazdek(x.przyklad.es), tr('Posłuchaj zdania', 'Escuchar la frase'))}</p><p class="przyklad-pl">${podswietl(x.przyklad.pl)}</p></div>`;
+    }
+    if (x.typ === 'slowo') {
+      const kt = kontekstSlowa(x, x.przyklad ? 2 : 3);
+      if (kt.length) h += `<div class="kontekst-lista"><p class="etykieta">${tr('W kontekście', 'En contexto')}</p>${kt.map(z => `<p class="kontekst-zd"><span>${esc(z.es)}${z.pl ? `<small>${esc(z.pl)}</small>` : ''}</span>${przyciskGlosu(z.es, tr('Posłuchaj zdania', 'Escuchar la frase'))}</p>`).join('')}</div>`;
     }
     if (x.kiedy) h += `<p class="kiedy"><b>Kiedy:</b> ${esc(x.kiedy)}</p>`;
     if (x.dialog && x.dialog.length) {

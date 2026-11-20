@@ -7,6 +7,7 @@ import { SLOWA_CODZIENNE_D } from './slowa-codzienne-d.js';
 import { SLOWA_CODZIENNE_E } from './slowa-codzienne-e.js';
 import { SLOWA_ZAAWANSOWANE } from './slowa-zaawansowane.js';
 import { PRZYKLADY } from './przyklady.js';
+import { PRZYKLADY_2 } from './przyklady-2.js';
 import { WARIANTY, RODZAJ_WYJATKI, MNOGA } from './warianty.js';
 import { ZWROTY } from './zwroty.js';
 import { ZWROTY_DODATKOWE } from './zwroty-dodatkowe.js';
@@ -53,7 +54,7 @@ export function liczbaMnoga(es) {
 }
 
 function przyklad(es) {
-  const p = PRZYKLADY[es];
+  const p = PRZYKLADY[es] || PRZYKLADY_2[es];
   if (!p) return null;
   const [e, pl] = p.split('|');
   return { es: e, pl };
