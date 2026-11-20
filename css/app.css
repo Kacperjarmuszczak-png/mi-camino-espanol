@@ -730,3 +730,6 @@ input:focus-visible + .tgl { outline: 2px solid var(--zloto); outline-offset: 2p
   transition: transform .25s var(--ios); }
 #znaki.znaki button { flex: 1 1 0; min-width: 0; max-width: none; height: 40px; border-radius: 14px; font-size: 1.1rem; }
 textarea { font: inherit; color: inherit; }
+/* góra ekranu: płynne przejście od koloru paska stanu (theme-color = --tlo) do płynącego tła – bez widocznej krawędzi */
+.gora-tlo { position: fixed; z-index: 1; top: 0; left: 0; right: 0; height: calc(env(safe-area-inset-top, 0px) + 96px); pointer-events: none;
+  background: linear-gradient(to bottom, var(--tlo) 0, var(--tlo) env(safe-area-inset-top, 0px), color-mix(in srgb, var(--tlo) 55%, transparent) calc(env(safe-area-inset-top, 0px) + 40px), transparent); }
