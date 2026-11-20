@@ -742,3 +742,12 @@ textarea { font: inherit; color: inherit; }
 @media (min-width: 760px) { #zakladki.dock { top: calc(100svh - var(--dock-h) - 20px); } }
 .wyspa { transform: translate3d(-50%, 0, 0); backface-visibility: hidden; }
 html, body { overscroll-behavior-y: none; }
+/* tryb „Mów”: karta ze słowem i duży szklany mikrofon */
+.mow-karta { display: grid; justify-items: center; gap: 8px; padding: 26px 16px; border-radius: var(--r); text-align: center;
+  border: 1px solid var(--szklo-brzeg); background: linear-gradient(160deg, rgba(255,255,255,.14), rgba(255,255,255,.02) 58%), var(--pole); box-shadow: inset 0 1px 1px rgba(255,255,255,.4); }
+.mikrofon { justify-self: center; width: 84px; height: 84px; border-radius: 50%; display: grid; place-items: center; color: var(--na-zlocie); border: 0;
+  background: radial-gradient(120% 90% at 30% 0%, rgba(255,255,255,.45), transparent 60%), var(--zloto);
+  box-shadow: inset 0 1px 1px rgba(255,255,255,.6), 0 12px 30px -10px var(--zloto); }
+.mikrofon svg { width: 38px; height: 38px; }
+.mikrofon.slucha { animation: puls 1.2s var(--ios) infinite; background: radial-gradient(120% 90% at 30% 0%, rgba(255,255,255,.45), transparent 60%), var(--zle); }
+@keyframes puls { 0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--zle) 60%, transparent); } 100% { box-shadow: 0 0 0 26px transparent; } }

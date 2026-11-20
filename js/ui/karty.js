@@ -1,12 +1,13 @@
 // Silnik sesji z kartami (słówka i zwroty): kolejka SRS, 4 tryby ćwiczeń, podpowiedzi, oceny, podsumowanie sesji.
 import { $, esc, IKONY, przyciskGlosu, przyciskGwiazdki, podswietl, bezGwiazdek, wpisZAkcentami, toast, otworzModal, sygnalModalu, kapsulaOpcji } from './wspolne.js';
 import { budujKolejke, poOcenie, status, doPowtorki } from '../srs.js';
-import { sprawdz, komunikat, ocenaZWyniku, tasuj, bezRodzajnika, czysc, warianty } from '../tekst.js';
+import { sprawdz, komunikat, ocenaZWyniku, tasuj, bezRodzajnika, czysc, warianty, ocenWymowe } from '../tekst.js';
+import { rozpoznawanieDostepne, sluchaj, przerwijSluchanie } from '../rozpoznawanie.js';
 import { wWariancie, odpowiedziEs } from '../dane/index.js';
 import { t as tr, HISP, CEL } from '../jezyk.js';
 
 export const TRYBY = [
-  ['fiszka', tr('Fiszka', 'Tarjeta')], ['wpisz', tr('Wpisz', 'Escribir')], ['wybor', tr('Wybór', 'Elegir')], ['sluchanie', tr('Słuchanie', 'Escuchar')],
+  ['fiszka', tr('Fiszka', 'Tarjeta')], ['wpisz', tr('Wpisz', 'Escribir')], ['wybor', tr('Wybór', 'Elegir')], ['sluchanie', tr('Słuchanie', 'Escuchar')], ['mow', tr('Mów', 'Hablar')],
 ];
 // „es” = język nauki → język użytkownika
 const KIERUNKI = HISP ? [['es', 'PL → ES'], ['pl', 'ES → PL'], ['mix', 'Mixto']] : [['es', 'ES → PL'], ['pl', 'PL → ES'], ['mix', 'Mieszany']];
@@ -124,6 +125,7 @@ export function silnikKart(root, cfg) {
     if (t === 'fiszka') rysujFiszke();
     else if (t === 'wpisz') rysujWpisz();
     else if (t === 'wybor') rysujWybor(false);
+    else if (t === 'mow') rysujMow();
     else rysujSluchanie();
     if (ust().auto && (S.karta.k === 'es' || t === 'sluchanie') && t !== 'wpisz') app.mowa.powiedz(tekstEs(x));
     if (S.ocenione > 0 || S.wlasna) widocznaKarta();
@@ -320,6 +322,63 @@ export function silnikKart(root, cfg) {
     zapiszOcene(ocenaZWyniku(r.wynik));
   }
 
+  // 5) mówienie: rozpoznawanie mowy w języku nauki i ocena podobieństwa
+  const IKONA_MIK = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 14.5a3.5 3.5 0 0 0 3.5-3.5V5.5a3.5 3.5 0 1 0-7 0V11a3.5 3.5 0 0 0 3.5 3.5zm6-3.5h-1.6a4.4 4.4 0 0 1-8.8 0H6a6 6 0 0 0 5.2 5.9V20H9v1.6h6V20h-2.2v-3.1A6 6 0 0 0 18 11z"/></svg>';
+  const jezykMowy = () => (LANG_CEL === 'pl' ? 'pl-PL' : ust().wariant === 'latam' ? 'es-MX' : 'es-ES');
+  function rysujMow() {
+    const { x } = S.karta;
+    S.karta.proby = 0;
+    if (!rozpoznawanieDostepne()) {
+      obszar.innerHTML = `<div class="ostrzezenie"><p><b>${tr('Ta przeglądarka nie rozpoznaje mowy.', 'Este navegador no reconoce la voz.')}</b></p>
+        <p class="male">${tr('Działa w Safari na iPhonie i w Chrome. Na iPhonie włącz też: Ustawienia → Ogólne → Klawiatura → Włącz dyktowanie.', 'Funciona en Safari (iPhone) y en Chrome. En el iPhone activa también: Ajustes → General → Teclado → Activar dictado.')}</p>
+        <button type="button" class="btn btn--akcent" data-tryb-zapas>${tr('Ćwicz w trybie Wybór', 'Practicar en modo Elegir')}</button></div>`;
+      return;
+    }
+    obszar.innerHTML = `${naglowekKarty()}
+      <div class="mow-karta">
+        <b class="fiszka-slowo">${esc(tekstEs(x))}</b>
+        <span class="male">${esc(x.pl)}</span>
+        <div class="karta-narzedzia">${przyciskiGlosu(x)}</div>
+      </div>
+      <button type="button" class="mikrofon" data-mikrofon aria-label="${tr('Powiedz na głos', 'Dilo en voz alta')}">${IKONA_MIK}</button>
+      <p class="male srodek" data-mow-info>${tr('Stuknij mikrofon i powiedz słowo na głos.', 'Toca el micrófono y di la palabra en voz alta.')}</p>
+      <div class="wynik" data-wynik hidden></div>
+      <div class="szczegoly" data-szcz hidden>${szczegoly(x)}</div>`;
+  }
+  async function nagrywaj() {
+    if (S.karta.odpowiedziano) return dalej();
+    const { x } = S.karta, przycisk = $('[data-mikrofon]', obszar), info = $('[data-mow-info]', obszar);
+    if (!przycisk || przycisk.classList.contains('slucha')) { przerwijSluchanie(); return; }
+    app.mowa.stop();
+    przycisk.classList.add('slucha'); info.textContent = tr('Słucham…', 'Escuchando…');
+    try {
+      const alt = await sluchaj(jezykMowy());
+      const o = ocenWymowe(alt, odpowiedziEs(x));
+      S.karta.proby++;
+      const w = $('[data-wynik]', obszar);
+      w.hidden = false;
+      w.className = 'wynik wynik--' + (o.wynik === 'dobrze' ? 'ok' : o.wynik === 'prawie' ? 'uwaga' : 'zle');
+      const slyszane = `${tr('Usłyszałem', 'He oído')}: „${esc(o.slyszane)}” · ${o.proc}%`;
+      if (o.wynik !== 'zle' || S.karta.proby >= 3) {
+        w.innerHTML = `<p>${o.wynik === 'dobrze' ? tr('Świetnie, brzmi poprawnie!', '¡Muy bien, suena correcto!') : o.wynik === 'prawie' ? tr('Prawie! Posłuchaj jeszcze raz wzoru.', '¡Casi! Escucha otra vez el modelo.') : tr('Jeszcze nie tym razem.', 'Esta vez no.')}</p><p class="male">${slyszane}</p>`;
+        $('[data-szcz]', obszar).hidden = false;
+        zapiszOcene(o.wynik === 'dobrze' ? 3 : o.wynik === 'prawie' ? 2 : 1);
+        S.karta.odpowiedziano = true;
+        w.insertAdjacentHTML('afterend', `<button type="button" class="btn btn--akcent btn--szeroki" data-dalej>${tr('Dalej', 'Siguiente')} <kbd>Enter</kbd></button>`);
+        info.textContent = '';
+        if (o.wynik !== 'dobrze') app.mowa.powiedz(tekstEs(x));
+      } else {
+        w.innerHTML = `<p>${tr('Spróbuj jeszcze raz', 'Inténtalo otra vez')} (${S.karta.proby}/3).</p><p class="male">${slyszane}</p>`;
+        info.textContent = tr('Stuknij mikrofon i powtórz.', 'Toca el micrófono y repite.');
+      }
+    } catch (e) {
+      const k = e.message;
+      if (k !== 'przerwane') info.textContent = k === 'zgoda' ? tr('Brak dostępu do mikrofonu. Pozwól na mikrofon i rozpoznawanie mowy w ustawieniach Safari.', 'Sin acceso al micrófono. Permite el micrófono y el reconocimiento de voz en los ajustes de Safari.')
+        : k === 'cisza' ? tr('Nic nie usłyszałem. Stuknij i mów wyraźnie.', 'No he oído nada. Toca y habla con claridad.') : tr('Rozpoznawanie mowy nie zadziałało. Spróbuj ponownie.', 'El reconocimiento de voz falló. Inténtalo de nuevo.');
+      else info.textContent = tr('Stuknij mikrofon i powiedz słowo na głos.', 'Toca el micrófono y di la palabra en voz alta.');
+    } finally { const pr = $('[data-mikrofon]', obszar); if (pr) pr.classList.remove('slucha'); }
+  }
+
   // --- ocena i przejście dalej ---
   function zapiszOcene(ocena) {
     const { x } = S.karta;
@@ -409,6 +468,7 @@ export function silnikKart(root, cfg) {
     const oc = t.closest('[data-ocena]'); if (oc) return ocenFiszke(+oc.dataset.ocena);
     const op = t.closest('[data-opcja]'); if (op) return wybierz(op.dataset.opcja);
     if (t.closest('[data-dalej]')) return dalej();
+    if (t.closest('[data-mikrofon]')) return nagrywaj();
     if (t.closest('[data-niewiem]')) return sprawdzWpis(true);
     if (t.closest('[data-wolno]')) return app.mowa.powiedz(tekstEs(S.karta.x), { wolniej: true });
     if (t.closest('[data-podp]')) {
@@ -440,6 +500,7 @@ export function silnikKart(root, cfg) {
       if ((t === 'wybor' || t === 'sluchanie') && S.karta.opcje) { const b = obszar.querySelectorAll('[data-opcja]')[n - 1]; if (b) wybierz(b.dataset.opcja); return true; }
     }
     if (e.key === 'Enter' && S.karta.odpowiedziano) { dalej(); return true; }
+    if (e.key === 'Enter' && t === 'mow') { nagrywaj(); return true; }
     return false;
   }
 

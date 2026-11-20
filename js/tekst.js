@@ -111,3 +111,29 @@ export const pasuje = (q, ...pola) => {
   const n = bezZnakow(czysc(q));
   return !n || pola.some(p => bezZnakow(czysc(p || '')).includes(n));
 };
+
+// --- ocena wymowy (rozpoznana mowa vs wzorzec) ---
+// Podobieństwo 0–1 bez akcentów, wielkości liter, znaków interpunkcyjnych i rodzajnika.
+export function podobienstwo(a, b) {
+  const n = s => bezZnakow(bezRodzajnika(czysc(s))).replace(/\s+/g, ' ');
+  const x = n(a), y = n(b);
+  if (!x || !y) return 0;
+  if (x === y) return 1;
+  return Math.max(0, 1 - levenshtein(x, y) / Math.max(x.length, y.length));
+}
+/**
+ * @param {string[]} slyszane – alternatywy z rozpoznawania mowy
+ * @param {string[]} wzorce – poprawne formy (pełne zapisy, z wariantami po przecinku)
+ * @returns {{wynik: 'dobrze'|'prawie'|'zle', proc: number, slyszane: string}}
+ */
+export function ocenWymowe(slyszane, wzorce) {
+  const cele = wzorce.flatMap(w => warianty(w));
+  let naj = { proc: 0, slyszane: slyszane[0] || '' };
+  for (const s of slyszane) for (const c of cele) {
+    // rozpoznawanie czasem dokleja słowa („la casa sí”) – liczy się też dopasowanie fragmentu
+    const p = Math.max(podobienstwo(s, c), czysc(s).split(' ').length > czysc(c).split(' ').length && bezZnakow(czysc(s)).includes(bezZnakow(bezRodzajnika(czysc(c)))) ? 0.9 : 0);
+    if (p > naj.proc) naj = { proc: p, slyszane: s };
+  }
+  const proc = Math.round(naj.proc * 100);
+  return { wynik: proc >= 85 ? 'dobrze' : proc >= 60 ? 'prawie' : 'zle', proc, slyszane: naj.slyszane };
+}

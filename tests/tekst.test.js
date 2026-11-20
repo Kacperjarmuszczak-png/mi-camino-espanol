@@ -50,3 +50,15 @@ test('pomocnicze: Levenshtein, akcenty, ñ, wyszukiwanie', () => {
   assert.ok(pasuje('', 'cokolwiek'));
   assert.deepEqual(['dobrze', 'akcent', 'zle'].map(ocenaZWyniku), [3, 2, 1]);
 });
+
+import { ocenWymowe, podobienstwo } from '../js/tekst.js';
+test('ocena wymowy: rozpoznana mowa vs wzorzec', () => {
+  assert.equal(ocenWymowe(['La casa'], ['la casa']).wynik, 'dobrze');
+  assert.equal(ocenWymowe(['casa'], ['la casa']).wynik, 'dobrze');          // bez rodzajnika
+  assert.equal(ocenWymowe(['cancion'], ['la canción']).wynik, 'dobrze');     // bez akcentu
+  assert.equal(ocenWymowe(['casita'], ['la casa']).wynik, 'prawie');
+  assert.equal(ocenWymowe(['perro'], ['la casa']).wynik, 'zle');
+  assert.equal(ocenWymowe(['hola buenos días'], ['buenos días']).wynik, 'dobrze');
+  assert.equal(ocenWymowe(['xyz', 'gracias'], ['gracias']).wynik, 'dobrze');   // druga alternatywa
+  assert.ok(podobienstwo('dziękuję', 'dziekuje') === 1);
+});
