@@ -1,6 +1,6 @@
 // Service worker: aplikacja działa offline i można ją dodać do ekranu głównego.
 // Strategia „najpierw sieć”: online zawsze najnowsza wersja z GitHub Pages, bez sieci – ostatnia zapisana kopia.
-const WERSJA = 'b38993cbbe';
+const WERSJA = 'e364a3a4f0';
 const PAMIEC = 'espanol-' + WERSJA;
 const PLIKI = [
   './',
@@ -10,6 +10,7 @@ const PLIKI = [
   './img/ikona-512.png',
   './img/ikona-maskable-512.png',
   './index.html',
+  './js/akcent.js',
   './js/analiza-pl.js',
   './js/analiza.js',
   './js/cwiczenia-logika.js',
@@ -42,6 +43,7 @@ const PLIKI = [
   './js/jezyk.js',
   './js/kontekst.js',
   './js/lib/qrcode.js',
+  './js/liczby.js',
   './js/main.js',
   './js/mowa.js',
   './js/odmiana-pl.js',
@@ -56,6 +58,7 @@ const PLIKI = [
   './js/statystyki.js',
   './js/tekst.js',
   './js/tlumaczenie.js',
+  './js/ui/akcenty-swiata.js',
   './js/ui/cwiczenia.js',
   './js/ui/czasowniki-pl.js',
   './js/ui/czasowniki.js',
@@ -63,12 +66,14 @@ const PLIKI = [
   './js/ui/dyktando.js',
   './js/ui/egzamin.js',
   './js/ui/falszywi.js',
+  './js/ui/gdzie-akcent.js',
   './js/ui/gramatyka.js',
   './js/ui/gry-pula.js',
   './js/ui/karty.js',
   './js/ui/kontekst-dane.js',
   './js/ui/kultura.js',
   './js/ui/lekcja-dnia.js',
+  './js/ui/liczby.js',
   './js/ui/lista.js',
   './js/ui/memory.js',
   './js/ui/moje.js',
@@ -77,6 +82,7 @@ const PLIKI = [
   './js/ui/pula.js',
   './js/ui/rodzajnik.js',
   './js/ui/rozmowa.js',
+  './js/ui/shadowing.js',
   './js/ui/slowka.js',
   './js/ui/suwak.js',
   './js/ui/tlumacz-pl.js',

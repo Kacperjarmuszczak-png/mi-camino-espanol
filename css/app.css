@@ -919,3 +919,14 @@ html, body { overscroll-behavior-y: none; }
 .rd-karta.ok { border-color: var(--ok); background: color-mix(in srgb, var(--ok) 18%, var(--pole)); }
 .rd-karta.zle { border-color: var(--zle); background: color-mix(in srgb, var(--zle) 18%, var(--pole)); }
 .rd-przyciski { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.sh-zdanie { font-size: 1.25rem; line-height: 1.4; }
+.sh-ukryte { color: var(--szary); letter-spacing: .3em; }
+.ak-kraj { display: grid; gap: 4px; padding: 12px 14px; border-radius: 18px; border: 1px solid var(--linia); background: var(--pole); }
+.ak-kraj p { margin: 0; }
+.ak-gora { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.ga-slowo { display: flex; justify-content: center; flex-wrap: wrap; gap: 4px; }
+.ga-lit { min-width: 40px; height: 52px; border-radius: 12px; display: grid; place-items: center; font: 700 1.6rem var(--font-tytul); color: var(--tekst);
+  border: 1px solid var(--szklo-brzeg); background: linear-gradient(160deg, rgba(255,255,255,.16), rgba(255,255,255,.02) 60%), var(--pole); }
+.ga-lit--sp { border-color: transparent; background: none; min-width: 22px; color: var(--szary); }
+.ga-lit.ok { border-color: var(--ok); background: color-mix(in srgb, var(--ok) 25%, var(--pole)); }
+.ga-lit.zle { border-color: var(--zle); background: color-mix(in srgb, var(--zle) 25%, var(--pole)); }

@@ -43,15 +43,18 @@ export function utworzMowe(ust) {
     naZmiane: f => sluchacze.add(f),
     stop() { if (synt) synt.cancel(); },
     // tempo: mnożnik z ustawień (0.75 / 1 / 1.15); wolniej: dodatkowe spowolnienie
-    powiedz(tekst, { wolniej = false, granica = null, koniec = null } = {}) {
+    // wszystkie głosy danego języka (np. 'es' – do porównania akcentów)
+    glosyJezyka: prefix => (synt ? synt.getVoices().filter(v => new RegExp('^' + prefix, 'i').test(v.lang)) : []),
+    powiedz(tekst, { wolniej = false, granica = null, koniec = null, glos = null } = {}) {
       if (!synt || !tekst) return false;
       try {
         const zajety = synt.speaking || synt.pending;
         if (zajety) synt.cancel();
         if (!glosy.length) odswiez();
         const u = new SpeechSynthesisUtterance(String(tekst).replace(/\*/g, '').replace(/…/g, '').replace(/\([^)]*\)/g, ' '));
-        u.lang = wybrany ? wybrany.lang : CEL === 'pl' ? 'pl-PL' : (ust.wariant === 'latam' ? 'es-MX' : 'es-ES');
-        if (wybrany) u.voice = wybrany;
+        const v = glos || wybrany;
+        u.lang = v ? v.lang : CEL === 'pl' ? 'pl-PL' : (ust.wariant === 'latam' ? 'es-MX' : 'es-ES');
+        if (v) u.voice = v;
         u.rate = Math.max(0.5, 0.95 * (ust.tempo || 1) * (wolniej ? 0.7 : 1));
         if (granica) u.onboundary = e => { if (e.name !== 'sentence') granica(e.charIndex); };
         if (koniec) { u.onend = koniec; u.onerror = koniec; }
