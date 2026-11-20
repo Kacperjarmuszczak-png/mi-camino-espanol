@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#14070b">
-  <meta name="description" content="Nauka hiszpańskiego od A1 do C2: słówka z powtórkami, egzaminy, odmiana czasowników, zwroty i dialogi.">
+  <meta name="theme-color" content="#0d0b1a">
+  <meta name="description" content="Nauka hiszpańskiego od A1 do C2: słówka z powtórkami, egzaminy, odmiana czasowników, zwroty, dialogi i tłumacz z wyjaśnieniami.">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>Español JKF</title>
@@ -14,49 +14,60 @@
 </head>
 <body>
   <a class="pomin" href="#tresc">Przejdź do nauki</a>
-  <header class="gora">
-    <div class="marka"><h1>Español</h1><span>JKF</span></div>
-    <div class="kapsula-gora szklo">
-      <button type="button" class="dzis" id="dzis" aria-label="Dzisiejsza aktywność i seria dni">
-        <svg class="pierscien" viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="15" class="tor"/><circle cx="18" cy="18" r="15" class="wypelnienie" id="dzis-luk"/></svg>
-        <span class="dzis-tekst"><b id="dzis-ile">0</b><small id="dzis-cel">/20</small></span>
-        <span class="seria" id="seria" title="Seria dni z osiągniętym celem"></span>
-      </button>
-      <span class="kreska" aria-hidden="true"></span>
-      <button type="button" class="ikona-wew" id="ustawienia-btn" aria-label="Ustawienia"></button>
+
+  <!-- Górna kapsuła (jak Dynamic Island): zwinięta = poziom + pierścień dnia; rozwinięta = statystyki, poziomy, tryb, akcje -->
+  <header class="wyspa szklo" id="wyspa">
+    <button type="button" class="wyspa-pigulka" id="wyspa-btn" aria-expanded="false" aria-controls="wyspa-panel" aria-label="Poziom i postęp – rozwiń">
+      <svg class="pierscien pierscien--maly" viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="15" class="tor"/><circle cx="18" cy="18" r="15" class="wypelnienie" id="wyspa-luk"/></svg>
+      <b id="wyspa-poziom">A1</b>
+      <span class="wyspa-sekcja" id="wyspa-sekcja">Słówka</span>
+    </button>
+    <div class="wyspa-panel" id="wyspa-panel" aria-hidden="true">
+      <div class="wyspa-wnetrze">
+        <div class="wyspa-staty">
+          <button type="button" class="dzis" id="dzis" aria-label="Dzisiejsza aktywność i seria dni">
+            <svg class="pierscien" viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="15" class="tor"/><circle cx="18" cy="18" r="15" class="wypelnienie" id="dzis-luk"/></svg>
+            <span class="dzis-tekst"><b id="dzis-ile">0</b><small id="dzis-cel">/20</small></span>
+            <span class="seria" id="seria" title="Seria dni z osiągniętym celem"></span>
+          </button>
+          <button type="button" class="poziom-linia" id="poziom-info" aria-label="Statystyki poziomu"></button>
+        </div>
+        <nav class="poziomy" id="poziomy" aria-label="Poziom"></nav>
+        <div class="seg seg--pelny" id="wyspa-tryby" role="group" aria-label="Tryb"></div>
+        <div class="wyspa-akcje">
+          <button type="button" data-wa="opcje"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h10m4 0h2M4 17h4m4 0h8"/><circle cx="16" cy="7" r="2.2"/><circle cx="10" cy="17" r="2.2"/></svg><span>Opcje</span></button>
+          <button type="button" data-wa="lista"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4.5h11a3 3 0 0 1 3 3v12H8a3 3 0 0 1-3-3z"/><path d="M5 16.5a3 3 0 0 1 3-3h11"/></svg><span>Słowniczek</span></button>
+          <button type="button" data-wa="egzamin"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4h6m-7 2h8a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2zm1 7 2 2 4-4"/></svg><span>Egzamin</span></button>
+          <button type="button" id="ustawienia-btn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h3m4 0h9M4 12h9m4 0h3M4 18h1m4 0h11"/><circle cx="9" cy="6" r="2"/><circle cx="15" cy="12" r="2"/><circle cx="7" cy="18" r="2"/></svg><span>Ustawienia</span></button>
+        </div>
+      </div>
     </div>
   </header>
 
-  <nav class="poziomy szklo" id="poziomy" aria-label="Poziom"></nav>
-
-  <button type="button" class="poziom-linia" id="poziom-info" aria-label="Statystyki poziomu"></button>
-
-  <nav class="zakladki szklo" id="zakladki" aria-label="Sekcje">
-    <button type="button" data-z="slowka"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" d="M6 3h9l5 5v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2zm8 0v5h6M8 13h8M8 17h5"/></svg><span>Słówka</span></button>
-    <button type="button" data-z="egzamin"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" d="M9 4h6m-7 2h8a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2zm1 7 2 2 4-4"/></svg><span>Egzamin</span></button>
-    <button type="button" data-z="czasowniki"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" d="M4 6h16M4 12h10M4 18h13M17 10l3 2-3 2"/></svg><span>Czasowniki</span></button>
-    <button type="button" data-z="tlumacz"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" d="M3 5h9M7.5 3v2m3 0c-.8 3.4-3.3 6.3-6.5 7.8M6 8.5c1.2 1.8 3 3.3 5 4.2M13 21l4-9 4 9m-6.8-3h5.6"/></svg><span>Tłumacz</span></button>
-    <button type="button" data-z="zwroty"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" d="M4 4h11a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H9l-4 3v-3H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zm16 5a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2h-1v3l-4-3h-3"/></svg><span>Zwroty</span></button>
-  </nav>
-
+  <!-- Obszar roboczy: tylko bieżące ćwiczenie, dużo przestrzeni wokół -->
   <main id="tresc">
-    <section class="panel szklo" id="z-slowka" aria-label="Słówka"></section>
-    <section class="panel szklo" id="z-egzamin" aria-label="Egzamin" hidden></section>
-    <section class="panel szklo" id="z-czasowniki" aria-label="Czasowniki" hidden></section>
-    <section class="panel szklo" id="z-zwroty" aria-label="Zwroty" hidden></section>
-    <section class="panel szklo" id="z-tlumacz" aria-label="Tłumacz" hidden></section>
+    <section class="obszar" id="z-slowka" aria-label="Słówka"></section>
+    <section class="obszar" id="z-egzamin" aria-label="Egzamin" hidden></section>
+    <section class="obszar" id="z-czasowniki" aria-label="Czasowniki" hidden></section>
+    <section class="obszar" id="z-zwroty" aria-label="Zwroty" hidden></section>
+    <section class="obszar" id="z-tlumacz" aria-label="Tłumacz" hidden></section>
   </main>
 
-  <footer class="stopka">
-    <p class="tylko-desktop">Skróty: <kbd>spacja</kbd> odkryj / odsłuchaj · <kbd>1</kbd>–<kbd>4</kbd> ocena lub odpowiedź · <kbd>Enter</kbd> dalej · <kbd>←</kbd> <kbd>→</kbd> zakładki · <kbd>?</kbd> pomoc</p>
-    <p>Postęp zapisuje się tylko na tym urządzeniu. Kopię zapasową zrobisz w Ustawieniach (eksport).</p>
-  </footer>
+  <!-- Dolny pływający dock: 4 ikony, aktywna pod szklaną kroplą (przeciągalna) -->
+  <nav class="zakladki dock szklo" id="zakladki" aria-label="Sekcje">
+    <button type="button" data-z="slowka"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h9l5 5v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2zm8 0v5h6M8 13h8M8 17h5"/></svg><span>Słówka</span></button>
+    <button type="button" data-z="zwroty"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h11a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H9l-4 3v-3H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zm16 5a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2h-1v3l-4-3h-3"/></svg><span>Zwroty</span></button>
+    <button type="button" data-z="czasowniki"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h10M4 18h13M17 10l3 2-3 2"/></svg><span>Odmiana</span></button>
+    <button type="button" data-z="tlumacz"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5h9M7.5 3v2m3 0c-.8 3.4-3.3 6.3-6.5 7.8M6 8.5c1.2 1.8 3 3.3 5 4.2M13 21l4-9 4 9m-6.8-3h5.6"/></svg><span>Tłumacz</span></button>
+  </nav>
 
   <div class="znaki szklo" id="znaki" hidden role="toolbar" aria-label="Znaki hiszpańskie"></div>
 
+  <!-- Arkusz od dołu (iOS bottom sheet): uchwyt, zamykanie przeciągnięciem w dół lub stuknięciem tła -->
   <div class="modal" id="modal" hidden>
     <div class="modal-tlo" data-zamknij></div>
     <div class="modal-okno szklo" role="dialog" aria-modal="true" aria-labelledby="modal-tytul">
+      <div class="arkusz-uchwyt" aria-hidden="true"></div>
       <div class="modal-gora"><h2 id="modal-tytul"></h2><button type="button" class="ikona ikona--mala" id="modal-zamknij" data-zamknij aria-label="Zamknij">✕</button></div>
       <div class="modal-tresc" id="modal-tresc"></div>
     </div>

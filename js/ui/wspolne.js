@@ -33,21 +33,24 @@ export function toast(tekst) {
   toastCzas = setTimeout(() => { t.classList.remove('widoczny'); setTimeout(() => { t.hidden = true; }, 300); }, 2600);
 }
 
-// --- modal ---
-let poZamknieciu = null, ostatniFokus = null, kontrolerModalu = null;
-// Sygnał bieżącego okna: słuchacze dodane z { signal: sygnalModalu() } znikają przy zamknięciu / następnym otwarciu.
+// --- arkusz od dołu (dawny modal; API bez zmian: otworzModal / zamknijModal) ---
+let poZamknieciu = null, ostatniFokus = null, kontrolerModalu = null, chowanie = 0;
+// Sygnał bieżącego arkusza: słuchacze dodane z { signal: sygnalModalu() } znikają przy zamknięciu / następnym otwarciu.
 export const sygnalModalu = () => kontrolerModalu.signal;
 export function otworzModal(tytul, html, { naZamkniecie } = {}) {
+  if (poZamknieciu) { const f = poZamknieciu; poZamknieciu = null; f(); }   // np. odłóż przeniesiony element na miejsce
   if (kontrolerModalu) kontrolerModalu.abort();
   kontrolerModalu = new AbortController();
+  clearTimeout(chowanie);
   const m = $('#modal');
-  ostatniFokus = document.activeElement;
+  if (m.hidden) ostatniFokus = document.activeElement;
   $('#modal-tytul').textContent = tytul;
   $('#modal-tresc').innerHTML = html;
+  $('.modal-okno', m).style.transform = '';
   m.hidden = false;
   requestAnimationFrame(() => m.classList.add('otwarty'));
   poZamknieciu = naZamkniecie || null;
-  setTimeout(() => $('#modal-zamknij').focus(), 30);
+  setTimeout(() => $('#modal-zamknij').focus({ preventScroll: true }), 30);
   return $('#modal-tresc');
 }
 export function zamknijModal() {
@@ -55,9 +58,68 @@ export function zamknijModal() {
   if (m.hidden) return;
   m.classList.remove('otwarty');
   if (kontrolerModalu) kontrolerModalu.abort();
-  setTimeout(() => { m.hidden = true; $('#modal-tresc').innerHTML = ''; }, 220);
   if (poZamknieciu) { const f = poZamknieciu; poZamknieciu = null; f(); }
-  if (ostatniFokus && ostatniFokus.focus) ostatniFokus.focus();
+  clearTimeout(chowanie);
+  chowanie = setTimeout(() => { m.hidden = true; $('#modal-tresc').innerHTML = ''; $('.modal-okno', m).style.transform = ''; }, 380);
+  if (ostatniFokus && ostatniFokus.focus) ostatniFokus.focus({ preventScroll: true });
+}
+// Przenosi istniejący element (z jego stanem i słuchaczami) do arkusza; po zamknięciu wraca na swoje miejsce.
+export function arkuszZElementem(tytul, el) {
+  const miejsce = document.createComment('miejsce arkusza');
+  el.before(miejsce);
+  const tresc = otworzModal(tytul, '', { naZamkniecie: () => miejsce.replaceWith(el) });
+  tresc.append(el);
+  return tresc;
+}
+// Przeciągnięcie arkusza w dół (za uchwyt / nagłówek) zamyka go
+export function zainicjujArkusz() {
+  const okno = $('.modal-okno');
+  let d = null;
+  okno.addEventListener('pointerdown', e => {
+    if (!e.target.closest('.arkusz-uchwyt, .modal-gora') || e.target.closest('button')) return;
+    d = { id: e.pointerId, y0: e.clientY, t0: performance.now(), dy: 0 };
+    okno.setPointerCapture(e.pointerId);
+    okno.classList.add('ciagniety');
+  });
+  okno.addEventListener('pointermove', e => {
+    if (!d || e.pointerId !== d.id) return;
+    d.dy = Math.max(0, e.clientY - d.y0);
+    okno.style.transform = `translateY(${d.dy}px)`;
+  });
+  const koniec = e => {
+    if (!d || e.pointerId !== d.id) return;
+    const v = d.dy / Math.max(1, performance.now() - d.t0);
+    okno.classList.remove('ciagniety');
+    if (d.dy > 110 || v > 0.6) { okno.style.transform = 'translateY(110%)'; zamknijModal(); }
+    else okno.style.transform = '';
+    d = null;
+  };
+  okno.addEventListener('pointerup', koniec);
+  okno.addEventListener('pointercancel', koniec);
+}
+
+// --- gruby szklany suwak (input range) z dymkiem wartości widocznym tylko w trakcie przesuwania ---
+export function suwakZakres({ id, min, max, krok = 1, wartosc, format = v => v, etykieta }) {
+  const p = (wartosc - min) / (max - min) * 100;
+  return `<label class="zakres" style="--p:${p}%"><span class="zakres-et">${esc(etykieta)}</span>
+    <span class="zakres-tor"><input type="range" id="${id}" min="${min}" max="${max}" step="${krok}" value="${wartosc}" aria-valuetext="${esc(format(wartosc))}">
+    <output class="zakres-dymek" for="${id}">${esc(format(wartosc))}</output></span></label>`;
+}
+const formaty = new WeakMap();
+export function podlaczZakres(input, format, naZmiane) {
+  formaty.set(input, format);
+  const odswiez = () => {
+    const v = +input.value, p = (v - input.min) / (input.max - input.min) * 100;
+    const l = input.closest('.zakres'); l.style.setProperty('--p', p + '%');
+    const t = format(v); l.querySelector('.zakres-dymek').textContent = t; input.setAttribute('aria-valuetext', t);
+  };
+  input.addEventListener('input', () => { odswiez(); naZmiane(+input.value, false); });
+  input.addEventListener('change', () => naZmiane(+input.value, true));
+  const l = input.closest('.zakres');
+  const wl = () => l.classList.add('aktywny'), wyl = () => setTimeout(() => l.classList.remove('aktywny'), 450);
+  input.addEventListener('pointerdown', wl); input.addEventListener('pointerup', wyl); input.addEventListener('pointercancel', wyl);
+  input.addEventListener('keydown', wl); input.addEventListener('keyup', wyl); input.addEventListener('blur', wyl);
+  odswiez();
 }
 export const modalOtwarty = () => !$('#modal').hidden;
 

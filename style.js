@@ -1,8 +1,9 @@
-// 21 stylów Liquid Glass (domyślny: Burdeos – ciemny, bordowo-różowy). Ładowany w <head>, żeby zapisany styl był widoczny od pierwszej klatki.
+// 22 style Liquid Glass (domyślny: Andalucía – głębokie indygo z bursztynem i terakotą). Ładowany w <head>, żeby zapisany styl był widoczny od pierwszej klatki.
 // t: ciemny (d) albo jasny (j); tlo: kolor bazowy; plamy: trzy kolory rozmytych plam pod szkłem;
 // a: kolor akcentu; tx: tekst; sz: tekst drugoplanowy.
 (() => {
   const S = [
+    { id: 'andalucia', n: 'Andalucía', t: 'd', tlo: '#0d0b1a', plamy: ['#a8492f', '#b8862f', '#2a2f7a'], a: '#f2b45c', tx: '#f7efe4', sz: '#c7bcb0' },
     { id: 'burdeos', n: 'Burdeos', t: 'd', tlo: '#14070b', plamy: ['#7a1838', '#d6467a', '#3d0d22'], a: '#ff8fb3', tx: '#fbeef2', sz: '#cfb2bc' },
     { id: 'las', n: 'Las', t: 'd', tlo: '#0c1712', plamy: ['#1f6a47', '#c9a24a', '#0f4a48'], a: '#e0bd74', tx: '#eef0e6', sz: '#aebcb1' },
     { id: 'aurora', n: 'Aurora', t: 'd', tlo: '#070f1c', plamy: ['#14b892', '#7b4dff', '#1c6dd0'], a: '#6ff3cf', tx: '#eaf6f4', sz: '#a3bcc4' },
@@ -27,7 +28,7 @@
   ];
   const SZKLO = {
     d: { szklo: 'rgba(255,255,255,.08)', brzeg: 'rgba(255,255,255,.18)', blask: 'rgba(255,255,255,.28)', pole: 'rgba(255,255,255,.07)', linia: 'rgba(255,255,255,.12)', cien: 'rgba(0,0,0,.35)', ok: '#7fd6a2', zle: '#ff9a8a', na: '#10131a' },
-    j: { szklo: 'rgba(255,255,255,.42)', brzeg: 'rgba(255,255,255,.75)', blask: 'rgba(255,255,255,.95)', pole: 'rgba(255,255,255,.5)', linia: 'rgba(20,30,50,.09)', cien: 'rgba(30,40,70,.13)', ok: '#1f7a49', zle: '#b8321e', na: '#ffffff' },
+    j: { szklo: 'rgba(255,255,255,.55)', brzeg: 'rgba(255,255,255,.75)', blask: 'rgba(255,255,255,.95)', pole: 'rgba(255,255,255,.5)', linia: 'rgba(20,30,50,.09)', cien: 'rgba(30,40,70,.13)', ok: '#1f7a49', zle: '#b8321e', na: '#ffffff' },
   };
   function zastosuj(id) {
     const s = S.find(x => x.id === id) || S[0], g = SZKLO[s.t], r = document.documentElement;
@@ -40,10 +41,12 @@
     const m = document.querySelector('meta[name="theme-color"]'); if (m) m.content = s.tlo;
     return s;
   }
-  let zapisany = 'burdeos';
+  let zapisany = 'andalucia';
   try {
     const v2 = JSON.parse(localStorage.getItem('es-nauka-v2') || 'null');
-    zapisany = (v2 && v2.ust && v2.ust.styl) || JSON.parse(localStorage.getItem('es-nauka') || '{}').styl || 'burdeos';
+    zapisany = (v2 && v2.ust && v2.ust.styl) || 'andalucia';
+    // jednorazowo: dawny styl domyślny (Burdeos) przechodzi na nowy domyślny; wybór jest dalej w Ustawieniach
+    if (zapisany === 'burdeos' && !(v2 && v2.ust && v2.ust.styl3)) zapisany = 'andalucia';
   } catch (e) { /* brak dostępu */ }
   zastosuj(zapisany);
   window.STYLE = { lista: S, zastosuj };

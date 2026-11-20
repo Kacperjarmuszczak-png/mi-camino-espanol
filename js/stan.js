@@ -9,7 +9,8 @@ export const domyslneUstawienia = () => ({
   glos: '', tempo: 1, auto: true,
   cel: 20,                // cel dzienny: liczba przećwiczonych pozycji
   skala: 2,               // 2 przyciski (Jeszcze nie / Umiem) albo 4 (Nie wiem / Trudne / Dobrze / Łatwe)
-  styl: 'burdeos',
+  styl: 'andalucia',
+  styl3: true,            // styl ustawiony już po zmianie domyślnego na Andalucía
 });
 
 export const nowyStanAplikacji = () => ({
@@ -32,6 +33,7 @@ export function migruj(dane, stareV1 = null, teraz = Date.now()) {
   const s = nowyStanAplikacji();
   if (dane && typeof dane === 'object' && dane.v >= 2) {
     Object.assign(s, dane, { ust: { ...s.ust, ...(dane.ust || {}) }, ui: { ...s.ui, ...(dane.ui || {}) } });
+    if (!(dane.ust && dane.ust.styl3)) { if (s.ust.styl === 'burdeos') s.ust.styl = 'andalucia'; s.ust.styl3 = true; }
     s.v = WERSJA;
     return s;
   }

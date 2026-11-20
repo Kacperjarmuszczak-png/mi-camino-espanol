@@ -1,5 +1,5 @@
 // Zakładka „Tłumacz”: wpisz zdanie lub tekst, dostaniesz tłumaczenie, analizę słowo po słowie i wyjaśnienia „dlaczego tak”.
-import { $, esc, przyciskGlosu, przyciskGwiazdki, toast } from './wspolne.js';
+import { $, esc, przyciskGlosu, przyciskGwiazdki, toast, zamknijModal } from './wspolne.js';
 import { analizuj, slownikPl } from '../analiza.js';
 import { tlumaczOnline } from '../tlumaczenie.js';
 
@@ -21,11 +21,11 @@ export function zakladkaTlumacz(root, app) {
       <button type="button" class="btn btn--akcent" id="t-start">Przetłumacz i wyjaśnij <kbd>Ctrl + Enter</kbd></button>
       <button type="button" class="btn btn--male btn--cichy" id="t-wyczysc">Wyczyść</button>
     </div>
-    <div class="wiersz-narzedzi">
-      <label class="przelacznik przelacznik--maly"><input type="checkbox" id="t-online"><span></span>Tłumaczenie online</label>
-      <details class="zwin zwin--i"><summary aria-label="Informacja o tłumaczeniu online">ⓘ</summary><p class="male" id="t-info-online"></p></details>
+    <div class="arkusz" id="t-opcje">
+      <label class="cc-kafel cc-kafel--szeroki"><input type="checkbox" id="t-online"><span class="tgl" aria-hidden="true"></span><b>Tłumaczenie online</b><small id="t-info-online"></small></label>
+      <p class="etykieta">Przykładowe zdania</p>
+      <div class="pigulki pigulki--pion" id="t-przyklady" aria-label="Przykłady"></div>
     </div>
-    <details class="zwin"><summary>Przykładowe zdania</summary><div class="pigulki" id="t-przyklady" aria-label="Przykłady"></div></details>
     <div id="t-wynik" aria-live="polite"></div>`;
   const pole = $('#t-tekst', root), wynikEl = $('#t-wynik', root), online = $('#t-online', root);
   online.checked = ui.tOnline !== false;
@@ -35,8 +35,8 @@ export function zakladkaTlumacz(root, app) {
     root.querySelectorAll('[data-tk]').forEach(b => b.setAttribute('aria-pressed', b.dataset.tk === kier()));
     pole.setAttribute('lang', kier());
     pole.placeholder = kier() === 'es' ? 'Wpisz zdanie lub tekst po hiszpańsku, np. „Me gustaría reservar una mesa para dos.”' : 'Wpisz zdanie po polsku, np. „Gdzie jest najbliższa apteka?”';
-    $('#t-przyklady', root).innerHTML = PRZYKLADY[kier()].map(p => `<button type="button" class="pigulka" data-tp="${esc(p)}">${esc(p)}</button>`).join('');
-    $('#t-info-online', root).textContent = online.checked
+    $('#t-przyklady').innerHTML = PRZYKLADY[kier()].map(p => `<button type="button" class="pigulka" data-tp="${esc(p)}">${esc(p)}</button>`).join('');
+    $('#t-info-online').textContent = online.checked
       ? 'Całe zdanie tłumaczy darmowy serwis MyMemory (tekst jest do niego wysyłany, limit ok. 5000 znaków dziennie). Analiza słów i wyjaśnienia działają bez internetu.'
       : kier() === 'es' ? 'Bez tłumaczenia online: analiza słowo po słowie i wyjaśnienia działają offline.' : 'Bez tłumaczenia online dostaniesz propozycje hiszpańskich słów dla każdego polskiego słowa.';
   }
@@ -120,7 +120,6 @@ export function zakladkaTlumacz(root, app) {
   root.addEventListener('click', e => {
     const t = e.target;
     const k = t.closest('[data-tk]'); if (k) { ui.tKier = k.dataset.tk; app.zapisz(); rysujKier(); wynikEl.innerHTML = ''; return; }
-    const p = t.closest('[data-tp]'); if (p) { pole.value = p.dataset.tp; start(); return; }
     if (t.closest('#t-start')) return start();
     if (t.closest('#t-wyczysc')) { pole.value = ''; wynikEl.innerHTML = ''; pole.focus(); return; }
     const s = t.closest('[data-ts]');
@@ -137,6 +136,11 @@ export function zakladkaTlumacz(root, app) {
       return;
     }
     const o = t.closest('[data-todm]'); if (o) { app.otworzCzasownik(o.dataset.todm); }
+  });
+  // opcje (online, przykłady) żyją w arkuszu otwieranym z górnej kapsuły
+  $('#t-opcje', root).addEventListener('click', e => {
+    const p = e.target.closest('[data-tp]'); if (!p) return;
+    pole.value = p.dataset.tp; zamknijModal(); start();
   });
   online.addEventListener('change', () => { ui.tOnline = online.checked; app.zapisz(); rysujKier(); });
   pole.addEventListener('keydown', e => { if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); start(); } });

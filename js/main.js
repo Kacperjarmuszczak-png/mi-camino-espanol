@@ -3,21 +3,21 @@ import { wczytaj, zapisz as zapiszStan, dodajAktywnosc, seria, dzien, eksportuj,
 import { ocen, postep, status, doPowtorki } from './srs.js';
 import { utworzMowe } from './mowa.js';
 import { POZIOMY, OPIS_POZIOMU, SLOWKA, CZAS, ZWROTY_LISTA, POD_ID, tematy } from './dane/index.js';
-import { $, $$, esc, IKONY, otworzModal, zamknijModal, modalOtwarty, toast, zainicjujZnaki, zainicjujPolysk } from './ui/wspolne.js';
+import { $, $$, esc, IKONY, otworzModal, zamknijModal, modalOtwarty, toast, zainicjujZnaki, zainicjujPolysk, zainicjujArkusz, arkuszZElementem, suwakZakres, podlaczZakres } from './ui/wspolne.js';
 import { zakladkaSlowka } from './ui/slowka.js';
 import { zakladkaEgzamin } from './ui/egzamin.js';
 import { zakladkaCzasowniki } from './ui/czasowniki.js';
 import { zakladkaZwroty } from './ui/zwroty.js';
 import { zakladkaTlumacz } from './ui/tlumacz.js';
 import { zainicjujSuwaki } from './ui/suwak.js';
-import { zainicjujKule } from './ui/kula.js';
+import { zainicjujWyspe } from './ui/wyspa.js';
 
 const stan = wczytaj();
 const ZAKLADKI = ['slowka', 'egzamin', 'czasowniki', 'zwroty', 'tlumacz'];
 if (!POZIOMY.includes(stan.ui.poziom)) stan.ui.poziom = 'A1';
 if (!ZAKLADKI.includes(stan.ui.zakladka)) stan.ui.zakladka = 'slowka';
 
-let czasZapisu, kula = null;
+let czasZapisu, wyspa = null;
 const app = {
   stan,
   dane: POD_ID,
@@ -88,6 +88,10 @@ function rysujNaglowek() {
   $('#dzis').classList.toggle('cel-osiagniety', ile >= cel);
   $('#seria').innerHTML = `${IKONY.ogien}<b>${sr}</b>`;
   $('#dzis').setAttribute('aria-label', `Dziś ${ile} z ${cel} pozycji, seria ${sr} dni`);
+  $('#wyspa-luk').style.strokeDasharray = `${obw * Math.min(1, ile / cel)} ${obw}`;
+  $('#wyspa').classList.toggle('cel-osiagniety', ile >= cel);
+  $('#wyspa-poziom').textContent = stan.ui.poziom;
+  $('#wyspa-btn').setAttribute('aria-label', `Poziom ${stan.ui.poziom}, dziś ${ile} z ${cel}. Rozwiń, aby zobaczyć statystyki i opcje`);
 }
 function modalDnia() {
   const dni = [];
@@ -123,14 +127,37 @@ function pokazZakladke(z, { przewin = false } = {}) {
   ZAKLADKI.forEach(k => { $('#z-' + k).hidden = k !== z; });
   if (!zainicjowane.has(z)) { zainicjowane.add(z); moduly[z].poziom(); }
   app.mowa.stop();
-  if (kula) kula.odswiez();
-  if (przewin) $('#tresc').scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
+  if (wyspa) wyspa.odswiez();
+  if (przewin) scrollTo({ top: 0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
 }
 function zmienPoziom(p) {
   stan.ui.poziom = p; app.zapisz();
-  rysujPoziomy(); rysujInfo();
+  rysujPoziomy(); rysujInfo(); rysujNaglowek();
   zainicjowane.clear(); zainicjowane.add(stan.ui.zakladka);
   moduly[stan.ui.zakladka].poziom();
+  if (wyspa) wyspa.odswiez();
+}
+
+// --- akcje z górnej kapsuły: opcje sekcji, słowniczek (lista), egzamin ---
+const LISTY = { slowka: ['#s-lista', 'Słowniczek – słówka'], zwroty: ['#z-lista', 'Słowniczek – zwroty'], czasowniki: ['#c-lista', 'Słowniczek – czasowniki'] };
+function opcjeSekcji() {
+  const z = stan.ui.zakladka;
+  const klik = sel => { const b = $(sel); if (b) b.click(); };
+  if (z === 'slowka') klik('#slowka-opcje');
+  else if (z === 'zwroty') { if ((stan.ui.zWidok || 'przeglad') === 'fiszki' && $('#zwroty-opcje')) klik('#zwroty-opcje'); else klik('#z-kat-kapsula'); }
+  else if (z === 'czasowniki') { if ((stan.ui.cWidok || 'tabela') === 'drill' && $('#d-opcje')) klik('#d-opcje'); else klik('#c-grupa-kapsula'); }
+  else if (z === 'tlumacz') arkuszZElementem('Opcje tłumacza', $('#t-opcje'));
+}
+function slowniczek() {
+  const l = LISTY[stan.ui.zakladka]; if (!l) return;
+  const el = $(l[0]); if (!el) return;
+  arkuszZElementem(l[1], el);
+  const d = el.querySelector('details'); if (d && !d.open) d.open = true;
+}
+function akcjaWyspy(k) {
+  if (k === 'opcje') opcjeSekcji();
+  else if (k === 'lista') slowniczek();
+  else if (k === 'egzamin') pokazZakladke('egzamin', { przewin: true });
 }
 
 // --- ustawienia ---
@@ -141,39 +168,38 @@ function modalUstawien() {
   const sygnal = { signal: ustawieniaAC.signal };
   const u = stan.ust, m = app.mowa;
   const glosy = m.glosy;
-  const tresc = otworzModal('Ustawienia', `
-    <div class="ust-grupa"><p class="etykieta">Wariant hiszpańskiego</p>
-      <div class="seg seg--pelny" role="group" aria-label="Wariant">${[['es', 'Hiszpania'], ['latam', 'Ameryka Łac.'], ['neutral', 'Neutralny']].map(([k, n]) => `<button type="button" data-wariant="${k}" aria-pressed="${u.wariant === k}">${n}</button>`).join('')}</div>
-      <p class="male">Wariant zmienia pokazywane słowa (np. coche / carro), głos lektora i to, czy ćwiczysz formę vosotros.</p>
-      <label class="przelacznik"><input type="checkbox" id="u-vosotros" ${u.bezVosotros ? 'checked' : ''}><span></span>Ukryj formę „vosotros” w odmianach i ćwiczeniach</label>
+  const fTempo = v => String(Math.round(v * 100) / 100).replace('.', ',') + '×';
+  const fCel = v => `${v} dziennie`;
+  const tresc = otworzModal('Szybkie ustawienia', `<div class="cc">
+    <div class="cc-kafle">
+      <label class="cc-kafel"><input type="checkbox" id="u-auto" ${u.auto ? 'checked' : ''}><span class="tgl" aria-hidden="true"></span><b>Auto-wymowa</b><small>nowa karta i odpowiedź</small></label>
+      <label class="cc-kafel"><input type="checkbox" id="u-vosotros" ${u.bezVosotros ? 'checked' : ''}><span class="tgl" aria-hidden="true"></span><b>Bez „vosotros”</b><small>odmiana jak w Ameryce</small></label>
     </div>
-    <div class="ust-grupa"><p class="etykieta">Wymowa</p>
-      ${m.dostepna ? (glosy.length ? `<label class="wybor"><span>Głos</span><select class="pole" id="u-glos">${glosy.map(v => `<option value="${esc(v.voiceURI)}"${m.wybrany && v.voiceURI === m.wybrany.voiceURI ? ' selected' : ''}>${esc(m.opisGlosu(v))}</option>`).join('')}</select></label>
-        ${glosy.some(v => m.jakoscGlosu(v) > 0) ? '' : '<p class="male">Najlepiej brzmią głosy Premium. Na iPhonie: Ustawienia → Dostępność → Treść mówiona → Głosy → Hiszpański → pobierz Mónica (Premium) albo Jorge.</p>'}`
-        : '<p class="ostrzezenie">Ta przeglądarka nie ma hiszpańskiego głosu. Na iPhonie: Ustawienia → Dostępność → Treść mówiona → Głosy → Hiszpański. Na Androidzie: Ustawienia → Zamiana tekstu na mowę → język hiszpański.</p>')
-        : '<p class="ostrzezenie">Ta przeglądarka nie obsługuje syntezy mowy.</p>'}
-      <div class="wiersz"><span class="male">Tempo</span><div class="seg" role="group" aria-label="Tempo mowy">${[0.75, 1, 1.15].map(t => `<button type="button" data-tempo="${t}" aria-pressed="${u.tempo === t}">${String(t).replace('.', ',')}×</button>`).join('')}</div>
-        <button type="button" class="btn btn--male" id="u-test">Posłuchaj</button></div>
-      <label class="przelacznik"><input type="checkbox" id="u-auto" ${u.auto ? 'checked' : ''}><span></span>Odtwarzaj wymowę automatycznie (nowa karta, odkrycie, odpowiedź)</label>
-    </div>
-    <div class="ust-grupa"><p class="etykieta">Nauka</p>
-      <div class="wiersz"><span class="male">Cel dzienny</span><div class="seg" role="group" aria-label="Cel dzienny">${[10, 20, 30, 50].map(n => `<button type="button" data-cel="${n}" aria-pressed="${u.cel === n}">${n}</button>`).join('')}</div></div>
-      <div class="wiersz"><span class="male">Ocena kart</span><div class="seg" role="group" aria-label="Skala oceny">
-        <button type="button" data-skala="2" aria-pressed="${u.skala !== 4}">2 przyciski</button><button type="button" data-skala="4" aria-pressed="${u.skala === 4}">4 poziomy trudności</button></div></div>
-      <p class="male">Cel dzienny to też długość sesji fiszek (10–50 kart).</p>
-    </div>
-    <div class="ust-grupa"><p class="etykieta">Styl Liquid Glass</p>
-      <div class="style-siatka" id="u-style">${window.STYLE.lista.map(s => `<button type="button" data-styl="${s.id}" aria-pressed="${document.documentElement.dataset.styl === s.id}" style="background:radial-gradient(70% 70% at 20% 20%, ${s.plamy[0]}, transparent 70%), radial-gradient(70% 70% at 90% 35%, ${s.plamy[1]}, transparent 70%), radial-gradient(80% 80% at 50% 100%, ${s.plamy[2]}, transparent 70%), ${s.tlo}"><span style="color:${s.tx};background:${s.t === 'd' ? 'rgba(255,255,255,.12)' : 'rgba(255,255,255,.55)'}">${esc(s.n)}</span></button>`).join('')}</div>
-    </div>
-    <div class="ust-grupa"><p class="etykieta">Postępy</p>
+    ${suwakZakres({ id: 'u-tempo', min: 0.6, max: 1.4, krok: 0.05, wartosc: u.tempo || 1, format: fTempo, etykieta: 'Tempo lektora' })}
+    ${suwakZakres({ id: 'u-cel', min: 10, max: 60, krok: 5, wartosc: u.cel, format: fCel, etykieta: 'Cel dzienny' })}
+    <div class="cc-blok"><p class="etykieta">Wariant hiszpańskiego</p>
+      <div class="seg seg--pelny" role="group" aria-label="Wariant">${[['es', 'Hiszpania'], ['latam', 'Ameryka Łac.'], ['neutral', 'Neutralny']].map(([k, n]) => `<button type="button" data-wariant="${k}" aria-pressed="${u.wariant === k}">${n}</button>`).join('')}</div></div>
+    <div class="cc-blok"><p class="etykieta">Ocena kart</p>
+      <div class="seg seg--pelny" role="group" aria-label="Skala oceny"><button type="button" data-skala="2" aria-pressed="${u.skala !== 4}">Nie wiem · Umiem</button><button type="button" data-skala="4" aria-pressed="${u.skala === 4}">4 stopnie</button></div></div>
+    <div class="cc-blok"><p class="etykieta">Głos lektora</p>
+      ${m.dostepna ? (glosy.length ? `<div class="szukaj"><select class="pole" id="u-glos" aria-label="Głos">${glosy.map(v => `<option value="${esc(v.voiceURI)}"${m.wybrany && v.voiceURI === m.wybrany.voiceURI ? ' selected' : ''}>${esc(m.opisGlosu(v))}</option>`).join('')}</select><button type="button" class="btn btn--male" id="u-test">Posłuchaj</button></div>
+        ${glosy.some(v => m.jakoscGlosu(v) > 0) ? '' : '<p class="male">Najlepiej brzmią głosy Premium. iPhone: Ustawienia → Dostępność → Treść mówiona → Głosy → Hiszpański → Mónica (Premium).</p>'}`
+        : '<p class="ostrzezenie">Ta przeglądarka nie ma hiszpańskiego głosu. iPhone: Ustawienia → Dostępność → Treść mówiona → Głosy → Hiszpański. Android: Ustawienia → Zamiana tekstu na mowę → hiszpański.</p>')
+        : '<p class="ostrzezenie">Ta przeglądarka nie obsługuje syntezy mowy.</p>'}</div>
+    <details class="zwin cc-blok"><summary>Styl Liquid Glass</summary>
+      <div class="style-siatka" id="u-style">${window.STYLE.lista.map(s => `<button type="button" data-styl="${s.id}" aria-pressed="${document.documentElement.dataset.styl === s.id}" style="background:radial-gradient(70% 70% at 20% 20%, ${s.plamy[0]}, transparent 70%), radial-gradient(70% 70% at 90% 35%, ${s.plamy[1]}, transparent 70%), radial-gradient(80% 80% at 50% 100%, ${s.plamy[2]}, transparent 70%), ${s.tlo}"><span style="color:${s.tx};background:${s.t === 'd' ? 'rgba(255,255,255,.12)' : 'rgba(255,255,255,.55)'}">${esc(s.n)}</span></button>`).join('')}</div></details>
+    <details class="zwin cc-blok"><summary>Kopia zapasowa i reset</summary>
       <div class="akcje-poziom">
         <button type="button" class="btn" id="u-eksport">Eksportuj do pliku</button>
         <label class="btn" for="u-import-plik">Importuj z pliku</label><input type="file" id="u-import-plik" accept="application/json,.json" hidden>
         <button type="button" class="btn btn--niebezpieczny" id="u-reset">Wyzeruj postępy</button>
       </div>
       <div id="u-reset-potw" hidden class="ostrzezenie"><p><b>Na pewno?</b> Usuniesz wszystkie powtórki, wyniki egzaminów i serię dni. Tego nie da się cofnąć (chyba że masz eksport).</p>
-        <div class="akcje-poziom"><button type="button" class="btn btn--niebezpieczny" id="u-reset-tak">Tak, wyzeruj</button><button type="button" class="btn" id="u-reset-nie">Anuluj</button></div></div>
-    </div>`);
+        <div class="akcje-poziom"><button type="button" class="btn btn--niebezpieczny" id="u-reset-tak">Tak, wyzeruj</button><button type="button" class="btn" id="u-reset-nie">Anuluj</button></div></div></details>
+    <p class="male srodek">Postęp zapisuje się tylko na tym urządzeniu. Skróty: spacja, 1–4, Enter, ← →, ? (pomoc).</p>
+  </div>`);
+  podlaczZakres($('#u-tempo', tresc), fTempo, (v, koniec) => { u.tempo = v; app.zapisz(); if (koniec) app.mowa.powiedz('Esta es la velocidad de lectura.'); });
+  podlaczZakres($('#u-cel', tresc), fCel, v => { u.cel = v; app.zapisz(); rysujNaglowek(); });
   tresc.addEventListener('change', e => {
     if (e.target.id === 'u-vosotros') { u.bezVosotros = e.target.checked; app.zapisz(); odswiezModuly(); }
     if (e.target.id === 'u-auto') { u.auto = e.target.checked; app.zapisz(); }
@@ -196,7 +222,6 @@ function modalUstawien() {
       toast(u.wariant === 'latam' ? 'Wariant: Ameryka Łacińska (vosotros ukryte).' : u.wariant === 'es' ? 'Wariant: Hiszpania.' : 'Wariant neutralny.');
       return;
     }
-    const tp = t.closest('[data-tempo]'); if (tp) { u.tempo = +tp.dataset.tempo; app.zapisz(); $$('[data-tempo]', tresc).forEach(b => b.setAttribute('aria-pressed', b === tp)); app.mowa.powiedz('Esta es la velocidad de lectura.'); return; }
     if (t.closest('#u-test')) { app.mowa.powiedz('Hola, me llamo Mónica. ¿Practicamos un poco de español?'); return; }
     const sk = t.closest('[data-skala]'); if (sk) { u.skala = +sk.dataset.skala; app.zapisz(); $$('[data-skala]', tresc).forEach(b => b.setAttribute('aria-pressed', b === sk)); odswiezModuly(); return; }
     const st = t.closest('button[data-styl]'); if (st) { u.styl = window.STYLE.zastosuj(st.dataset.styl).id; app.zapisz(); $$('button[data-styl]', tresc).forEach(b => b.setAttribute('aria-pressed', b === st)); return; }
@@ -238,7 +263,6 @@ $('#poziomy').addEventListener('click', e => { const b = e.target.closest('[data
 $('#zakladki').addEventListener('click', e => { const b = e.target.closest('[data-z]'); if (b) pokazZakladke(b.dataset.z); });
 $('#poziom-info').addEventListener('click', modalStatystyk);
 $('#dzis').addEventListener('click', modalDnia);
-$('#ustawienia-btn').innerHTML = IKONY.ustawienia;
 $('#ustawienia-btn').addEventListener('click', modalUstawien);
 
 document.addEventListener('keydown', e => {
@@ -268,8 +292,10 @@ rysujNaglowek(); rysujPoziomy(); rysujInfo();
 pokazZakladke(stan.ui.zakladka);
 app.mowa.naZmiane(() => {});
 zainicjujSuwaki();
-kula = zainicjujKule({
-  aktywna: () => stan.ui.zakladka,
-  otworz: k => (k === 'ustawienia' ? modalUstawien() : pokazZakladke(k, { przewin: true })),
+zainicjujArkusz();
+wyspa = zainicjujWyspe({
+  sekcja: () => stan.ui.zakladka,
+  akcja: akcjaWyspy,
+  maAkcje: k => k === 'egzamin' || (k === 'lista' ? !!LISTY[stan.ui.zakladka] : stan.ui.zakladka !== 'egzamin'),
 });
 requestAnimationFrame(() => document.body.classList.add('gotowe'));

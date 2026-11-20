@@ -182,31 +182,34 @@ export function silnikKart(root, cfg) {
   function rysujFiszke() {
     const { x } = S.karta;
     obszar.innerHTML = `${naglowekKarty()}
-      <button type="button" class="fiszka" data-odkryj aria-label="Odkryj odpowiedź (spacja)">
+      <button type="button" class="fiszka" data-odkryj aria-label="Odkryj odpowiedź (spacja). Przesuń w prawo: umiem, w lewo: jeszcze nie">
         <b class="fiszka-slowo">${esc(pytanie())}</b>
         <span class="fiszka-odp" data-odp hidden>${esc(odpowiedz())}</span>
-        <em data-wskazowka>stuknij albo naciśnij spację, żeby odkryć</em>
+        <span class="fiszka-znak fiszka-znak--p" aria-hidden="true">✓</span><span class="fiszka-znak fiszka-znak--l" aria-hidden="true">↺</span>
       </button>
+      ${ust().skala === 4 ? `<div class="oceny oceny--4" data-oceny hidden>${przyciskiOcen()}</div>` : `<div class="gesty" data-oceny>${przyciskiOcen()}</div>`}
+      <div class="karta-narzedzia">${przyciskPodp()}${przyciskiGlosu(x)}</div>
       <div class="podpowiedz" data-podp-tekst hidden></div>
-      <div class="wiersz">${przyciskPodp()}${przyciskiGlosu(x)}</div>
-      <div class="szczegoly" data-szcz hidden>${szczegoly(x)}</div>
-      <div class="oceny" data-oceny hidden>${przyciskiOcen()}</div>`;
+      <div class="szczegoly" data-szcz hidden>${szczegoly(x)}</div>`;
   }
   function odkryj() {
     if (!S.karta || S.karta.odkryta || tryb() !== 'fiszka') return;
     S.karta.odkryta = true;
     $('[data-odp]', obszar).hidden = false; $('[data-szcz]', obszar).hidden = false; $('[data-oceny]', obszar).hidden = false;
-    $('[data-wskazowka]', obszar).textContent = 'Jak dobrze to umiesz?';
     $('.fiszka', obszar).classList.add('odkryta');
     $('.fiszka', obszar).scrollIntoView({ block: 'nearest', behavior: ruch() });
     if (ust().auto && S.karta.k === 'pl') app.mowa.powiedz(tekstEs(S.karta.x));
     const pierwszy = $('[data-ocena]', obszar); if (pierwszy && matchMedia('(pointer: fine)').matches) pierwszy.focus({ preventScroll: true });
   }
   function przyciskiOcen() {
-    const o = ust().skala === 4
-      ? [[1, 'Nie wiem', 'zle'], [2, 'Trudne', 'trudne'], [3, 'Dobrze', 'dobrze'], [4, 'Łatwe', 'latwe']]
-      : [[1, 'Jeszcze nie', 'zle'], [3, 'Umiem', 'dobrze']];
-    return o.map(([v, n, c], i) => `<button type="button" class="btn ocena ocena--${c}" data-ocena="${v}"><kbd>${i + 1}</kbd>${n}</button>`).join('');
+    if (ust().skala === 4) {
+      return [[1, 'Nie wiem', 'zle'], [2, 'Trudne', 'trudne'], [3, 'Dobrze', 'dobrze'], [4, 'Łatwe', 'latwe']]
+        .map(([v, n, c], i) => `<button type="button" class="ocena ocena--${c}" data-ocena="${v}"><kbd>${i + 1}</kbd>${n}</button>`).join('');
+    }
+    // skala 2: tylko dyskretne podpowiedzi gestów (też klikalne i pod klawiszami 1 / 2)
+    return `<button type="button" class="gest gest--l" data-ocena="1" aria-label="Jeszcze nie (klawisz 1)"><span aria-hidden="true">←</span> jeszcze nie</button>
+      <span class="gest-srodek" aria-hidden="true">stuknij, by odwrócić</span>
+      <button type="button" class="gest gest--p" data-ocena="3" aria-label="Umiem (klawisz 2)">umiem <span aria-hidden="true">→</span></button>`;
   }
 
   // 2) wpisywanie
@@ -323,7 +326,7 @@ export function silnikKart(root, cfg) {
     pozycja();
   }
   function ocenFiszke(v) {
-    if (!S.karta.odkryta) return;
+    if (!S.karta.odkryta) { if (v <= 1) { odkryj(); return; } }
     zapiszOcene(v);
     nastepna();
   }
@@ -355,10 +358,48 @@ export function silnikKart(root, cfg) {
     if (S.ocenione) toast(`Sesja zakończona: ${S.ocenione} odpowiedzi, ${proc}% poprawnych.`);
   }
 
+  // --- gest na fiszce: przesunięcie w prawo = umiem, w lewo = jeszcze nie (najpierw odsłania odpowiedź) ---
+  let gest = null, pominKlik = 0;
+  obszar.addEventListener('pointerdown', e => {
+    const f = e.target.closest('.fiszka');
+    if (!f || tryb() !== 'fiszka' || e.button) return;
+    gest = { id: e.pointerId, x0: e.clientX, y0: e.clientY, f, ruch: false, dx: 0 };
+  });
+  obszar.addEventListener('pointermove', e => {
+    if (!gest || e.pointerId !== gest.id) return;
+    const dx = e.clientX - gest.x0, dy = e.clientY - gest.y0;
+    if (!gest.ruch) {
+      if (Math.abs(dx) < 10) return;
+      if (Math.abs(dy) > Math.abs(dx)) { gest = null; return; }
+      gest.ruch = true; gest.f.classList.add('ciagnieta');
+      try { gest.f.setPointerCapture(e.pointerId); } catch (err) { /* stara przeglądarka */ }
+    }
+    gest.dx = dx;
+    gest.f.style.transform = `translateX(${dx}px) rotate(${(dx / 22).toFixed(2)}deg)`;
+    gest.f.classList.toggle('w-prawo', dx > 50); gest.f.classList.toggle('w-lewo', dx < -50);
+  });
+  const koniecGestu = e => {
+    if (!gest || e.pointerId !== gest.id) return;
+    const g = gest; gest = null;
+    if (!g.ruch) return;
+    pominKlik = performance.now() + 400;
+    g.f.classList.remove('ciagnieta', 'w-prawo', 'w-lewo');
+    const wyrzuc = kier => new Promise(r => {
+      g.f.style.transition = 'transform .28s cubic-bezier(.32,.72,0,1), opacity .28s';
+      g.f.style.transform = `translateX(${kier * 120}%) rotate(${kier * 14}deg)`; g.f.style.opacity = '0';
+      setTimeout(r, 230);
+    });
+    if (g.dx > 90) wyrzuc(1).then(() => ocenFiszke(3));
+    else if (g.dx < -90 && S.karta.odkryta) wyrzuc(-1).then(() => ocenFiszke(1));
+    else { g.f.style.transform = ''; if (g.dx < -90) odkryj(); }
+  };
+  obszar.addEventListener('pointerup', koniecGestu);
+  obszar.addEventListener('pointercancel', e => { if (gest && gest.ruch) gest.f.style.transform = ''; gest = null; });
+
   // --- zdarzenia ---
   root.addEventListener('click', e => {
     const t = e.target;
-    if (t.closest('[data-odkryj]')) return odkryj();
+    if (t.closest('[data-odkryj]')) { if (performance.now() < pominKlik) return; return odkryj(); }
     const oc = t.closest('[data-ocena]'); if (oc) return ocenFiszke(+oc.dataset.ocena);
     const op = t.closest('[data-opcja]'); if (op) return wybierz(op.dataset.opcja);
     if (t.closest('[data-dalej]')) return dalej();
@@ -389,7 +430,7 @@ export function silnikKart(root, cfg) {
       return true;
     }
     if (n >= 1 && n <= 4) {
-      if (t === 'fiszka' && S.karta.odkryta) { const b = obszar.querySelectorAll('[data-ocena]')[n - 1]; if (b) ocenFiszke(+b.dataset.ocena); return true; }
+      if (t === 'fiszka' && (S.karta.odkryta || ust().skala !== 4)) { const b = obszar.querySelectorAll('[data-ocena]')[n - 1]; if (b) ocenFiszke(+b.dataset.ocena); return true; }
       if ((t === 'wybor' || t === 'sluchanie') && S.karta.opcje) { const b = obszar.querySelectorAll('[data-opcja]')[n - 1]; if (b) wybierz(b.dataset.opcja); return true; }
     }
     if (e.key === 'Enter' && S.karta.odpowiedziano) { dalej(); return true; }
