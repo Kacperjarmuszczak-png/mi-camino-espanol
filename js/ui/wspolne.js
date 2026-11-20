@@ -124,7 +124,7 @@ export function podlaczZakres(input, format, naZmiane) {
 }
 export const modalOtwarty = () => !$('#modal').hidden;
 
-// --- pływający pasek znaków (nad klawiaturą telefonu): litery języka pola, do którego piszesz ---
+// --- pływający pasek liter hiszpańskich (nad klawiaturą telefonu) ---
 const ZNAKI = { es: ['á', 'é', 'í', 'ó', 'ú', 'ü', 'ñ', '¿', '¡'], pl: ['ą', 'ć', 'ę', 'ł', 'ń', 'ó', 'ś', 'ź', 'ż'] };
 export function zainicjujZnaki() {
   const pasek = $('#znaki');
@@ -149,7 +149,7 @@ export function zainicjujZnaki() {
   document.addEventListener('focusin', e => {
     const t = e.target;
     if (t.matches && t.matches('input[data-znaki], textarea[data-znaki]')) {
-      pole = t; rysuj((t.getAttribute('lang') || (HISP ? 'pl' : 'es')).startsWith('pl') ? 'pl' : 'es');
+      pole = t; rysuj(HISP ? 'pl' : 'es');   // zawsze litery języka nauki (hiszpańskie; w trybie dla Hiszpanów polskie)
       pasek.hidden = false; document.body.classList.add('z-znakami');
       ustawPozycje(); setTimeout(ustawPozycje, 300); setTimeout(ustawPozycje, 700);
     }
