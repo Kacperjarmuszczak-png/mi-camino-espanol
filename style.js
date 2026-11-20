@@ -43,7 +43,8 @@
   }
   let zapisany = 'andalucia';
   try {
-    const v2 = JSON.parse(localStorage.getItem('es-nauka-v2') || 'null');
+    const hisp = localStorage.getItem('jkf-jezyk') === 'es';
+    const v2 = JSON.parse(localStorage.getItem(hisp ? 'pl-nauka-v1' : 'es-nauka-v2') || 'null');
     zapisany = (v2 && v2.ust && v2.ust.styl) || 'andalucia';
     // jednorazowo: dawny styl domyślny (Burdeos) przechodzi na nowy domyślny; wybór jest dalej w Ustawieniach
     if (zapisany === 'burdeos' && !(v2 && v2.ust && v2.ust.styl3)) zapisany = 'andalucia';

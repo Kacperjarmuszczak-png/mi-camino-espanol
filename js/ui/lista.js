@@ -2,8 +2,9 @@
 import { $, esc, przyciskGlosu, przyciskGwiazdki } from './wspolne.js';
 import { FILTRY, SORTY, filtruj, sortuj } from '../filtry.js';
 import { status } from '../srs.js';
+import { t as tr, CEL } from '../jezyk.js';
 
-const ETYK = { nowe: 'nowe', nauka: 'w nauce', utrwalane: 'utrwalane', opanowane: 'opanowane' };
+const ETYK = { nowe: tr('nowe', 'nueva'), nauka: tr('w nauce', 'aprendiendo'), utrwalane: tr('utrwalane', 'afianzando'), opanowane: tr('opanowane', 'dominada') };
 
 /**
  * @param {HTMLElement} kontener
@@ -16,12 +17,12 @@ export function utworzListe(kontener, o) {
     <details class="lista-szuflada" id="${o.id}">
       <summary><span>${esc(o.tytul)}</span><span class="licznik" data-ile></span></summary>
       <div class="lista-narzedzia">
-        <input type="search" class="pole" data-q placeholder="Szukaj po polsku albo po hiszpańsku" aria-label="Szukaj" autocomplete="off" spellcheck="false" data-znaki>
-        <div class="pigulki" role="group" aria-label="Filtr">${FILTRY.map(([k, n]) => `<button type="button" class="pigulka" data-filtr="${k}" aria-pressed="${k === 'wszystkie'}">${n}</button>`).join('')}</div>
-        <label class="wybor"><span>Sortuj</span><select class="pole" data-sort aria-label="Sortowanie">${SORTY.map(([k, n]) => `<option value="${k}">${n}</option>`).join('')}</select></label>
+        <input type="search" class="pole" data-q placeholder="${tr('Szukaj po polsku albo po hiszpańsku', 'Busca en español o en polaco')}" aria-label="${tr('Szukaj', 'Buscar')}" lang="${CEL}" autocomplete="off" spellcheck="false" data-znaki>
+        <div class="pigulki" role="group" aria-label="${tr('Filtr', 'Filtro')}">${FILTRY.map(([k, n]) => `<button type="button" class="pigulka" data-filtr="${k}" aria-pressed="${k === 'wszystkie'}">${n}</button>`).join('')}</div>
+        <label class="wybor"><span>${tr('Sortuj', 'Ordenar')}</span><select class="pole" data-sort aria-label="${tr('Sortowanie', 'Orden')}">${SORTY.map(([k, n]) => `<option value="${k}">${n}</option>`).join('')}</select></label>
       </div>
       <ul class="lista" data-lista></ul>
-      <button type="button" class="btn btn--male wiecej" data-wiecej hidden>Pokaż więcej</button>
+      <button type="button" class="btn btn--male wiecej" data-wiecej hidden>${tr('Pokaż więcej', 'Mostrar más')}</button>
     </details>`;
   const ul = $('[data-lista]', kontener);
   function rysuj() {
@@ -30,13 +31,13 @@ export function utworzListe(kontener, o) {
     ul.innerHTML = wynik.slice(0, st.ile).map(x => {
       const s = status(app.stan.srs[x.id]);
       return `<li data-id="${esc(x.id)}" class="st-${s}">
-        <button type="button" class="lista-tekst" data-cwicz="${esc(x.id)}" aria-label="Ćwicz: ${esc(x.es)}">
+        <button type="button" class="lista-tekst" data-cwicz="${esc(x.id)}" aria-label="${tr('Ćwicz', 'Practicar')}: ${esc(x.es)}">
           <b>${esc(x.es)}</b><span>${o.opis(x)}</span>
         </button>
         <span class="znacznik znacznik--${s}" title="${ETYK[s]}">${ETYK[s]}</span>
         ${przyciskGlosu(o.mow(x))}${przyciskGwiazdki(x.id, app.stan.ulub[x.id])}
       </li>`;
-    }).join('') || '<li class="pusto">Nic tu nie ma. Zmień filtr albo wyszukiwanie.</li>';
+    }).join('') || `<li class="pusto">${tr('Nic tu nie ma. Zmień filtr albo wyszukiwanie.', 'No hay nada. Cambia el filtro o la búsqueda.')}</li>`;
     $('[data-wiecej]', kontener).hidden = wynik.length <= st.ile;
   }
   $('[data-q]', kontener).addEventListener('input', e => { st.q = e.target.value; st.ile = 40; rysuj(); });

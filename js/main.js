@@ -11,6 +11,9 @@ import { zakladkaZwroty } from './ui/zwroty.js';
 import { zakladkaTlumacz } from './ui/tlumacz.js';
 import { zainicjujSuwaki } from './ui/suwak.js';
 import { zainicjujWyspe } from './ui/wyspa.js';
+import { zakladkaCzasownikiPl } from './ui/czasowniki-pl.js';
+import { zakladkaTlumaczPl } from './ui/tlumacz-pl.js';
+import { HISP, t as T, ustawJezyk } from './jezyk.js';
 
 const stan = wczytaj();
 const ZAKLADKI = ['slowka', 'egzamin', 'czasowniki', 'zwroty', 'tlumacz'];
@@ -22,7 +25,7 @@ const app = {
   stan,
   dane: POD_ID,
   mowa: utworzMowe(stan.ust),
-  zapisz() { clearTimeout(czasZapisu); czasZapisu = setTimeout(() => { if (!zapiszStan(stan)) toast('Nie udało się zapisać postępu (pamięć przeglądarki jest niedostępna).'); }, 150); },
+  zapisz() { clearTimeout(czasZapisu); czasZapisu = setTimeout(() => { if (!zapiszStan(stan)) toast(T('Nie udało się zapisać postępu (pamięć przeglądarki jest niedostępna).', 'No se pudo guardar el progreso (el almacenamiento del navegador no está disponible).')); }, 150); },
   ocen(id, ocena, { bezAktywnosci = false } = {}) {
     stan.srs[id] = ocen(stan.srs[id], ocena);
     if (!bezAktywnosci) dodajAktywnosc(stan, 1);
@@ -52,14 +55,14 @@ const czesc = (lista, p) => { const el = lista.filter(x => x.p === p); return [e
 function rysujPoziomy() {
   $('#poziomy').innerHTML = POZIOMY.map(p => {
     const s = statystyki(p);
-    return `<button type="button" class="poziom" data-p="${p}" aria-pressed="${p === stan.ui.poziom}" aria-label="Poziom ${p}: ${s.procent}% postępu">
-      <b>${p}${stan.egz[p] >= 70 ? '<i class="zdany" title="Egzamin zdany">✓</i>' : ''}</b><small>${s.procent}%</small></button>`;
+    return `<button type="button" class="poziom" data-p="${p}" aria-pressed="${p === stan.ui.poziom}" aria-label="${T('Poziom', 'Nivel')} ${p}: ${s.procent}% ${T('postępu', 'de progreso')}">
+      <b>${p}${stan.egz[p] >= 70 ? `<i class="zdany" title="${T('Egzamin zdany', 'Examen aprobado')}">✓</i>` : ''}</b><small>${s.procent}%</small></button>`;
   }).join('');
 }
 function rysujInfo() {
   const p = stan.ui.poziom, s = statystyki(p), o = OPIS_POZIOMU[p];
   const [so, sr] = czesc(SLOWKA, p);
-  $('#poziom-info').innerHTML = `<span><b>${p}</b> · ${esc(o.n)}</span><span class="linia-liczby">${so}/${sr} słówek${s.powtorka ? ` · <b class="akcent">${s.powtorka} do powtórki</b>` : ''}${s.egz != null ? ` · egzamin ${s.egz}%` : ''}</span><span class="linia-i" aria-hidden="true">ⓘ</span>`;
+  $('#poziom-info').innerHTML = `<span><b>${p}</b> · ${esc(o.n)}</span><span class="linia-liczby">${so}/${sr} ${T('słówek', 'palabras')}${s.powtorka ? ` · <b class="akcent">${s.powtorka} ${T('do powtórki', 'para repasar')}</b>` : ''}${s.egz != null ? ` · ${T('egzamin', 'examen')} ${s.egz}%` : ''}</span><span class="linia-i" aria-hidden="true">ⓘ</span>`;
 }
 function modalStatystyk() {
   const p = stan.ui.poziom, s = statystyki(p);
@@ -68,15 +71,15 @@ function modalStatystyk() {
     const v = Math.round(100 * el.reduce((a, w) => a + postep(stan.srs[w.id]), 0) / el.length);
     return `<div class="typ"><span>${esc(t)}</span><div class="postep"><i style="width:${v}%"></i></div><small>${v}%</small></div>`;
   }).join('');
-  otworzModal(`Poziom ${p} – statystyki`, `
+  otworzModal(T(`Poziom ${p} – statystyki`, `Nivel ${p} – estadísticas`), `
     <p><b>${esc(OPIS_POZIOMU[p].n)}.</b> ${esc(OPIS_POZIOMU[p].o)}</p>
     <div class="liczby">
-      <div><b>${s.procent}%</b><span>postęp poziomu</span></div><div><b>${s.opanowane}</b><span>opanowane</span></div>
-      <div><b>${s.utrwalane}</b><span>utrwalane</span></div><div><b>${s.nauka}</b><span>w nauce</span></div>
-      <div><b>${s.nowe}</b><span>jeszcze nowe</span></div><div><b>${s.powtorka}</b><span>do powtórki dziś</span></div>
+      <div><b>${s.procent}%</b><span>${T('postęp poziomu', 'progreso del nivel')}</span></div><div><b>${s.opanowane}</b><span>${T('opanowane', 'dominadas')}</span></div>
+      <div><b>${s.utrwalane}</b><span>${T('utrwalane', 'afianzando')}</span></div><div><b>${s.nauka}</b><span>${T('w nauce', 'aprendiendo')}</span></div>
+      <div><b>${s.nowe}</b><span>${T('jeszcze nowe', 'nuevas')}</span></div><div><b>${s.powtorka}</b><span>${T('do powtórki dziś', 'para repasar hoy')}</span></div>
     </div>
-    <p class="male">Postęp = opanowanie słówek, czasowników i zwrotów z tego poziomu (85%) + najlepszy wynik egzaminu (15%). Element jest opanowany, gdy następna powtórka wypada za co najmniej 7 dni.</p>
-    <p class="etykieta">Tematy słówek</p><div class="typy">${tem}</div>`);
+    <p class="male">${T('Postęp = opanowanie słówek, czasowników i zwrotów z tego poziomu (85%) + najlepszy wynik egzaminu (15%). Element jest opanowany, gdy następna powtórka wypada za co najmniej 7 dni.', 'Progreso = dominio de las palabras, verbos y frases del nivel (85 %) + mejor resultado del examen (15 %). Un elemento está dominado cuando el siguiente repaso es dentro de 7 días o más.')}</p>
+    <p class="etykieta">${T('Tematy słówek', 'Temas de vocabulario')}</p><div class="typy">${tem}</div>`);
 }
 
 // --- nagłówek: dzisiejszy cel i seria ---
@@ -87,31 +90,31 @@ function rysujNaglowek() {
   $('#dzis-luk').style.strokeDasharray = `${obw * Math.min(1, ile / cel)} ${obw}`;
   $('#dzis').classList.toggle('cel-osiagniety', ile >= cel);
   $('#seria').innerHTML = `${IKONY.ogien}<b>${sr}</b>`;
-  $('#dzis').setAttribute('aria-label', `Dziś ${ile} z ${cel} pozycji, seria ${sr} dni`);
+  $('#dzis').setAttribute('aria-label', T(`Dziś ${ile} z ${cel} pozycji, seria ${sr} dni`, `Hoy ${ile} de ${cel}, racha de ${sr} días`));
   $('#wyspa-luk').style.strokeDasharray = `${obw * Math.min(1, ile / cel)} ${obw}`;
   $('#wyspa').classList.toggle('cel-osiagniety', ile >= cel);
   $('#wyspa-poziom').textContent = stan.ui.poziom;
-  $('#wyspa-btn').setAttribute('aria-label', `Poziom ${stan.ui.poziom}, dziś ${ile} z ${cel}. Rozwiń, aby zobaczyć statystyki i opcje`);
+  $('#wyspa-btn').setAttribute('aria-label', T(`Poziom ${stan.ui.poziom}, dziś ${ile} z ${cel}. Rozwiń, aby zobaczyć statystyki i opcje`, `Nivel ${stan.ui.poziom}, hoy ${ile} de ${cel}. Despliega para ver estadísticas y opciones`));
 }
 function modalDnia() {
   const dni = [];
   for (let i = 13; i >= 0; i--) { const t = Date.now() - i * 864e5; dni.push([dzien(t), stan.dni[dzien(t)] || 0, new Date(t)]); }
   const max = Math.max(stan.ust.cel, ...dni.map(d => d[1]));
-  otworzModal('Twoja aktywność', `
-    <div class="liczby"><div><b>${stan.dni[dzien()] || 0}</b><span>dziś</span></div><div><b>${seria(stan)}</b><span>dni serii</span></div><div><b>${Object.values(stan.dni).reduce((a, b) => a + b, 0)}</b><span>łącznie</span></div></div>
-    <div class="slupki slupki--dni">${dni.map(([k, n, d]) => `<div class="slupek${n >= stan.ust.cel ? ' cel' : ''}" title="${k}: ${n}"><span style="height:${Math.max(3, 100 * n / max)}%"></span><small>${'ndwścpsn'[d.getDay()] || ''}${d.getDate()}</small></div>`).join('')}</div>
-    <p class="male">Seria rośnie każdego dnia, w którym osiągniesz cel dzienny. Licznik obejmuje każdą ocenioną kartę, odpowiedź w drillu, ćwiczeniu i egzaminie.</p>
-    <p class="etykieta">Cel dzienny</p>
-    <div class="seg" role="group" aria-label="Cel dzienny">${[10, 20, 30, 50].map(n => `<button type="button" data-cel="${n}" aria-pressed="${stan.ust.cel === n}">${n}</button>`).join('')}</div>`);
+  otworzModal(T('Twoja aktywność', 'Tu actividad'), `
+    <div class="liczby"><div><b>${stan.dni[dzien()] || 0}</b><span>${T('dziś', 'hoy')}</span></div><div><b>${seria(stan)}</b><span>${T('dni serii', 'días de racha')}</span></div><div><b>${Object.values(stan.dni).reduce((a, b) => a + b, 0)}</b><span>${T('łącznie', 'en total')}</span></div></div>
+    <div class="slupki slupki--dni">${dni.map(([k, n, d]) => `<div class="slupek${n >= stan.ust.cel ? ' cel' : ''}" title="${k}: ${n}"><span style="height:${Math.max(3, 100 * n / max)}%"></span><small>${T('ndwścpsn', 'dlmmjvs')[d.getDay()] || ''}${d.getDate()}</small></div>`).join('')}</div>
+    <p class="male">${T('Seria rośnie każdego dnia, w którym osiągniesz cel dzienny. Licznik obejmuje każdą ocenioną kartę, odpowiedź w drillu, ćwiczeniu i egzaminie.', 'La racha crece cada día que alcanzas tu meta diaria. Cuenta cada tarjeta evaluada y cada respuesta en la práctica y el examen.')}</p>
+    <p class="etykieta">${T('Cel dzienny', 'Meta diaria')}</p>
+    <div class="seg" role="group" aria-label="${T('Cel dzienny', 'Meta diaria')}">${[10, 20, 30, 50].map(n => `<button type="button" data-cel="${n}" aria-pressed="${stan.ust.cel === n}">${n}</button>`).join('')}</div>`);
 }
 
 // --- zakładki z przesuwaną szklaną kapsułą ---
 const moduly = {
   slowka: zakladkaSlowka($('#z-slowka'), app),
   egzamin: zakladkaEgzamin($('#z-egzamin'), app),
-  czasowniki: zakladkaCzasowniki($('#z-czasowniki'), app),
+  czasowniki: (HISP ? zakladkaCzasownikiPl : zakladkaCzasowniki)($('#z-czasowniki'), app),
   zwroty: zakladkaZwroty($('#z-zwroty'), app),
-  tlumacz: zakladkaTlumacz($('#z-tlumacz'), app),
+  tlumacz: (HISP ? zakladkaTlumaczPl : zakladkaTlumacz)($('#z-tlumacz'), app),
 };
 app.otworzCzasownik = inf => {
   stan.ui.cWidok = 'tabela';
@@ -139,14 +142,14 @@ function zmienPoziom(p) {
 }
 
 // --- akcje z górnej kapsuły: opcje sekcji, słowniczek (lista), egzamin ---
-const LISTY = { slowka: ['#s-lista', 'Słowniczek – słówka'], zwroty: ['#z-lista', 'Słowniczek – zwroty'], czasowniki: ['#c-lista', 'Słowniczek – czasowniki'] };
+const LISTY = { slowka: ['#s-lista', T('Słowniczek – słówka', 'Diccionario – palabras')], zwroty: ['#z-lista', T('Słowniczek – zwroty', 'Diccionario – frases')], czasowniki: ['#c-lista', T('Słowniczek – czasowniki', 'Diccionario – verbos')] };
 function opcjeSekcji() {
   const z = stan.ui.zakladka;
   const klik = sel => { const b = $(sel); if (b) b.click(); };
   if (z === 'slowka') klik('#slowka-opcje');
   else if (z === 'zwroty') { if ((stan.ui.zWidok || 'przeglad') === 'fiszki' && $('#zwroty-opcje')) klik('#zwroty-opcje'); else klik('#z-kat-kapsula'); }
   else if (z === 'czasowniki') { if ((stan.ui.cWidok || 'tabela') === 'drill' && $('#d-opcje')) klik('#d-opcje'); else klik('#c-grupa-kapsula'); }
-  else if (z === 'tlumacz') arkuszZElementem('Opcje tłumacza', $('#t-opcje'));
+  else if (z === 'tlumacz') arkuszZElementem(T('Opcje tłumacza', 'Opciones del traductor'), $('#t-opcje'));
 }
 function slowniczek() {
   const l = LISTY[stan.ui.zakladka]; if (!l) return;
@@ -169,51 +172,55 @@ function modalUstawien() {
   const u = stan.ust, m = app.mowa;
   const glosy = m.glosy;
   const fTempo = v => String(Math.round(v * 100) / 100).replace('.', ',') + '×';
-  const fCel = v => `${v} dziennie`;
-  const tresc = otworzModal('Szybkie ustawienia', `<div class="cc">
+  const fCel = v => T(`${v} dziennie`, `${v} al día`);
+  const tresc = otworzModal(T('Szybkie ustawienia', 'Ajustes rápidos'), `<div class="cc">
+    <div class="cc-blok"><p class="etykieta">${T('Czego się uczysz', 'Qué aprendes')}</p>
+      <div class="seg seg--pelny" role="group" aria-label="${T('Język nauki', 'Idioma de estudio')}"><button type="button" data-jezyk="pl" aria-pressed="${!HISP}">🇪🇸 ${T('Hiszpański (dla Polaków)', 'Español (para polacos)')}</button><button type="button" data-jezyk="es" aria-pressed="${HISP}">🇵🇱 ${T('Polski (dla Hiszpanów)', 'Polaco (para hispanohablantes)')}</button></div></div>
     <div class="cc-kafle">
-      <label class="cc-kafel"><input type="checkbox" id="u-auto" ${u.auto ? 'checked' : ''}><span class="tgl" aria-hidden="true"></span><b>Auto-wymowa</b><small>nowa karta i odpowiedź</small></label>
-      <label class="cc-kafel"><input type="checkbox" id="u-vosotros" ${u.bezVosotros ? 'checked' : ''}><span class="tgl" aria-hidden="true"></span><b>Bez „vosotros”</b><small>odmiana jak w Ameryce</small></label>
+      <label class="cc-kafel"><input type="checkbox" id="u-auto" ${u.auto ? 'checked' : ''}><span class="tgl" aria-hidden="true"></span><b>${T('Auto-wymowa', 'Pronunciación automática')}</b><small>${T('nowa karta i odpowiedź', 'tarjeta nueva y respuesta')}</small></label>
+      ${HISP ? '' : `<label class="cc-kafel"><input type="checkbox" id="u-vosotros" ${u.bezVosotros ? 'checked' : ''}><span class="tgl" aria-hidden="true"></span><b>Bez „vosotros”</b><small>odmiana jak w Ameryce</small></label>`}
     </div>
-    ${suwakZakres({ id: 'u-tempo', min: 0.6, max: 1.4, krok: 0.05, wartosc: u.tempo || 1, format: fTempo, etykieta: 'Tempo lektora' })}
-    ${suwakZakres({ id: 'u-cel', min: 10, max: 60, krok: 5, wartosc: u.cel, format: fCel, etykieta: 'Cel dzienny' })}
-    <div class="cc-blok"><p class="etykieta">Wariant hiszpańskiego</p>
-      <div class="seg seg--pelny" role="group" aria-label="Wariant">${[['es', 'Hiszpania'], ['latam', 'Ameryka Łac.'], ['neutral', 'Neutralny']].map(([k, n]) => `<button type="button" data-wariant="${k}" aria-pressed="${u.wariant === k}">${n}</button>`).join('')}</div></div>
-    <div class="cc-blok"><p class="etykieta">Ocena kart</p>
-      <div class="seg seg--pelny" role="group" aria-label="Skala oceny"><button type="button" data-skala="2" aria-pressed="${u.skala !== 4}">Nie wiem · Umiem</button><button type="button" data-skala="4" aria-pressed="${u.skala === 4}">4 stopnie</button></div></div>
-    <div class="cc-blok"><p class="etykieta">Głos lektora</p>
-      ${m.dostepna ? (glosy.length ? `<div class="szukaj"><select class="pole" id="u-glos" aria-label="Głos">${glosy.map(v => `<option value="${esc(v.voiceURI)}"${m.wybrany && v.voiceURI === m.wybrany.voiceURI ? ' selected' : ''}>${esc(m.opisGlosu(v))}</option>`).join('')}</select><button type="button" class="btn btn--male" id="u-test">Posłuchaj</button></div>
-        ${glosy.some(v => m.jakoscGlosu(v) > 0) ? '' : '<p class="male">Najlepiej brzmią głosy Premium. iPhone: Ustawienia → Dostępność → Treść mówiona → Głosy → Hiszpański → Mónica (Premium).</p>'}`
-        : '<p class="ostrzezenie">Ta przeglądarka nie ma hiszpańskiego głosu. iPhone: Ustawienia → Dostępność → Treść mówiona → Głosy → Hiszpański. Android: Ustawienia → Zamiana tekstu na mowę → hiszpański.</p>')
-        : '<p class="ostrzezenie">Ta przeglądarka nie obsługuje syntezy mowy.</p>'}</div>
-    <details class="zwin cc-blok"><summary>Styl Liquid Glass</summary>
+    ${suwakZakres({ id: 'u-tempo', min: 0.6, max: 1.4, krok: 0.05, wartosc: u.tempo || 1, format: fTempo, etykieta: T('Tempo lektora', 'Velocidad de la voz') })}
+    ${suwakZakres({ id: 'u-cel', min: 10, max: 60, krok: 5, wartosc: u.cel, format: fCel, etykieta: T('Cel dzienny', 'Meta diaria') })}
+    ${HISP ? '' : `<div class="cc-blok"><p class="etykieta">Wariant hiszpańskiego</p>
+      <div class="seg seg--pelny" role="group" aria-label="Wariant">${[['es', 'Hiszpania'], ['latam', 'Ameryka Łac.'], ['neutral', 'Neutralny']].map(([k, n]) => `<button type="button" data-wariant="${k}" aria-pressed="${u.wariant === k}">${n}</button>`).join('')}</div></div>`}
+    <div class="cc-blok"><p class="etykieta">${T('Ocena kart', 'Evaluación de tarjetas')}</p>
+      <div class="seg seg--pelny" role="group" aria-label="${T('Skala oceny', 'Escala')}"><button type="button" data-skala="2" aria-pressed="${u.skala !== 4}">${T('Nie wiem · Umiem', 'No lo sé · Lo sé')}</button><button type="button" data-skala="4" aria-pressed="${u.skala === 4}">${T('4 stopnie', '4 niveles')}</button></div></div>
+    <div class="cc-blok"><p class="etykieta">${T('Głos lektora', 'Voz')}</p>
+      ${m.dostepna ? (glosy.length ? `<div class="szukaj"><select class="pole" id="u-glos" aria-label="${T('Głos', 'Voz')}">${glosy.map(v => `<option value="${esc(v.voiceURI)}"${m.wybrany && v.voiceURI === m.wybrany.voiceURI ? ' selected' : ''}>${esc(m.opisGlosu(v))}</option>`).join('')}</select><button type="button" class="btn btn--male" id="u-test">${T('Posłuchaj', 'Escuchar')}</button></div>
+        ${glosy.some(v => m.jakoscGlosu(v) > 0) ? '' : `<p class="male">${T('Najlepiej brzmią głosy Premium. iPhone: Ustawienia → Dostępność → Treść mówiona → Głosy → Hiszpański → Mónica (Premium).', 'Las voces Premium suenan mejor. iPhone: Ajustes → Accesibilidad → Contenido leído → Voces → Polaco → Zosia (Premium).')}</p>`}`
+        : `<p class="ostrzezenie">${T('Ta przeglądarka nie ma hiszpańskiego głosu. iPhone: Ustawienia → Dostępność → Treść mówiona → Głosy → Hiszpański. Android: Ustawienia → Zamiana tekstu na mowę → hiszpański.', 'Este navegador no tiene voz en polaco. iPhone: Ajustes → Accesibilidad → Contenido leído → Voces → Polaco. Android: Ajustes → Síntesis de voz → polaco.')}</p>`)
+        : `<p class="ostrzezenie">${T('Ta przeglądarka nie obsługuje syntezy mowy.', 'Este navegador no admite síntesis de voz.')}</p>`}</div>
+    <details class="zwin cc-blok"><summary>${T('Styl Liquid Glass', 'Estilo Liquid Glass')}</summary>
       <div class="style-siatka" id="u-style">${window.STYLE.lista.map(s => `<button type="button" data-styl="${s.id}" aria-pressed="${document.documentElement.dataset.styl === s.id}" style="background:radial-gradient(70% 70% at 20% 20%, ${s.plamy[0]}, transparent 70%), radial-gradient(70% 70% at 90% 35%, ${s.plamy[1]}, transparent 70%), radial-gradient(80% 80% at 50% 100%, ${s.plamy[2]}, transparent 70%), ${s.tlo}"><span style="color:${s.tx};background:${s.t === 'd' ? 'rgba(255,255,255,.12)' : 'rgba(255,255,255,.55)'}">${esc(s.n)}</span></button>`).join('')}</div></details>
-    <details class="zwin cc-blok"><summary>Kopia zapasowa i reset</summary>
+    <details class="zwin cc-blok"><summary>${T('Kopia zapasowa i reset', 'Copia de seguridad y reinicio')}</summary>
       <div class="akcje-poziom">
-        <button type="button" class="btn" id="u-eksport">Eksportuj do pliku</button>
-        <label class="btn" for="u-import-plik">Importuj z pliku</label><input type="file" id="u-import-plik" accept="application/json,.json" hidden>
-        <button type="button" class="btn btn--niebezpieczny" id="u-reset">Wyzeruj postępy</button>
+        <button type="button" class="btn" id="u-eksport">${T('Eksportuj do pliku', 'Exportar a un archivo')}</button>
+        <label class="btn" for="u-import-plik">${T('Importuj z pliku', 'Importar desde un archivo')}</label><input type="file" id="u-import-plik" accept="application/json,.json" hidden>
+        <button type="button" class="btn btn--niebezpieczny" id="u-reset">${T('Wyzeruj postępy', 'Borrar el progreso')}</button>
       </div>
-      <div id="u-reset-potw" hidden class="ostrzezenie"><p><b>Na pewno?</b> Usuniesz wszystkie powtórki, wyniki egzaminów i serię dni. Tego nie da się cofnąć (chyba że masz eksport).</p>
-        <div class="akcje-poziom"><button type="button" class="btn btn--niebezpieczny" id="u-reset-tak">Tak, wyzeruj</button><button type="button" class="btn" id="u-reset-nie">Anuluj</button></div></div></details>
-    <p class="male srodek">Postęp zapisuje się tylko na tym urządzeniu. Skróty: spacja, 1–4, Enter, ← →, ? (pomoc).</p>
+      <div id="u-reset-potw" hidden class="ostrzezenie"><p>${T('<b>Na pewno?</b> Usuniesz wszystkie powtórki, wyniki egzaminów i serię dni. Tego nie da się cofnąć (chyba że masz eksport).', '<b>¿Seguro?</b> Se borrarán todos los repasos, resultados de exámenes y la racha. No se puede deshacer (salvo que tengas una copia).')}</p>
+        <div class="akcje-poziom"><button type="button" class="btn btn--niebezpieczny" id="u-reset-tak">${T('Tak, wyzeruj', 'Sí, borrar')}</button><button type="button" class="btn" id="u-reset-nie">${T('Anuluj', 'Cancelar')}</button></div></div></details>
+    <p class="male srodek">${T('Postęp zapisuje się tylko na tym urządzeniu. Skróty: spacja, 1–4, Enter, ← →, ? (pomoc).', 'El progreso se guarda solo en este dispositivo. Atajos: espacio, 1–4, Enter, ← →, ? (ayuda).')}</p>
   </div>`);
-  podlaczZakres($('#u-tempo', tresc), fTempo, (v, koniec) => { u.tempo = v; app.zapisz(); if (koniec) app.mowa.powiedz('Esta es la velocidad de lectura.'); });
+  podlaczZakres($('#u-tempo', tresc), fTempo, (v, koniec) => { u.tempo = v; app.zapisz(); if (koniec) app.mowa.powiedz(T('Esta es la velocidad de lectura.', 'Tak brzmi to tempo czytania.')); });
   podlaczZakres($('#u-cel', tresc), fCel, v => { u.cel = v; app.zapisz(); rysujNaglowek(); });
   tresc.addEventListener('change', e => {
     if (e.target.id === 'u-vosotros') { u.bezVosotros = e.target.checked; app.zapisz(); odswiezModuly(); }
     if (e.target.id === 'u-auto') { u.auto = e.target.checked; app.zapisz(); }
-    if (e.target.id === 'u-glos') { u.glos = e.target.value; app.zapisz(); app.mowa.odswiez(); app.mowa.powiedz('Hola, ¿qué tal? Vamos a practicar.'); }
+    if (e.target.id === 'u-glos') { u.glos = e.target.value; app.zapisz(); app.mowa.odswiez(); app.mowa.powiedz(T('Hola, ¿qué tal? Vamos a practicar.', 'Cześć! Poćwiczymy trochę polski?')); }
     if (e.target.id === 'u-import-plik' && e.target.files[0]) {
       e.target.files[0].text().then(t => {
         const nowy = importuj(t);
         Object.keys(stan).forEach(k => delete stan[k]); Object.assign(stan, nowy);
-        zapiszStan(stan); toast('Zaimportowano postępy.'); zamknijModal(); location.reload();
-      }).catch(err => toast('Nie udało się zaimportować: ' + err.message));
+        zapiszStan(stan); toast(T('Zaimportowano postępy.', 'Progreso importado.')); zamknijModal(); location.reload();
+      }).catch(err => toast(T('Nie udało się zaimportować: ', 'No se pudo importar: ') + err.message));
     }
   }, sygnal);
   tresc.addEventListener('click', e => {
     const t = e.target;
+    const jz = t.closest('[data-jezyk]');
+    if (jz) { if ((jz.dataset.jezyk === 'es') !== HISP) { zapiszStan(stan); ustawJezyk(jz.dataset.jezyk); } return; }
     const w = t.closest('[data-wariant]');
     if (w) {
       u.wariant = w.dataset.wariant;
@@ -222,21 +229,21 @@ function modalUstawien() {
       toast(u.wariant === 'latam' ? 'Wariant: Ameryka Łacińska (vosotros ukryte).' : u.wariant === 'es' ? 'Wariant: Hiszpania.' : 'Wariant neutralny.');
       return;
     }
-    if (t.closest('#u-test')) { app.mowa.powiedz('Hola, me llamo Mónica. ¿Practicamos un poco de español?'); return; }
+    if (t.closest('#u-test')) { app.mowa.powiedz(HISP ? 'Dzień dobry! Ćwiczymy razem język polski?' : 'Hola, me llamo Mónica. ¿Practicamos un poco de español?'); return; }
     const sk = t.closest('[data-skala]'); if (sk) { u.skala = +sk.dataset.skala; app.zapisz(); $$('[data-skala]', tresc).forEach(b => b.setAttribute('aria-pressed', b === sk)); odswiezModuly(); return; }
     const st = t.closest('button[data-styl]'); if (st) { u.styl = window.STYLE.zastosuj(st.dataset.styl).id; app.zapisz(); $$('button[data-styl]', tresc).forEach(b => b.setAttribute('aria-pressed', b === st)); return; }
     if (t.closest('#u-eksport')) {
       const blob = new Blob([eksportuj(stan)], { type: 'application/json' });
-      const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `espanol-postepy-${dzien()}.json`;
+      const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = HISP ? `polaco-progreso-${dzien()}.json` : `espanol-postepy-${dzien()}.json`;
       document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500);
-      toast('Zapisano plik z postępami.'); return;
+      toast(HISP ? 'Archivo de progreso guardado.' : 'Zapisano plik z postępami.'); return;
     }
     if (t.closest('#u-reset')) { $('#u-reset-potw', tresc).hidden = false; return; }
     if (t.closest('#u-reset-nie')) { $('#u-reset-potw', tresc).hidden = true; return; }
     if (t.closest('#u-reset-tak')) {
       const ust = { ...stan.ust }, nowy = nowyStanAplikacji();
       Object.keys(stan).forEach(k => delete stan[k]); Object.assign(stan, nowy, { ust });
-      zapiszStan(stan); zamknijModal(); toast('Postępy wyzerowane.'); setTimeout(() => location.reload(), 600);
+      zapiszStan(stan); zamknijModal(); toast(HISP ? 'Progreso borrado.' : 'Postępy wyzerowane.'); setTimeout(() => location.reload(), 600);
     }
   }, sygnal);
 }
@@ -245,14 +252,14 @@ function odswiezModuly() { zainicjowane.clear(); zainicjowane.add(stan.ui.zaklad
 // --- zdarzenia globalne ---
 document.addEventListener('click', e => {
   const t = e.target;
-  const mow = t.closest('[data-mow]'); if (mow) { if (!app.mowa.powiedz(mow.dataset.mow)) toast('Brak hiszpańskiego głosu w tej przeglądarce (szczegóły w Ustawieniach).'); return; }
+  const mow = t.closest('[data-mow]'); if (mow) { if (!app.mowa.powiedz(mow.dataset.mow)) toast(T('Brak hiszpańskiego głosu w tej przeglądarce (szczegóły w Ustawieniach).', 'No hay voz en polaco en este navegador (más información en Ajustes).')); return; }
   const ul = t.closest('[data-ulub]');
   if (ul) {
     const id = ul.dataset.ulub;
     if (stan.ulub[id]) delete stan.ulub[id]; else stan.ulub[id] = 1;
     app.zapisz();
     $$(`[data-ulub="${CSS.escape(id)}"]`).forEach(b => { b.classList.toggle('on', !!stan.ulub[id]); b.setAttribute('aria-pressed', !!stan.ulub[id]); });
-    toast(stan.ulub[id] ? 'Dodano do ulubionych ★' : 'Usunięto z ulubionych');
+    toast(stan.ulub[id] ? T('Dodano do ulubionych ★', 'Añadido a favoritos ★') : T('Usunięto z ulubionych', 'Quitado de favoritos'));
     return;
   }
   if (t.closest('[data-zamknij]')) return zamknijModal();
@@ -278,14 +285,32 @@ document.addEventListener('keydown', e => {
     pokazZakladke(ZAKLADKI[(i + ZAKLADKI.length) % ZAKLADKI.length]); e.preventDefault(); return;
   }
   if (e.key === '?') {
-    otworzModal('Skróty klawiszowe', `<ul class="skroty">
+    otworzModal(T('Skróty klawiszowe', 'Atajos de teclado'), T(`<ul class="skroty">
       <li><kbd>spacja</kbd> odkryj fiszkę / odsłuchaj wymowę</li><li><kbd>1</kbd>–<kbd>4</kbd> ocena karty albo wybór odpowiedzi</li>
       <li><kbd>Enter</kbd> zatwierdź / dalej / zacznij</li><li><kbd>←</kbd> <kbd>→</kbd> poprzednia / następna zakładka (w egzaminie ← to poprzednie pytanie)</li>
-      <li><kbd>Esc</kbd> zamknij okno</li></ul>`);
+      <li><kbd>Esc</kbd> zamknij okno</li></ul>`, `<ul class="skroty">
+      <li><kbd>espacio</kbd> girar la tarjeta / escuchar</li><li><kbd>1</kbd>–<kbd>4</kbd> evaluar la tarjeta o elegir respuesta</li>
+      <li><kbd>Enter</kbd> confirmar / siguiente / empezar</li><li><kbd>←</kbd> <kbd>→</kbd> sección anterior / siguiente (en el examen ← es la pregunta anterior)</li>
+      <li><kbd>Esc</kbd> cerrar la ventana</li></ul>`));
   }
 });
 
 // --- start ---
+if (HISP) {
+  // statyczne napisy z index.html po hiszpańsku
+  document.title = 'Polaco JKF';
+  const napisy = { slowka: 'Palabras', zwroty: 'Frases', czasowniki: 'Verbos', tlumacz: 'Traductor' };
+  $$('#zakladki [data-z]').forEach(b => { $('span', b).textContent = napisy[b.dataset.z]; });
+  const akcje = { opcje: 'Opciones', lista: 'Diccionario', egzamin: 'Examen' };
+  $$('#wyspa [data-wa]').forEach(b => { $('span', b).textContent = akcje[b.dataset.wa]; });
+  $('#ustawienia-btn span').textContent = 'Ajustes';
+  $('#zakladki').setAttribute('aria-label', 'Secciones');
+  $('#poziomy').setAttribute('aria-label', 'Nivel');
+  $('.pomin').textContent = 'Ir al contenido';
+  $('#modal-zamknij').setAttribute('aria-label', 'Cerrar');
+  $('#znaki').setAttribute('aria-label', 'Letras polacas');
+  [['#z-slowka', 'Palabras'], ['#z-egzamin', 'Examen'], ['#z-czasowniki', 'Verbos'], ['#z-zwroty', 'Frases'], ['#z-tlumacz', 'Traductor']].forEach(([s, n]) => $(s).setAttribute('aria-label', n));
+}
 zainicjujZnaki();
 zainicjujPolysk();
 rysujNaglowek(); rysujPoziomy(); rysujInfo();

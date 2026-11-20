@@ -3,16 +3,17 @@
 // egzamin, ustawienia). Przełącznik trybu jest „lustrem” przełączników sekcji: wybór klika ich ukryty przycisk,
 // więc logika modułów się nie zmienia. Zwija się po stuknięciu obok, Esc albo po wybraniu akcji.
 import { $, esc } from './wspolne.js';
+import { t as tr } from '../jezyk.js';
 
 // skąd brać tryby każdej sekcji (przyciski w obszarze roboczym, ukryte stylem)
 const ZRODLA = {
-  slowka: { et: 'Tryb', sel: '#z-slowka .przelaczniki [data-tryb]' },
-  zwroty: { et: 'Widok', sel: '#z-widoki [data-widok]' },
-  czasowniki: { et: 'Widok', sel: '#c-widoki [data-cw]' },
-  tlumacz: { et: 'Kierunek', sel: '#t-kier [data-tk]' },
-  egzamin: { et: 'Zakres', sel: '#z-egzamin [data-ez]' },
+  slowka: { et: tr('Tryb', 'Modo'), sel: '#z-slowka .przelaczniki [data-tryb]' },
+  zwroty: { et: tr('Widok', 'Vista'), sel: '#z-widoki [data-widok]' },
+  czasowniki: { et: tr('Widok', 'Vista'), sel: '#c-widoki [data-cw]' },
+  tlumacz: { et: tr('Kierunek', 'Dirección'), sel: '#t-kier [data-tk]' },
+  egzamin: { et: tr('Zakres', 'Alcance'), sel: '#z-egzamin [data-ez]' },
 };
-const NAZWY = { slowka: 'Słówka', zwroty: 'Zwroty', czasowniki: 'Odmiana', tlumacz: 'Tłumacz', egzamin: 'Egzamin' };
+const NAZWY = { slowka: tr('Słówka', 'Palabras'), zwroty: tr('Zwroty', 'Frases'), czasowniki: tr('Odmiana', 'Verbos'), tlumacz: tr('Tłumacz', 'Traductor'), egzamin: tr('Egzamin', 'Examen') };
 
 /**
  * @param {{ sekcja: () => string, akcja: (k: string) => void, maAkcje: (k: string) => boolean }} o

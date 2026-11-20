@@ -5,8 +5,10 @@ import { CZYTANIE } from './dane/czytanie.js';
 import { czasyNaPoziomie, ZDANIA, PODMIOTY, BEZ_DRILLU } from './dane/czasowniki.js';
 import { CZASY, OSOBY, OSOBY_ROZKAZ, formy, regula } from './odmiana.js';
 import { tasuj, losowy, czysc } from './tekst.js';
+import { HISP, t as tr } from './jezyk.js';
+import { CZASY_PL, OSOBY_PL, formyPl, regulaPl, czasyNaPoziomiePl } from './odmiana-pl.js';
 
-export const TYPY = { slowo: 'Słownictwo', zwrot: 'Zwroty', czasownik: 'Czasowniki w zdaniu', gramatyka: 'Gramatyka', luka: 'Luka w zdaniu', czytanie: 'Rozumienie tekstu' };
+export const TYPY = HISP ? { slowo: 'Vocabulario', zwrot: 'Frases', czasownik: 'Conjugación' } : { slowo: 'Słownictwo', zwrot: 'Zwroty', czasownik: 'Czasowniki w zdaniu', gramatyka: 'Gramatyka', luka: 'Luka w zdaniu', czytanie: 'Rozumienie tekstu' };
 const bez = s => s.replace(/\*/g, '');
 const unikalne = (odp, kand, n = 3) => { const w = [], u = new Set([czysc(odp)]); for (const k of tasuj(kand)) { const c = czysc(k); if (!u.has(c)) { u.add(c); w.push(k); } if (w.length === n) break; } return w; };
 
@@ -17,8 +19,8 @@ function pSlowo(p, pula = SLOWKA.filter(w => w.p === p)) {
   const tem = pula.filter(x => x.t === w.t && x.id !== w.id);
   const inne = unikalne(odp, (tem.length >= 3 ? tem : pula).filter(x => x.id !== w.id).map(x => doPl ? x.pl : x.es));
   if (inne.length < 3) return null;
-  return { typ: 'slowo', p, tytul: doPl ? 'Co to znaczy?' : 'Jak to powiedzieć po hiszpańsku?', tekst: doPl ? w.es : w.pl, opcje: tasuj([odp, ...inne]), odp,
-    wyj: `${w.es} = ${w.pl}.${w.przyklad ? ' Przykład: ' + bez(w.przyklad.es) + ' – ' + bez(w.przyklad.pl) : ''}`, id: w.id, mow: w.es };
+  return { typ: 'slowo', p, tytul: doPl ? tr('Co to znaczy?', '¿Qué significa?') : tr('Jak to powiedzieć po hiszpańsku?', '¿Cómo se dice en polaco?'), tekst: doPl ? w.es : w.pl, opcje: tasuj([odp, ...inne]), odp,
+    wyj: `${w.es} = ${w.pl}.${w.przyklad ? tr(' Przykład: ', ' Ejemplo: ') + bez(w.przyklad.es) + ' – ' + bez(w.przyklad.pl) : ''}`, id: w.id, mow: w.es };
 }
 function pLuka(p, pula = SLOWKA.filter(w => w.p === p && w.przyklad)) {
   if (pula.length < 4) return null;
@@ -37,10 +39,28 @@ function pZwrot(p) {
   if (pula.length < 4) return null;
   const z = losowy(pula);
   const inne = unikalne(z.pl, pula.filter(x => x.id !== z.id).map(x => x.pl));
-  return { typ: 'zwrot', p, tytul: 'Co znaczy ten zwrot?', tekst: z.es, opcje: tasuj([z.pl, ...inne]), odp: z.pl,
+  return { typ: 'zwrot', p, tytul: tr('Co znaczy ten zwrot?', '¿Qué significa esta frase?'), tekst: z.es, opcje: tasuj([z.pl, ...inne]), odp: z.pl,
     wyj: `${z.es} – ${z.pl}.${z.kiedy ? ' Kiedy: ' + z.kiedy : ''}`, id: z.id, mow: z.es };
 }
+// tryb dla hiszpańskojęzycznych: forma polskiego czasownika (osoba + czas)
+function pCzasownikPl(p) {
+  const i = POZIOMY.indexOf(p);
+  const pula = CZAS.filter(v => POZIOMY.indexOf(v.p) <= i);
+  if (!pula.length) return null;
+  const v = losowy(pula), czasy = czasyNaPoziomiePl(p).filter(k => formyPl(v)[k]);
+  const czas = losowy(czasy), f = formyPl(v)[czas];
+  const os = [0, 1, 2, 3, 4, 5].filter(o => f[o]);
+  const o = losowy(os), odp = f[o];
+  const kand = [];
+  for (const k of czasy) formyPl(v)[k].forEach(x => { if (x) kand.push(x); });
+  const inne = unikalne(odp, kand);
+  if (inne.length < 3) return null;
+  const nazwa = CZASY_PL.find(c => c.k === czas).n;
+  return { typ: 'czasownik', p, tytul: `${v.inf} (${v.pl.split(',')[0]}) · ${nazwa}`, tekst: `${OSOBY_PL[o][0]} (${OSOBY_PL[o][1]}) ___`, opcje: tasuj([odp, ...inne]), odp,
+    wyj: `${OSOBY_PL[o][0]} ${odp}. ${regulaPl(v, czas)}`, id: v.id, mow: odp };
+}
 function pCzasownik(p, bezVosotros = false) {
+  if (HISP) return pCzasownikPl(p);
   const i = POZIOMY.indexOf(p);
   const pula = CZAS.filter(v => POZIOMY.indexOf(v.p) <= i && !BEZ_DRILLU.has(v.inf));
   const v = losowy(pula), czas = losowy(czasyNaPoziomie(p)), f = formy(v)[czas];
@@ -75,7 +95,7 @@ function pCzytanie(p, uzyte) {
 }
 
 const GEN = { slowo: pSlowo, luka: pLuka, zwrot: pZwrot, czasownik: pCzasownik, gramatyka: pGramatyka, czytanie: pCzytanie };
-const UDZIALY = [['slowo', 0.28], ['luka', 0.14], ['czasownik', 0.2], ['gramatyka', 0.2], ['zwrot', 0.08], ['czytanie', 0.1]];
+const UDZIALY = HISP ? [['slowo', 0.5], ['czasownik', 0.3], ['zwrot', 0.2]] : [['slowo', 0.28], ['luka', 0.14], ['czasownik', 0.2], ['gramatyka', 0.2], ['zwrot', 0.08], ['czytanie', 0.1]];
 
 function pytanieTypu(typ, p, uzyte, ust) {
   for (let proba = 0; proba < 12; proba++) {
@@ -92,7 +112,7 @@ export function utworzEgzamin(o, ust = {}) {
   const uzyte = new Set(), pyt = [];
   if (o.zakres === 'poziomujacy') {
     for (const p of POZIOMY) {
-      for (const typ of ['gramatyka', 'gramatyka', 'slowo', p === 'A1' || p === 'A2' ? 'luka' : 'czytanie']) {
+      for (const typ of HISP ? ['slowo', 'slowo', 'czasownik', 'zwrot'] : ['gramatyka', 'gramatyka', 'slowo', p === 'A1' || p === 'A2' ? 'luka' : 'czytanie']) {
         const q = pytanieTypu(typ, p, uzyte, ust) || pytanieTypu('slowo', p, uzyte, ust);
         if (q) pyt.push(q);
       }
@@ -102,7 +122,7 @@ export function utworzEgzamin(o, ust = {}) {
   if (o.zakres === 'temat') {
     const pula = SLOWKA.filter(w => w.t === o.temat);
     for (let i = 0; i < o.ile * 3 && pyt.length < o.ile; i++) {
-      const zLuka = Math.random() < 0.3;
+      const zLuka = !HISP && Math.random() < 0.3;
       const q = zLuka ? pLuka(o.p, pula.filter(w => w.przyklad)) : pSlowo(o.p, pula);
       if (q && !uzyte.has(q.tekst)) { uzyte.add(q.tekst); pyt.push(q); }
     }
@@ -121,7 +141,7 @@ export function utworzEgzamin(o, ust = {}) {
 
 // Szacowany poziom z testu poziomującego: najwyższy poziom, do którego każdy kolejny ma ≥ 60% poprawnych.
 export function szacujPoziom(pytania, odpowiedzi) {
-  let wynik = 'poniżej A1';
+  let wynik = tr('poniżej A1', 'por debajo de A1');
   for (const p of POZIOMY) {
     const idx = pytania.map((q, i) => [q, i]).filter(([q]) => q.p === p);
     if (!idx.length) continue;
@@ -132,9 +152,9 @@ export function szacujPoziom(pytania, odpowiedzi) {
 }
 
 export function ocenaSlowna(proc) {
-  if (proc >= 90) return 'Celujący';
-  if (proc >= 75) return 'Bardzo dobry';
-  if (proc >= 60) return 'Dobry';
-  if (proc >= 45) return 'Dostateczny';
-  return 'Do powtórki';
+  if (proc >= 90) return tr('Celujący', 'Sobresaliente');
+  if (proc >= 75) return tr('Bardzo dobry', 'Notable');
+  if (proc >= 60) return tr('Dobry', 'Bien');
+  if (proc >= 45) return tr('Dostateczny', 'Suficiente');
+  return tr('Do powtórki', 'Para repasar');
 }

@@ -709,3 +709,6 @@ input:focus-visible + .tgl { outline: 2px solid var(--zloto); outline-offset: 2p
   .oceny { position: sticky; bottom: calc(var(--pasek-dol) + 6px); }
 }
 @media (prefers-reduced-motion: reduce) { body::after { animation: none; } }
+.link { border: 0; background: none; padding: 0; color: var(--zloto); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+/* pasek liter nad dockiem (komputer i wąskie okno z myszką) */
+@media (min-width: 760px) { .znaki { bottom: calc(var(--pasek-dol) + 10px); } }

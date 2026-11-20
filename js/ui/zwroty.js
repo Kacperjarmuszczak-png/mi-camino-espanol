@@ -4,14 +4,16 @@ import { silnikKart } from './karty.js';
 import { utworzListe } from './lista.js';
 import { ZWROTY_LISTA, KATEGORIE_ZWROTOW, POZIOMY } from '../dane/index.js';
 import { tasuj } from '../tekst.js';
+import { t as tr, HISP } from '../jezyk.js';
 
-const WIDOKI = [['przeglad', 'Przegląd'], ['fiszki', 'Fiszki'], ['reakcja', 'Reakcja'], ['dialog', 'Dialog z luką']];
-const REJESTR = { form: 'formalny', nieform: 'nieformalny', neutr: 'neutralny' };
+// w trybie dla hiszpańskojęzycznych nie ma dialogów (są po hiszpańsku), więc zostają przegląd i fiszki
+const WIDOKI = HISP ? [['przeglad', 'Resumen'], ['fiszki', 'Tarjetas']] : [['przeglad', 'Przegląd'], ['fiszki', 'Fiszki'], ['reakcja', 'Reakcja'], ['dialog', 'Dialog z luką']];
+const REJESTR = HISP ? { form: 'formal', nieform: 'informal', neutr: 'neutro' } : { form: 'formalny', nieform: 'nieformalny', neutr: 'neutralny' };
 
 export function zakladkaZwroty(root, app) {
   const ui = app.stan.ui;
   root.innerHTML = `
-    <div class="seg seg--pelny" role="group" aria-label="Widok" id="z-widoki">${WIDOKI.map(([k, n]) => `<button type="button" data-widok="${k}">${n}</button>`).join('')}</div>
+    <div class="seg seg--pelny" role="group" aria-label="${tr('Widok', 'Vista')}" id="z-widoki">${WIDOKI.map(([k, n]) => `<button type="button" data-widok="${k}">${n}</button>`).join('')}</div>
     <div class="wiersz-narzedzi">${kapsulaOpcji('z-kat-kapsula', '')}</div>
     <div id="z-tresc"></div>
     <div id="z-karty"></div>
@@ -20,26 +22,26 @@ export function zakladkaZwroty(root, app) {
   const dostepneKat = () => KATEGORIE_ZWROTOW.filter(k => POZIOMY.indexOf(k.p) <= POZIOMY.indexOf(ui.poziom));
   const pula = () => ZWROTY_LISTA.filter(z => (ui.zKat ? z.t === ui.zKat : dostepneKat().some(k => k.t === z.t)));
   const zDialogiem = () => pula().filter(z => z.dialog.length);
-  const silnik = silnikKart(kartyEl, { app, rodzaj: 'zwroty', pula, pelnaPula: () => ZWROTY_LISTA, etykietaZakresu: () => ui.zKat || 'wszystkie sytuacje' });
+  const silnik = silnikKart(kartyEl, { app, rodzaj: 'zwroty', pula, pelnaPula: () => ZWROTY_LISTA, etykietaZakresu: () => ui.zKat || tr('wszystkie sytuacje', 'todas las situaciones') });
   const lista = utworzListe($('#z-lista', root), {
-    id: 'z-lista-szuflada', app, tytul: 'Lista zwrotów', pobierz: pula,
+    id: 'z-lista-szuflada', app, tytul: tr('Lista zwrotów', 'Lista de frases'), pobierz: pula,
     opis: z => esc(z.pl) + ` <i>· ${REJESTR[z.reg]}</i>`, mow: z => z.es,
     cwicz: z => { ui.zWidok = 'fiszki'; rysujWidoki(); silnik.cwiczJeden(z); root.scrollIntoView({ behavior: 'smooth', block: 'start' }); },
   });
-  const widok = () => ui.zWidok || 'przeglad';
+  const widok = () => (WIDOKI.some(w => w[0] === ui.zWidok) ? ui.zWidok : 'przeglad');
 
   function rysujKategorie() {
     const k = dostepneKat();
     if (ui.zKat && !k.some(x => x.t === ui.zKat)) ui.zKat = '';
-    $('#z-kat-kapsula span', root).innerHTML = `Sytuacja: <b>${esc(ui.zKat || 'wszystkie')}</b>`;
+    $('#z-kat-kapsula span', root).innerHTML = `${tr('Sytuacja', 'Situación')}: <b>${esc(ui.zKat || tr('wszystkie', 'todas'))}</b>`;
   }
   function otworzKategorie() {
     const k = dostepneKat();
-    const el = otworzModal('Sytuacja', `<div class="arkusz">
+    const el = otworzModal(tr('Sytuacja', 'Situación'), `<div class="arkusz">
       <div class="pigulki pigulki--pion">
-        <button type="button" class="pigulka" data-zk="" aria-pressed="${!ui.zKat}">Wszystkie dostępne (${ZWROTY_LISTA.filter(z => k.some(x => x.t === z.t)).length})</button>
+        <button type="button" class="pigulka" data-zk="" aria-pressed="${!ui.zKat}">${tr('Wszystkie dostępne', 'Todas las disponibles')} (${ZWROTY_LISTA.filter(z => k.some(x => x.t === z.t)).length})</button>
         ${k.map(x => `<button type="button" class="pigulka" data-zk="${esc(x.t)}" aria-pressed="${x.t === ui.zKat}">${esc(x.t)} · ${x.p} (${ZWROTY_LISTA.filter(z => z.t === x.t).length})</button>`).join('')}
-      </div><p class="male">Kategorie z wyższych poziomów pojawią się, gdy wybierzesz wyższy poziom.</p></div>`);
+      </div><p class="male">${tr('Kategorie z wyższych poziomów pojawią się, gdy wybierzesz wyższy poziom.', 'Las categorías de niveles superiores aparecen al elegir un nivel más alto.')}</p></div>`);
     el.addEventListener('click', e => {
       const b = e.target.closest('[data-zk]'); if (!b) return;
       ui.zKat = b.dataset.zk; app.zapisz(); zamknijModal(); rysujKategorie(); pokaz(); lista.rysuj();
@@ -60,9 +62,9 @@ export function zakladkaZwroty(root, app) {
         <p class="zwrot-pl">${esc(x.pl)}</p>
         <div class="chipy"><span class="chip chip--${x.reg}">${REJESTR[x.reg]}</span><span class="chip">${esc(x.t)}</span></div>
         ${x.kiedy ? `<p class="kiedy"><b>Kiedy:</b> ${esc(x.kiedy)}</p>` : ''}
-        ${x.dialog.length ? `<details class="dialog-zwin"><summary>Przykładowy dialog</summary><div class="dialog">${x.dialog.map(l => `<p class="kwestia kwestia--${l.kto === 'A' ? 'a' : 'b'}"><span>${l.kto}</span>${podswietl(l.tekst)}</p>`).join('')}${przyciskGlosu(x.dialog.map(l => bezGwiazdek(l.tekst)).join(' '), 'Posłuchaj dialogu')}</div></details>` : ''}
+        ${x.dialog.length ? `<details class="dialog-zwin"><summary>${tr('Przykładowy dialog', 'Diálogo de ejemplo')}</summary><div class="dialog">${x.dialog.map(l => `<p class="kwestia kwestia--${l.kto === 'A' ? 'a' : 'b'}"><span>${l.kto}</span>${podswietl(l.tekst)}</p>`).join('')}${przyciskGlosu(x.dialog.map(l => bezGwiazdek(l.tekst)).join(' '), 'Posłuchaj dialogu')}</div></details>` : ''}
       </article>`).join('')}</div>
-      ${z.length > 60 ? `<p class="male srodek">Pokazano 60 z ${z.length}. Wybierz sytuację, żeby zobaczyć resztę, albo użyj listy poniżej.</p>` : ''}`;
+      ${z.length > 60 ? `<p class="male srodek">${tr(`Pokazano 60 z ${z.length}. Wybierz sytuację, żeby zobaczyć resztę, albo użyj słowniczka.`, `Se muestran 60 de ${z.length}. Elige una situación para ver el resto o usa la lista.`)}</p>` : ''}`;
   }
 
   // --- ćwiczenia: reakcja i dialog z luką ---

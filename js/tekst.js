@@ -1,4 +1,5 @@
 // Tekst: normalizacja i sprawdzanie odpowiedzi (czyste funkcje, bez DOM – testowane w tests/).
+import { HISP } from './jezyk.js';
 
 export const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
@@ -81,6 +82,15 @@ export function sprawdz(wpis, dobre, opcje = {}) {
 
 // Opis wyniku dla użytkownika (po polsku)
 export function komunikat(r, poprawna) {
+  if (HISP) {
+    switch (r.wynik) {
+      case 'dobrze': return `Dobrze! ${poprawna}`;
+      case 'akcent': return `Casi: falta un signo diacrítico (ą, ć, ę, ł, ń, ó, ś, ź, ż). Correcto: ${poprawna}`;
+      case 'rodzajnik': return `Bien. Correcto: ${poprawna}`;
+      case 'literowka': return `Casi: una pequeña errata. Correcto: ${poprawna}`;
+      default: return `Correcto: ${poprawna}`;
+    }
+  }
   switch (r.wynik) {
     case 'dobrze': return `¡Correcto! ${poprawna}`;
     case 'akcent': return `Prawie: brakuje akcentu lub tyldy. Poprawnie: ${poprawna}`;

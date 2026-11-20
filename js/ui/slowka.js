@@ -3,6 +3,7 @@ import { $, esc } from './wspolne.js';
 import { silnikKart } from './karty.js';
 import { utworzListe } from './lista.js';
 import { SLOWKA, tematy, wWariancie } from '../dane/index.js';
+import { t as tr } from '../jezyk.js';
 
 export function zakladkaSlowka(root, app) {
   const ui = app.stan.ui;
@@ -14,11 +15,11 @@ export function zakladkaSlowka(root, app) {
   const opcjeTematu = () => {
     const t = tematy(SLOWKA, ui.poziom);
     if (ui.temat && !t.includes(ui.temat)) ui.temat = '';
-    return `<p class="etykieta">Temat</p><select class="pole" id="s-temat" aria-label="Temat słówek"><option value="">Wszystkie tematy (${pulaPoziomu().length})</option>${t.map(x => `<option value="${esc(x)}"${x === ui.temat ? ' selected' : ''}>${esc(x)} (${pulaPoziomu().filter(w => w.t === x).length})</option>`).join('')}</select>`;
+    return `<p class="etykieta">${tr('Temat', 'Tema')}</p><select class="pole" id="s-temat" aria-label="${tr('Temat słówek', 'Tema')}"><option value="">${tr('Wszystkie tematy', 'Todos los temas')} (${pulaPoziomu().length})</option>${t.map(x => `<option value="${esc(x)}"${x === ui.temat ? ' selected' : ''}>${esc(x)} (${pulaPoziomu().filter(w => w.t === x).length})</option>`).join('')}</select>`;
   };
   const silnik = silnikKart($('#s-karty', root), {
     app, rodzaj: 'slowka', pula, pelnaPula: pulaPoziomu,
-    etykietaZakresu: () => ui.temat || 'wszystkie tematy',
+    etykietaZakresu: () => ui.temat || tr('wszystkie tematy', 'todos los temas'),
     opcjeHtml: opcjeTematu,
     podlaczOpcje: (el, sygnal, poZmianie) => el.addEventListener('change', e => {
       if (e.target.id !== 's-temat') return;
@@ -26,7 +27,7 @@ export function zakladkaSlowka(root, app) {
     }, sygnal),
   });
   const lista = utworzListe($('#s-lista', root), {
-    id: 's-lista-szuflada', app, tytul: 'Lista słów', pobierz: pula,
+    id: 's-lista-szuflada', app, tytul: tr('Lista słów', 'Lista de palabras'), pobierz: pula,
     opis: w => esc(w.pl) + (w.latam ? ` <i>· LATAM: ${esc(w.latam.es)}</i>` : ''),
     mow: w => wWariancie(w, app.stan.ust.wariant),
     cwicz: w => { silnik.cwiczJeden(w); root.scrollIntoView({ behavior: 'smooth', block: 'start' }); },

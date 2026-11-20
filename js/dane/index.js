@@ -11,6 +11,9 @@ import { ZWROTY } from './zwroty.js';
 import { ZWROTY_DODATKOWE } from './zwroty-dodatkowe.js';
 import { poziomCzasownika } from './czasowniki.js';
 import { CZASOWNIKI, grupa } from '../odmiana.js';
+import { HISP } from '../jezyk.js';
+import { TEMATY_ES, KATEGORIE_ES, OPIS_POZIOMU_ES } from './tematy-es.js';
+import { CZASOWNIKI_PL } from '../odmiana-pl.js';
 
 export const POZIOMY = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
 export const OPIS_POZIOMU = {
@@ -128,3 +131,46 @@ export const odpowiedziEs = w => {
   if (w.latam) z.push(...w.latam.es.split(' / '));
   return z;
 };
+
+// --- tryb dla hiszpańskojęzycznych: polski jest językiem nauki ---
+// Pole „es” elementu zawsze zawiera tekst w języku, którego się uczymy (tu: po polsku), a „pl” – tłumaczenie
+// w języku użytkownika (tu: po hiszpańsku). Dzięki temu silnik kart, listy i egzamin działają bez zmian.
+const zamien = (tablica, nowe) => { tablica.splice(0, tablica.length, ...nowe); };
+if (HISP) {
+  Object.assign(OPIS_POZIOMU, OPIS_POZIOMU_ES);
+  const slowa = new Map();
+  // „rozmiar, rozmiar (ubrania)” → „rozmiar (ubrania)”: bez powtórzeń tego samego słowa
+  const bezPowtorzen = pl => {
+    const czesci = [];
+    for (const c of pl.split(/, (?![^(]*\))/).map(x => x.trim()).filter(Boolean)) {
+      const baza = c.replace(/\s*\([^)]*\)/g, '').trim();
+      const i = czesci.findIndex(x => x.replace(/\s*\([^)]*\)/g, '').trim() === baza);
+      if (i < 0) czesci.push(c); else if (c.length > czesci[i].length) czesci[i] = c;
+    }
+    return czesci.join(', ');
+  };
+  for (const w of SLOWKA) {
+    const k = bezPowtorzen(w.pl.trim());
+    const g = slowa.get(k);
+    if (g) {
+      if (!g.pl.split(' / ').includes(w.es)) g.pl += ' / ' + w.es;
+      if (!g.przyklad && w.przyklad) g.przyklad = { es: w.przyklad.pl, pl: w.przyklad.es };
+      continue;
+    }
+    slowa.set(k, { id: 'p:' + k, typ: 'slowo', es: k, pl: w.es, p: w.p, t: TEMATY_ES[w.t] || w.t, rodzaj: null, mnoga: null,
+      przyklad: w.przyklad ? { es: w.przyklad.pl, pl: w.przyklad.es } : null, latam: null });
+  }
+  zamien(SLOWKA, [...slowa.values()]);
+  zamien(CZAS, CZASOWNIKI_PL.map(v => ({ ...v, id: 'pv:' + v.inf, typ: 'czasownik', es: v.inf, pl: v.es, grupa: v.asp })));
+  const zw = new Map();
+  for (const z of ZWROTY_LISTA) {
+    const k = z.pl.trim();
+    if (zw.has(k)) continue;
+    zw.set(k, { id: 'pz:' + k, typ: 'zwrot', es: k, pl: z.es, reg: z.reg, kiedy: '', dialog: [], luka: '', t: KATEGORIE_ES[z.t] || z.t, p: z.p });
+  }
+  zamien(ZWROTY_LISTA, [...zw.values()]);
+  zamien(KATEGORIE_ZWROTOW, KATEGORIE_ZWROTOW.map(k => ({ t: KATEGORIE_ES[k.t] || k.t, p: k.p })));
+  zamien(WSZYSTKIE, [...SLOWKA, ...CZAS, ...ZWROTY_LISTA]);
+  POD_ID.clear();
+  for (const x of WSZYSTKIE) POD_ID.set(x.id, x);
+}

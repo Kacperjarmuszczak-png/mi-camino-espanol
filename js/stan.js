@@ -1,7 +1,9 @@
 // Stan aplikacji w localStorage: wersja schematu, migracja, eksport/import, aktywność dzienna i seria dni.
+import { HISP } from './jezyk.js';
 export const WERSJA = 2;
-export const KLUCZ = 'es-nauka-v2';
-const STARY_KLUCZ = 'es-nauka';
+// osobne profile: Polak uczy się hiszpańskiego / osoba hiszpańskojęzyczna uczy się polskiego
+export const KLUCZ = HISP ? 'pl-nauka-v1' : 'es-nauka-v2';
+const STARY_KLUCZ = HISP ? null : 'es-nauka';
 
 export const domyslneUstawienia = () => ({
   wariant: 'es',          // 'es' Hiszpania | 'latam' Ameryka Łacińska | 'neutral'
@@ -52,7 +54,7 @@ export function migruj(dane, stareV1 = null, teraz = Date.now()) {
 export function wczytaj(magazyn = globalThis.localStorage) {
   try {
     const nowe = JSON.parse(magazyn.getItem(KLUCZ) || 'null');
-    const stare = nowe ? null : JSON.parse(magazyn.getItem(STARY_KLUCZ) || 'null');
+    const stare = nowe || !STARY_KLUCZ ? null : JSON.parse(magazyn.getItem(STARY_KLUCZ) || 'null');
     return migruj(nowe, stare);
   } catch (e) { return nowyStanAplikacji(); }
 }
@@ -84,10 +86,10 @@ export function seria(stan, teraz = Date.now()) {
 }
 
 // --- eksport / import ---
-export const eksportuj = stan => JSON.stringify({ aplikacja: 'espanol-jkf', ...stan }, null, 1);
+export const eksportuj = stan => JSON.stringify({ aplikacja: HISP ? 'polaco-jkf' : 'espanol-jkf', ...stan }, null, 1);
 
 export function importuj(tekst) {
   const d = JSON.parse(tekst);
-  if (!d || typeof d !== 'object' || !d.srs || typeof d.srs !== 'object') throw new Error('To nie jest plik z postępami tej aplikacji.');
+  if (!d || typeof d !== 'object' || !d.srs || typeof d.srs !== 'object') throw new Error(HISP ? 'Este archivo no contiene progreso de esta aplicación.' : 'To nie jest plik z postępami tej aplikacji.');
   return migruj({ ...d, v: Math.max(2, d.v || 2) });
 }

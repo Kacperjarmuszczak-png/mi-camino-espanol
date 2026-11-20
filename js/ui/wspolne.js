@@ -1,5 +1,6 @@
 // Wspólne elementy interfejsu: skróty DOM, modal, komunikat (toast), pasek znaków hiszpańskich, przyciski.
 import { esc } from '../tekst.js';
+import { t as tr, HISP } from '../jezyk.js';
 
 export const $ = (s, r = document) => r.querySelector(s);
 export const $$ = (s, r = document) => [...r.querySelectorAll(s)];
@@ -15,10 +16,10 @@ export const IKONY = {
   podpowiedz: '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a7 7 0 0 0-4 12.7V17a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-2.3A7 7 0 0 0 12 2zm2 11.6V16h-4v-2.4a5 5 0 1 1 4 0zM9 20h6v2H9z"/></svg>',
 };
 
-export const przyciskGlosu = (tekst, etykieta = 'Posłuchaj') =>
+export const przyciskGlosu = (tekst, etykieta = tr('Posłuchaj', 'Escuchar')) =>
   `<button type="button" class="glos" data-mow="${esc(tekst)}" aria-label="${esc(etykieta)}: ${esc(tekst)}">${IKONY.glos}</button>`;
 export const przyciskGwiazdki = (id, aktywna) =>
-  `<button type="button" class="gwiazdka${aktywna ? ' on' : ''}" data-ulub="${esc(id)}" aria-pressed="${!!aktywna}" aria-label="${aktywna ? 'Usuń z ulubionych' : 'Dodaj do ulubionych'}">${IKONY.gwiazda}</button>`;
+  `<button type="button" class="gwiazdka${aktywna ? ' on' : ''}" data-ulub="${esc(id)}" aria-pressed="${!!aktywna}" aria-label="${aktywna ? tr('Usuń z ulubionych', 'Quitar de favoritos') : tr('Dodaj do ulubionych', 'Añadir a favoritos')}">${IKONY.gwiazda}</button>`;
 
 // Podświetla *słowo* w zdaniu przykładowym
 export const podswietl = s => esc(s).replace(/\*([^*]+)\*/g, '<mark>$1</mark>');
@@ -124,11 +125,11 @@ export function podlaczZakres(input, format, naZmiane) {
 export const modalOtwarty = () => !$('#modal').hidden;
 
 // --- pływający pasek znaków hiszpańskich (nad klawiaturą telefonu) ---
-const ZNAKI = ['á', 'é', 'í', 'ó', 'ú', 'ü', 'ñ', '¿', '¡'];
+const ZNAKI = HISP ? ['ą', 'ć', 'ę', 'ł', 'ń', 'ó', 'ś', 'ź', 'ż'] : ['á', 'é', 'í', 'ó', 'ú', 'ü', 'ñ', '¿', '¡'];
 export function zainicjujZnaki() {
   const pasek = $('#znaki');
-  pasek.innerHTML = ZNAKI.map(z => `<button type="button" tabindex="-1" data-znak="${z}" aria-label="Wstaw ${z}">${z}</button>`).join('')
-    + '<button type="button" tabindex="-1" data-znak="⇧" class="wielkie" aria-label="Wielkie litery" aria-pressed="false">⇧</button>';
+  pasek.innerHTML = ZNAKI.map(z => `<button type="button" tabindex="-1" data-znak="${z}" aria-label="${tr('Wstaw', 'Insertar')} ${z}">${z}</button>`).join('')
+    + `<button type="button" tabindex="-1" data-znak="⇧" class="wielkie" aria-label="${tr('Wielkie litery', 'Mayúsculas')}" aria-pressed="false">⇧</button>`;
   let pole = null, wielkie = false;
   const ustawPozycje = () => {
     const vv = window.visualViewport;
