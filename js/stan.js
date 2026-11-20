@@ -23,6 +23,7 @@ export const nowyStanAplikacji = () => ({
   ulub: {},               // id → 1 (oznaczone gwiazdką)
   egz: {},                // poziom → najlepszy wynik %
   dni: {},                // 'RRRR-MM-DD' → liczba przećwiczonych pozycji
+  hist: {},               // 'RRRR-MM-DD' → liczba opanowanych pozycji (wykres postępu)
   ust: domyslneUstawienia(),
   ui: { poziom: 'A1', zakladka: 'slowka', tryb: 'fiszka', kier: 'es', temat: '' },
 });

@@ -3,7 +3,7 @@ import { wczytaj, zapisz as zapiszStan, dodajAktywnosc, seria, dzien, eksportuj,
 import { ocen, postep, status, doPowtorki } from './srs.js';
 import { utworzMowe } from './mowa.js';
 import { POZIOMY, OPIS_POZIOMU, SLOWKA, CZAS, ZWROTY_LISTA, POD_ID, tematy } from './dane/index.js';
-import { $, $$, esc, IKONY, otworzModal, zamknijModal, modalOtwarty, toast, zainicjujZnaki, zainicjujPolysk, zainicjujArkusz, arkuszZElementem, suwakZakres, podlaczZakres } from './ui/wspolne.js';
+import { $, $$, esc, IKONY, otworzModal, zamknijModal, modalOtwarty, toast, przyciskGlosu, sygnalModalu, zainicjujZnaki, zainicjujPolysk, zainicjujArkusz, arkuszZElementem, suwakZakres, podlaczZakres } from './ui/wspolne.js';
 import { zakladkaSlowka } from './ui/slowka.js';
 import { zakladkaEgzamin } from './ui/egzamin.js';
 import { zakladkaCzasowniki } from './ui/czasowniki.js';
@@ -14,6 +14,7 @@ import { zainicjujWyspe } from './ui/wyspa.js';
 import { zakladkaCzasownikiPl } from './ui/czasowniki-pl.js';
 import { zakladkaTlumaczPl } from './ui/tlumacz-pl.js';
 import { HISP, t as T, ustawJezyk } from './jezyk.js';
+import { kalendarz, najdluzszaSeria, liczOpanowane, seriaOpanowanych, najczesciejMylone } from './statystyki.js';
 import { plikIcs, pobierzIcs, plakietkaDostepna, wlaczPlakietke, ustawPlakietke } from './przypomnienia.js';
 
 const stan = wczytaj();
@@ -29,6 +30,7 @@ const app = {
   zapisz() { clearTimeout(czasZapisu); czasZapisu = setTimeout(() => { if (!zapiszStan(stan)) toast(T('Nie udało się zapisać postępu (pamięć przeglądarki jest niedostępna).', 'No se pudo guardar el progreso (el almacenamiento del navegador no está disponible).')); }, 150); },
   ocen(id, ocena, { bezAktywnosci = false } = {}) {
     stan.srs[id] = ocen(stan.srs[id], ocena);
+    stan.hist[dzien()] = liczOpanowane(stan.srs);
     if (!bezAktywnosci) dodajAktywnosc(stan, 1);
     app.zapisz(); rysujNaglowek(); rysujPoziomy();
     return stan.srs[id];
@@ -99,15 +101,43 @@ function rysujNaglowek() {
   $('#wyspa-btn').setAttribute('aria-label', T(`Poziom ${stan.ui.poziom}, dziś ${ile} z ${cel}. Rozwiń, aby zobaczyć statystyki i opcje`, `Nivel ${stan.ui.poziom}, hoy ${ile} de ${cel}. Despliega para ver estadísticas y opciones`));
 }
 function modalDnia() {
-  const dni = [];
-  for (let i = 13; i >= 0; i--) { const t = Date.now() - i * 864e5; dni.push([dzien(t), stan.dni[dzien(t)] || 0, new Date(t)]); }
-  const max = Math.max(stan.ust.cel, ...dni.map(d => d[1]));
-  otworzModal(T('Twoja aktywność', 'Tu actividad'), `
-    <div class="liczby"><div><b>${stan.dni[dzien()] || 0}</b><span>${T('dziś', 'hoy')}</span></div><div><b>${seria(stan)}</b><span>${T('dni serii', 'días de racha')}</span></div><div><b>${Object.values(stan.dni).reduce((a, b) => a + b, 0)}</b><span>${T('łącznie', 'en total')}</span></div></div>
-    <div class="slupki slupki--dni">${dni.map(([k, n, d]) => `<div class="slupek${n >= stan.ust.cel ? ' cel' : ''}" title="${k}: ${n}"><span style="height:${Math.max(3, 100 * n / max)}%"></span><small>${T('ndwścpsn', 'dlmmjvs')[d.getDay()] || ''}${d.getDate()}</small></div>`).join('')}</div>
-    <p class="male">${T('Seria rośnie każdego dnia, w którym osiągniesz cel dzienny. Licznik obejmuje każdą ocenioną kartę, odpowiedź w drillu, ćwiczeniu i egzaminie.', 'La racha crece cada día que alcanzas tu meta diaria. Cuenta cada tarjeta evaluada y cada respuesta en la práctica y el examen.')}</p>
+  const cel = stan.ust.cel;
+  const kal = kalendarz(stan.dni, cel);
+  const miesiace = T(['sty', 'lut', 'mar', 'kwi', 'maj', 'cze', 'lip', 'sie', 'wrz', 'paź', 'lis', 'gru'], ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic']);
+  const etyk = kal.map((kol, i) => { const d = kol.find(Boolean); if (!d) return ''; const m = +d.k.slice(5, 7) - 1; const prev = i && kal[i - 1].find(Boolean); return !prev || +prev.k.slice(5, 7) - 1 !== m ? miesiace[m] : ''; });
+  const pkt = seriaOpanowanych(stan.hist, 30);
+  const maxN = Math.max(5, ...pkt.map(p => p.n));
+  const W = 300, H = 90;
+  const xy = pkt.map((p, i) => [Math.round(i * W / (pkt.length - 1)), Math.round(H - 6 - (H - 12) * p.n / maxN)]);
+  const linia = xy.map(([x, y], i) => `${i ? 'L' : 'M'}${x} ${y}`).join(' ');
+  const mylone = najczesciejMylone(stan.srs, 10, id => { const x = POD_ID.get(id); return x && (x.typ === 'slowo' || x.typ === 'zwrot'); }).map(m => ({ ...m, x: POD_ID.get(m.id) }));
+  const suma = Object.values(stan.dni).reduce((a, b) => a + b, 0), aktywne = Object.values(stan.dni).filter(n => n > 0).length;
+  const el = otworzModal(T('Statystyki', 'Estadísticas'), `
+    <div class="liczby liczby--4"><div><b>${stan.dni[dzien()] || 0}</b><span>${T('dziś', 'hoy')}</span></div><div><b>${seria(stan)}</b><span>${T('dni serii', 'días de racha')}</span></div>
+      <div><b>${najdluzszaSeria(stan.dni, cel)}</b><span>${T('najdłuższa seria', 'racha más larga')}</span></div><div><b>${liczOpanowane(stan.srs)}</b><span>${T('opanowane', 'dominadas')}</span></div></div>
+    <p class="etykieta">${T('Kalendarz aktywności', 'Calendario de actividad')}</p>
+    <div class="kalendarz" role="img" aria-label="${T(`Aktywność: ${aktywne} dni nauki, łącznie ${suma} odpowiedzi`, `Actividad: ${aktywne} días de práctica, ${suma} respuestas en total`)}">
+      <div class="kal-mies">${etyk.map(m => `<span>${m}</span>`).join('')}</div>
+      <div class="kal-siatka">${kal.map(kol => `<div class="kal-kol">${kol.map(d => d ? `<i class="kal-d p${d.poziom}" title="${d.k}: ${d.n}"></i>` : '<i class="kal-d pusty"></i>').join('')}</div>`).join('')}</div>
+      <div class="kal-legenda"><span>${T('mniej', 'menos')}</span>${[0, 1, 2, 3, 4].map(p => `<i class="kal-d p${p}"></i>`).join('')}<span>${T('więcej', 'más')}</span></div>
+    </div>
+    <p class="male">${T(`Odpowiedzi: ${suma} · dni nauki: ${aktywne}. Pełny kolor = cel dzienny osiągnięty.`, `Respuestas: ${suma} · días de práctica: ${aktywne}. Color intenso = meta diaria alcanzada.`)}</p>
+    <p class="etykieta">${T('Opanowane w ostatnich 30 dniach', 'Dominadas en los últimos 30 días')}</p>
+    <svg class="wykres" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" role="img" aria-label="${T('Wykres opanowanych pozycji', 'Gráfico de elementos dominados')}">
+      <path class="wykres-pole" d="${linia} L${W} ${H} L0 ${H} Z"/><path class="wykres-linia" d="${linia}"/>
+      <circle cx="${xy[xy.length - 1][0] - 3}" cy="${xy[xy.length - 1][1]}" r="3.5" class="wykres-pkt"/></svg>
+    <div class="wykres-os"><span>${pkt[0].k.slice(5).split('-').reverse().join('.')}</span><span>${T('dziś', 'hoy')}: ${pkt[pkt.length - 1].n}</span></div>
+    <p class="etykieta">${T('Najczęściej mylone', 'Las que más fallas')}</p>
+    ${mylone.length ? `<ul class="lista lista--zwarta">${mylone.map(m => `<li><div class="lista-tekst"><b>${esc(m.x.es)}</b><span>${esc(m.x.pl)}</span></div><span class="znacznik znacznik--nauka">${m.zle}× ${T('błąd', 'error')}</span>${przyciskGlosu(m.x.es)}</li>`).join('')}</ul>
+      <button type="button" class="btn btn--akcent btn--szeroki" data-cwicz-mylone>${T('Ćwicz te słowa', 'Practicar estas palabras')}</button>` : `<p class="male">${T('Jeszcze nic – błędy pojawią się tutaj, gdy coś Ci nie wyjdzie.', 'Todavía nada: aquí aparecerán tus errores.')}</p>`}
     <p class="etykieta">${T('Cel dzienny', 'Meta diaria')}</p>
     <div class="seg" role="group" aria-label="${T('Cel dzienny', 'Meta diaria')}">${[10, 20, 30, 50].map(n => `<button type="button" data-cel="${n}" aria-pressed="${stan.ust.cel === n}">${n}</button>`).join('')}</div>`);
+  el.addEventListener('click', e => {
+    if (!e.target.closest('[data-cwicz-mylone]')) return;
+    zamknijModal();
+    pokazZakladke('slowka', { przewin: true });
+    moduly.slowka.cwiczListe(mylone.map(m => m.x));
+  }, { signal: sygnalModalu() });
 }
 
 // --- zakładki z przesuwaną szklaną kapsułą ---
@@ -341,6 +371,7 @@ if (HISP) {
 }
 zainicjujZnaki();
 zainicjujPolysk();
+stan.hist[dzien()] = liczOpanowane(stan.srs);
 rysujNaglowek(); rysujPoziomy(); rysujInfo();
 pokazZakladke(stan.ui.zakladka);
 app.mowa.naZmiane(() => {});

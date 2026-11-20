@@ -36,5 +36,6 @@ export function zakladkaSlowka(root, app) {
     poziom() { if (ui.temat && !tematy(SLOWKA, ui.poziom).includes(ui.temat)) ui.temat = ''; silnik.odswiezOpcje(); silnik.start(); lista.rysuj(); },
     odswiezListe: () => lista.rysuj(),
     klawisz: e => silnik.klawisz(e),
+    cwiczListe: lista => { silnik.start(lista); },
   };
 }

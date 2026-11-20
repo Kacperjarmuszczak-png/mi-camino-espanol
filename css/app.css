@@ -751,3 +751,24 @@ html, body { overscroll-behavior-y: none; }
 .mikrofon svg { width: 38px; height: 38px; }
 .mikrofon.slucha { animation: puls 1.2s var(--ios) infinite; background: radial-gradient(120% 90% at 30% 0%, rgba(255,255,255,.45), transparent 60%), var(--zle); }
 @keyframes puls { 0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--zle) 60%, transparent); } 100% { box-shadow: 0 0 0 26px transparent; } }
+/* statystyki: kalendarz aktywności i wykres */
+.liczby--4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+@media (min-width: 480px) { .liczby--4 { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.kalendarz { display: grid; gap: 4px; padding: 12px; border-radius: 18px; background: var(--pole); border: 1px solid var(--linia); overflow-x: auto; }
+.kal-mies, .kal-siatka { display: grid; grid-template-columns: repeat(18, minmax(0, 1fr)); gap: 3px; }
+.kal-mies span { font-size: .62rem; color: var(--szary); white-space: nowrap; overflow: visible; }
+.kal-kol { display: grid; grid-template-rows: repeat(7, auto); gap: 3px; }
+.kal-d { display: block; aspect-ratio: 1; border-radius: 4px; background: var(--linia); min-width: 10px; }
+.kal-d.pusty { background: transparent; }
+.kal-d.p1 { background: color-mix(in srgb, var(--zloto) 30%, transparent); }
+.kal-d.p2 { background: color-mix(in srgb, var(--zloto) 55%, transparent); }
+.kal-d.p3 { background: var(--zloto); }
+.kal-d.p4 { background: color-mix(in srgb, var(--zloto) 75%, white); box-shadow: 0 0 6px color-mix(in srgb, var(--zloto) 60%, transparent); }
+.kal-legenda { display: flex; align-items: center; justify-content: flex-end; gap: 3px; font-size: .62rem; color: var(--szary); margin-top: 4px; }
+.kal-legenda .kal-d { width: 10px; min-width: 10px; }
+.kal-legenda span { margin: 0 4px; }
+.wykres { width: 100%; height: 110px; display: block; padding: 6px 0; border-radius: 18px; background: var(--pole); border: 1px solid var(--linia); overflow: visible; }
+.wykres-linia { fill: none; stroke: var(--zloto); stroke-width: 2.4; stroke-linejoin: round; stroke-linecap: round; vector-effect: non-scaling-stroke; }
+.wykres-pole { fill: color-mix(in srgb, var(--zloto) 16%, transparent); }
+.wykres-pkt { fill: var(--zloto); }
+.wykres-os { display: flex; justify-content: space-between; font-size: .72rem; color: var(--szary); margin-top: -6px; }
