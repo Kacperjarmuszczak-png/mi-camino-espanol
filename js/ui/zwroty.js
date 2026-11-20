@@ -5,9 +5,10 @@ import { utworzListe } from './lista.js';
 import { ZWROTY_LISTA, KATEGORIE_ZWROTOW, POZIOMY } from '../dane/index.js';
 import { tasuj } from '../tekst.js';
 import { t as tr, HISP } from '../jezyk.js';
+import { widokCzytania } from './czytanie.js';
 
 // w trybie dla hiszpańskojęzycznych nie ma dialogów (są po hiszpańsku), więc zostają przegląd i fiszki
-const WIDOKI = HISP ? [['przeglad', 'Resumen'], ['fiszki', 'Tarjetas']] : [['przeglad', 'Przegląd'], ['fiszki', 'Fiszki'], ['reakcja', 'Reakcja'], ['dialog', 'Dialog z luką']];
+const WIDOKI = HISP ? [['przeglad', 'Resumen'], ['fiszki', 'Tarjetas'], ['czytanie', 'Lectura']] : [['przeglad', 'Przegląd'], ['fiszki', 'Fiszki'], ['reakcja', 'Reakcja'], ['dialog', 'Luka'], ['czytanie', 'Czytanie']];
 const REJESTR = HISP ? { form: 'formal', nieform: 'informal', neutr: 'neutro' } : { form: 'formalny', nieform: 'nieformalny', neutr: 'neutralny' };
 
 export function zakladkaZwroty(root, app) {
@@ -19,6 +20,7 @@ export function zakladkaZwroty(root, app) {
     <div id="z-karty"></div>
     <div id="z-lista"></div>`;
   const tresc = $('#z-tresc', root), kartyEl = $('#z-karty', root);
+  const czytanie = widokCzytania(tresc, app);
   const dostepneKat = () => KATEGORIE_ZWROTOW.filter(k => POZIOMY.indexOf(k.p) <= POZIOMY.indexOf(ui.poziom));
   const pula = () => ZWROTY_LISTA.filter(z => (ui.zKat ? z.t === ui.zKat : dostepneKat().some(k => k.t === z.t)));
   const zDialogiem = () => pula().filter(z => z.dialog.length);
@@ -117,6 +119,7 @@ export function zakladkaZwroty(root, app) {
     const w = widok();
     if (w === 'przeglad') przeglad();
     else if (w === 'fiszki') silnik.start();
+    else if (w === 'czytanie') czytanie.pokaz();
     else { C.nr = 0; C.dobrze = 0; C.bledy = []; nowePytanie(); }
   }
 
@@ -134,6 +137,7 @@ export function zakladkaZwroty(root, app) {
     odswiezListe: () => lista.rysuj(),
     klawisz(e) {
       if (widok() === 'fiszki') return silnik.klawisz(e);
+      if (widok() === 'czytanie') return czytanie.klawisz(e);
       if (widok() === 'reakcja' || widok() === 'dialog') {
         const n = parseInt(e.key, 10);
         if (n >= 1 && n <= 4 && C.pyt && !C.pyt.odp) { const b = tresc.querySelectorAll('[data-z]')[n - 1]; if (b) odpowiedz(b.dataset.z); return true; }

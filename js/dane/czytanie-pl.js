@@ -1,0 +1,21 @@
+// Teksty po polsku dla osób hiszpańskojęzycznych: poziom, tekst, pytania [pregunta (ES), [correcta, ...incorrectas], explicación].
+export const CZYTANIE_PL = [
+  { p: 'A1', tekst: 'Mam na imię Ana i jestem z Madrytu. Teraz mieszkam w Krakowie. Mieszkam w małym mieszkaniu blisko centrum. Rano piję kawę, a potem idę do pracy. Pracuję w biurze.',
+    q: [['¿Dónde vive Ana ahora?', ['En Cracovia', 'En Madrid', 'En Varsovia', 'En el campo'], '«Teraz mieszkam w Krakowie»: ahora vivo en Cracovia (w + locativo: Kraków → w Krakowie).'],
+        ['¿Qué hace Ana por la mañana?', ['Bebe café y va al trabajo', 'Va al gimnasio', 'Duerme hasta tarde', 'Desayuna en casa de sus padres'], '«Rano piję kawę, a potem idę do pracy».']] },
+  { p: 'A1', tekst: 'To jest moja rodzina. Mój tata ma na imię Piotr, a moja mama Ewa. Mam brata i siostrę. Mój brat lubi piłkę nożną, a moja siostra lubi czytać książki. W niedzielę jemy razem obiad.',
+    q: [['¿Qué le gusta al hermano?', ['El fútbol', 'Leer libros', 'Cocinar', 'La música'], '«Mój brat lubi piłkę nożną».'],
+        ['¿Cuándo comen juntos?', ['El domingo', 'El sábado', 'Todos los días', 'El lunes'], '«W niedzielę jemy razem obiad»: w niedzielę = el domingo.']] },
+  { p: 'A2', tekst: 'W zeszły weekend pojechałam z przyjaciółmi nad morze. Pogoda była piękna, więc cały dzień leżeliśmy na plaży. Wieczorem zjedliśmy rybę w małej restauracji. Wróciliśmy do domu w niedzielę wieczorem.',
+    q: [['¿Cómo hizo el tiempo?', ['Hizo muy buen tiempo', 'Llovió todo el día', 'Hizo frío', 'Nevó'], '«Pogoda była piękna».'],
+        ['¿Qué comieron por la noche?', ['Pescado', 'Pizza', 'Carne', 'Sopa'], '«Zjedliśmy rybę»: ryba (pescado) → rybę en acusativo.']] },
+  { p: 'A2', tekst: 'Jutro mam ważny egzamin z polskiego. Dzisiaj nie idę do kina, bo muszę się uczyć. Będę powtarzać słówka i czasowniki. Po egzaminie spotkam się z koleżanką i pójdziemy na spacer.',
+    q: [['¿Por qué no va al cine hoy?', ['Porque tiene que estudiar', 'Porque está enfermo', 'Porque no tiene dinero', 'Porque llueve'], '«Muszę się uczyć»: tengo que estudiar.'],
+        ['¿Qué hará después del examen?', ['Quedará con una amiga para pasear', 'Irá a trabajar', 'Volverá a estudiar', 'Irá al cine solo'], '«Spotkam się z koleżanką i pójdziemy na spacer» (futuro perfectivo).']] },
+  { p: 'B1', tekst: 'Coraz więcej osób w Polsce pracuje zdalnie. Wielu pracowników mówi, że oszczędza czas, bo nie musi dojeżdżać do biura. Niektórzy jednak tęsknią za rozmowami z kolegami i czują się samotni.',
+    q: [['¿Qué ventaja mencionan muchos trabajadores?', ['Ahorran tiempo porque no se desplazan', 'Ganan más dinero', 'Trabajan menos horas', 'Tienen más vacaciones'], '«Oszczędza czas, bo nie musi dojeżdżać do biura».'],
+        ['¿Qué echan de menos algunos?', ['Las conversaciones con los compañeros', 'La comida de la oficina', 'El transporte público', 'Las reuniones largas'], '«Tęsknią za rozmowami z kolegami»: tęsknić za + instrumental.']] },
+  { p: 'B1', tekst: 'Gdybym miał więcej czasu, nauczyłbym się grać na gitarze. Zawsze chciałem grać w zespole z przyjaciółmi. Niestety, teraz pracuję od rana do wieczora i w weekendy jestem zbyt zmęczony.',
+    q: [['¿Qué aprendería si tuviera más tiempo?', ['A tocar la guitarra', 'Inglés', 'A cocinar', 'A conducir'], '«Nauczyłbym się grać na gitarze»: condicional (tryb przypuszczający).'],
+        ['¿Por qué no puede ahora?', ['Trabaja todo el día y está cansado', 'No tiene guitarra', 'No le gusta la música', 'Vive lejos'], '«Pracuję od rana do wieczora… jestem zbyt zmęczony».']] },
+];

@@ -6,6 +6,7 @@ import { CZAS, POZIOMY } from '../dane/index.js';
 import { CZASY_PL, OSOBY_PL, ASPEKT, formyPl, regulaPl, czasyNaPoziomiePl } from '../odmiana-pl.js';
 import { budujKolejke, doPowtorki } from '../srs.js';
 import { sprawdz, komunikat, ocenaZWyniku, tasuj, losowy, czysc } from '../tekst.js';
+import { widokPrzypadkow } from './przypadki.js';
 
 const GRUPY = [['', 'Todos'], ['ndk', 'Imperfectivos'], ['dk', 'Perfectivos'], ['zwrotny', 'Reflexivos (się)']];
 const NAZWA_GRUPY = Object.fromEntries(GRUPY);
@@ -15,11 +16,13 @@ export function zakladkaCzasownikiPl(root, app) {
   const ui = app.stan.ui;
   root.innerHTML = `
     <div class="seg seg--pelny" role="group" aria-label="Vista" id="c-widoki">
-      <button type="button" data-cw="tabela">Conjugación</button><button type="button" data-cw="drill">Práctica</button>
+      <button type="button" data-cw="tabela">Conjugación</button><button type="button" data-cw="drill">Práctica</button><button type="button" data-cw="przypadki">Casos</button>
     </div>
     <div id="c-tabela"></div>
-    <div id="c-drill" hidden></div>`;
-  const tab = $('#c-tabela', root), drill = $('#c-drill', root);
+    <div id="c-drill" hidden></div>
+    <div id="c-przyp" hidden></div>`;
+  const tab = $('#c-tabela', root), drill = $('#c-drill', root), przypEl = $('#c-przyp', root);
+  const przypadki = widokPrzypadkow(przypEl, app);
   const widok = () => ui.cWidok || 'tabela';
   const doPoziomu = v => POZIOMY.indexOf(v.p) <= POZIOMY.indexOf(ui.poziom);
   const wGrupie = v => !ui.cGrupa || (ui.cGrupa === 'zwrotny' ? v.zwrotny : v.asp === ui.cGrupa);
@@ -200,8 +203,9 @@ export function zakladkaCzasownikiPl(root, app) {
 
   function pokazWidok() {
     root.querySelectorAll('[data-cw]').forEach(b => b.setAttribute('aria-pressed', b.dataset.cw === widok()));
-    tab.hidden = widok() !== 'tabela'; drill.hidden = widok() !== 'drill';
+    tab.hidden = widok() !== 'tabela'; drill.hidden = widok() !== 'drill'; przypEl.hidden = widok() !== 'przypadki';
     if (widok() === 'drill') startDrill();
+    if (widok() === 'przypadki') przypadki.pokaz();
   }
   root.querySelector('#c-widoki').addEventListener('click', e => { const b = e.target.closest('[data-cw]'); if (!b) return; ui.cWidok = b.dataset.cw; app.zapisz(); pokazWidok(); });
 
@@ -210,6 +214,7 @@ export function zakladkaCzasownikiPl(root, app) {
     poziom() { rysujGrupe(); pokazCzasownik(V); lista.rysuj(); pokazWidok(); },
     odswiezListe: () => { lista.rysuj(); rysujTabele(); },
     klawisz(e) {
+      if (widok() === 'przypadki') return przypadki.klawisz(e);
       if (widok() !== 'drill' || !D.kolejka.length) return false;
       const p = D.kolejka[D.nr]; if (!p) { if (e.key === 'Enter') { startDrill(); return true; } return false; }
       const n = parseInt(e.key, 10);

@@ -154,6 +154,93 @@ wpływać|wpływam|wpływasz|wpływaj|influir|B2|n|||
 rozwijać|rozwijam|rozwijasz|rozwijaj|desarrollar|B2|n|||
 twierdzić|twierdzę|twierdzisz|twierdź|afirmar, sostener|B2|n|||
 spodziewać się|spodziewam|spodziewasz|spodziewaj|esperar (prever)|B2|n|||
+oglądać|oglądam|oglądasz|oglądaj|ver (televisión, películas)|A1|n|obejrzeć||
+obejrzeć|obejrzę|obejrzysz|obejrzyj|ver una película (perfectivo)|A2|d|oglądać||
+sprzątać|sprzątam|sprzątasz|sprzątaj|limpiar, ordenar|A1|n|posprzątać||
+posprzątać|posprzątam|posprzątasz|posprzątaj|limpiar (perfectivo)|A2|d|sprzątać||
+przepraszać|przepraszam|przepraszasz|przepraszaj|pedir perdón|A1|n|przeprosić||
+zwiedzać|zwiedzam|zwiedzasz|zwiedzaj|visitar (un lugar)|A2|n|zwiedzić||
+zwiedzić|zwiedzę|zwiedzisz|zwiedź|visitar un lugar (perfectivo)|B1|d|zwiedzać||
+odwiedzać|odwiedzam|odwiedzasz|odwiedzaj|visitar (a alguien)|A2|n|odwiedzić||
+odwiedzić|odwiedzę|odwiedzisz|odwiedź|visitar a alguien (perfectivo)|A2|d|odwiedzać||
+ugotować|ugotuję|ugotujesz|ugotuj|cocinar (perfectivo)|A2|d|gotować||
+nauczyć się|nauczę|nauczysz|naucz|aprender (perfectivo)|A2|d|uczyć się||
+poczekać|poczekam|poczekasz|poczekaj|esperar (perfectivo)|A2|d|czekać||
+znaleźć|znajdę|znajdziesz|znajdź|encontrar (perfectivo)|A2|d|znajdować|znalazł,znalazła,znaleźli|
+zapytać|zapytam|zapytasz|zapytaj|preguntar (perfectivo)|A2|d|pytać||
+posłuchać|posłucham|posłuchasz|posłuchaj|escuchar (perfectivo)|A2|d|słuchać||
+przynosić|przynoszę|przynosisz|przynoś|traer|A2|n|przynieść||
+przynieść|przyniosę|przyniesiesz|przynieś|traer (perfectivo)|A2|d|przynosić|przyniósł,przyniosła,przynieśli|
+wychodzić|wychodzę|wychodzisz|wychodź|salir|A2|n|wyjść||
+wyjść|wyjdę|wyjdziesz|wyjdź|salir (perfectivo)|A2|d|wychodzić|wyszedł,wyszła,wyszli|
+wchodzić|wchodzę|wchodzisz|wchodź|entrar|A2|n|wejść||
+wejść|wejdę|wejdziesz|wejdź|entrar (perfectivo)|A2|d|wchodzić|wszedł,weszła,weszli|
+przyjechać|przyjadę|przyjedziesz|przyjedź|llegar en vehículo (perfectivo)|A2|d|przyjeżdżać||
+siadać|siadam|siadasz|siadaj|sentarse|A2|n|usiąść||
+usiąść|usiądę|usiądziesz|usiądź|sentarse (perfectivo)|A2|d|siadać|usiadł,usiadła,usiedli|
+kąpać się|kąpię|kąpiesz|kąp|bañarse|A2|n|||
+budzić się|budzę|budzisz|budź|despertarse|A2|n|obudzić się||
+obudzić się|obudzę|obudzisz|obudź|despertarse (perfectivo)|A2|d|budzić się||
+zapraszać|zapraszam|zapraszasz|zapraszaj|invitar|A2|n|zaprosić||
+zaprosić|zaproszę|zaprosisz|zaproś|invitar (perfectivo)|A2|d|zapraszać||
+znajdować|znajduję|znajdujesz|znajduj|encontrar|B1|n|znaleźć||
+ubrać się|ubiorę|ubierzesz|ubierz|vestirse (perfectivo)|B1|d|ubierać się||
+pomyśleć|pomyślę|pomyślisz|pomyśl|pensar (perfectivo)|B1|d|myśleć||
+poszukać|poszukam|poszukasz|poszukaj|buscar (perfectivo)|B1|d|szukać||
+zagrać|zagram|zagrasz|zagraj|jugar, tocar (perfectivo)|B1|d|grać||
+zatańczyć|zatańczę|zatańczysz|zatańcz|bailar (perfectivo)|B1|d|tańczyć||
+zaśpiewać|zaśpiewam|zaśpiewasz|zaśpiewaj|cantar (perfectivo)|B1|d|śpiewać||
+wyjeżdżać|wyjeżdżam|wyjeżdżasz|wyjeżdżaj|irse de viaje, partir|B1|n|wyjechać||
+wyjechać|wyjadę|wyjedziesz|wyjedź|irse de viaje (perfectivo)|B1|d|wyjeżdżać||
+przyjeżdżać|przyjeżdżam|przyjeżdżasz|przyjeżdżaj|llegar (en vehículo)|B1|n|przyjechać||
+kłaść|kładę|kładziesz|kładź|poner, colocar (tumbado)|B1|n|położyć|kładł,kładła,kładli|
+położyć|położę|położysz|połóż|poner, colocar (perfectivo)|B1|d|kłaść||
+nosić|noszę|nosisz|noś|llevar (puesto), cargar|B1|n|||
+pożyczyć|pożyczę|pożyczysz|pożycz|prestar, pedir prestado (perfectivo)|B1|d|pożyczać||
+wydać|wydam|wydasz|wydaj|gastar (perfectivo)|B1|d|wydawać||wydadzą
+nauczyć|nauczę|nauczysz|naucz|enseñar (perfectivo)|B1|d|uczyć||
+zapamiętać|zapamiętam|zapamiętasz|zapamiętaj|memorizar (perfectivo)|B1|d|pamiętać||
+prać|piorę|pierzesz|pierz|lavar (la ropa)|B1|n|||
+golić się|golę|golisz|gol|afeitarse|B1|n|||
+czesać się|czeszę|czeszesz|czesz|peinarse|B1|n|||
+zasypiać|zasypiam|zasypiasz|zasypiaj|dormirse|B1|n|zasnąć||
+zasnąć|zasnę|zaśniesz|zaśnij|dormirse (perfectivo)|B1|d|zasypiać||
+chorować|choruję|chorujesz|-|estar enfermo|B1|n|zachorować||
+zachorować|zachoruję|zachorujesz|-|enfermar (perfectivo)|B1|d|chorować||
+wygrywać|wygrywam|wygrywasz|wygrywaj|ganar (un partido)|B1|n|wygrać||
+wygrać|wygram|wygrasz|wygraj|ganar (perfectivo)|B1|d|wygrywać||
+przegrywać|przegrywam|przegrywasz|przegrywaj|perder (un partido)|B1|n|przegrać||
+przegrać|przegram|przegrasz|przegraj|perder un partido (perfectivo)|B1|d|przegrywać||
+gubić|gubię|gubisz|gub|perder (un objeto)|B1|n|zgubić||
+zgubić|zgubię|zgubisz|zgub|perder un objeto (perfectivo)|B1|d|gubić||
+tracić|tracę|tracisz|trać|perder (tiempo, dinero)|B1|n|stracić||
+stracić|stracę|stracisz|strać|perder tiempo o dinero (perfectivo)|B1|d|tracić||
+zarabiać|zarabiam|zarabiasz|zarabiaj|ganar (dinero)|B1|n|zarobić||
+zarobić|zarobię|zarobisz|zarób|ganar dinero (perfectivo)|B1|d|zarabiać||
+wynajmować|wynajmuję|wynajmujesz|wynajmuj|alquilar|B1|n|wynająć||
+wynająć|wynajmę|wynajmiesz|wynajmij|alquilar (perfectivo)|B1|d|wynajmować||
+opowiadać|opowiadam|opowiadasz|opowiadaj|contar (una historia)|B1|n|opowiedzieć||
+opowiedzieć|opowiem|opowiesz|opowiedz|contar una historia (perfectivo)|B1|d|opowiadać||opowiedzą
+pozwalać|pozwalam|pozwalasz|pozwalaj|permitir|B1|n|pozwolić||
+pozwolić|pozwolę|pozwolisz|pozwól|permitir (perfectivo)|B1|d|pozwalać||
+proponować|proponuję|proponujesz|proponuj|proponer|B1|n|zaproponować||
+zaproponować|zaproponuję|zaproponujesz|zaproponuj|proponer (perfectivo)|B1|d|proponować||
+obiecywać|obiecuję|obiecujesz|obiecuj|prometer|B1|n|obiecać||
+obiecać|obiecam|obiecasz|obiecaj|prometer (perfectivo)|B1|d|obiecywać||
+przeprosić|przeproszę|przeprosisz|przeproś|pedir perdón (perfectivo)|B1|d|przepraszać||
+narzekać|narzekam|narzekasz|narzekaj|quejarse|B1|n|||
+żartować|żartuję|żartujesz|żartuj|bromear|B1|n|||
+kłamać|kłamię|kłamiesz|nie kłam|mentir|B1|n|||
+kłócić się|kłócę|kłócisz|nie kłóć|discutir, pelearse|B1|n|||
+zauważyć|zauważę|zauważysz|zauważ|notar, darse cuenta (perfectivo)|B1|d|zauważać||
+zauważać|zauważam|zauważasz|zauważaj|notar, darse cuenta|B2|n|zauważyć||
+oceniać|oceniam|oceniasz|oceniaj|evaluar|B2|n|ocenić||
+ocenić|ocenię|ocenisz|oceń|evaluar (perfectivo)|B2|d|oceniać||
+uczestniczyć|uczestniczę|uczestniczysz|uczestnicz|participar|B2|n|||
+zapobiegać|zapobiegam|zapobiegasz|zapobiegaj|prevenir|B2|n|||
+wspierać|wspieram|wspierasz|wspieraj|apoyar|B2|n|||
+krytykować|krytykuję|krytykujesz|krytykuj|criticar|B2|n|||
+podkreślać|podkreślam|podkreślasz|podkreślaj|subrayar, destacar|B2|n|||
 przyznawać|przyznaję|przyznajesz|przyznawaj|admitir, reconocer|C1|n|||
 podejrzewać|podejrzewam|podejrzewasz|podejrzewaj|sospechar|C1|n|||
 zaniedbywać|zaniedbuję|zaniedbujesz|zaniedbuj|descuidar|C1|n|||

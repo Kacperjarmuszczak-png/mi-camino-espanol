@@ -2,13 +2,14 @@
 import { SLOWKA, CZAS, ZWROTY_LISTA, POZIOMY } from './dane/index.js';
 import { GRAMATYKA } from './dane/gramatyka.js';
 import { CZYTANIE } from './dane/czytanie.js';
+import { CZYTANIE_PL } from './dane/czytanie-pl.js';
 import { czasyNaPoziomie, ZDANIA, PODMIOTY, BEZ_DRILLU } from './dane/czasowniki.js';
 import { CZASY, OSOBY, OSOBY_ROZKAZ, formy, regula } from './odmiana.js';
 import { tasuj, losowy, czysc } from './tekst.js';
 import { HISP, t as tr } from './jezyk.js';
 import { CZASY_PL, OSOBY_PL, formyPl, regulaPl, czasyNaPoziomiePl } from './odmiana-pl.js';
 
-export const TYPY = HISP ? { slowo: 'Vocabulario', zwrot: 'Frases', czasownik: 'Conjugación' } : { slowo: 'Słownictwo', zwrot: 'Zwroty', czasownik: 'Czasowniki w zdaniu', gramatyka: 'Gramatyka', luka: 'Luka w zdaniu', czytanie: 'Rozumienie tekstu' };
+export const TYPY = HISP ? { slowo: 'Vocabulario', zwrot: 'Frases', czasownik: 'Conjugación', czytanie: 'Comprensión lectora' } : { slowo: 'Słownictwo', zwrot: 'Zwroty', czasownik: 'Czasowniki w zdaniu', gramatyka: 'Gramatyka', luka: 'Luka w zdaniu', czytanie: 'Rozumienie tekstu' };
 const bez = s => s.replace(/\*/g, '');
 const unikalne = (odp, kand, n = 3) => { const w = [], u = new Set([czysc(odp)]); for (const k of tasuj(kand)) { const c = czysc(k); if (!u.has(c)) { u.add(c); w.push(k); } if (w.length === n) break; } return w; };
 
@@ -86,16 +87,16 @@ function pGramatyka(p, uzyte) {
   return { typ: 'gramatyka', p, tytul: `Gramatyka: ${g[1]}`, tekst: g[2], opcje: tasuj(g[3]), odp: g[3][0], wyj: g[4] };
 }
 function pCzytanie(p, uzyte) {
-  const teksty = CZYTANIE.filter(t => t.p === p);
+  const teksty = (HISP ? CZYTANIE_PL : CZYTANIE).filter(t => t.p === p);
   const wolne = [];
   teksty.forEach(t => t.q.forEach((q, i) => { const k = t.tekst.slice(0, 20) + i; if (!uzyte.has(k)) wolne.push([t, q, k]); }));
   if (!wolne.length) return null;
   const [t, q, k] = losowy(wolne); uzyte.add(k);
-  return { typ: 'czytanie', p, tytul: 'Przeczytaj i odpowiedz', kontekst: t.tekst, tekst: q[0], opcje: tasuj(q[1]), odp: q[1][0], wyj: q[2], mow: t.tekst };
+  return { typ: 'czytanie', p, tytul: tr('Przeczytaj i odpowiedz', 'Lee y responde'), kontekst: t.tekst, tekst: q[0], opcje: tasuj(q[1]), odp: q[1][0], wyj: q[2], mow: t.tekst };
 }
 
 const GEN = { slowo: pSlowo, luka: pLuka, zwrot: pZwrot, czasownik: pCzasownik, gramatyka: pGramatyka, czytanie: pCzytanie };
-const UDZIALY = HISP ? [['slowo', 0.5], ['czasownik', 0.3], ['zwrot', 0.2]] : [['slowo', 0.28], ['luka', 0.14], ['czasownik', 0.2], ['gramatyka', 0.2], ['zwrot', 0.08], ['czytanie', 0.1]];
+const UDZIALY = HISP ? [['slowo', 0.45], ['czasownik', 0.3], ['zwrot', 0.15], ['czytanie', 0.1]] : [['slowo', 0.28], ['luka', 0.14], ['czasownik', 0.2], ['gramatyka', 0.2], ['zwrot', 0.08], ['czytanie', 0.1]];
 
 function pytanieTypu(typ, p, uzyte, ust) {
   for (let proba = 0; proba < 12; proba++) {

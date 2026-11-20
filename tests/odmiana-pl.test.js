@@ -36,3 +36,14 @@ test('analizator rozpoznaje formy czasowników i hasła', () => {
   assert.equal(w.find(x => x.t === 'kinie').haslo, 'kino');
   assert.equal(w.find(x => x.t === 'w').es, 'en');
 });
+
+import { RZECZOWNIKI, zadanie } from '../js/przypadki.js';
+test('przypadki: formy i zadania', () => {
+  const r = n => RZECZOWNIKI.find(x => x.formy.mian === n);
+  assert.equal(r('pies').formy.dop, 'psa');
+  assert.equal(zadanie(r('kino'), 'miej').zdanie, 'Jestem w ___.');
+  assert.equal(zadanie(r('poczta'), 'miej').odp, 'poczcie');
+  assert.equal(zadanie(r('poczta'), 'miej').zdanie, 'Jestem na ___.');
+  assert.equal(zadanie(r('brat'), 'narz').odp, 'bratem');
+  assert.ok(RZECZOWNIKI.every(x => Object.values(x.formy).every(Boolean)));
+});
