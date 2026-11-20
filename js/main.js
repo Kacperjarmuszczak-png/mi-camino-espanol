@@ -14,6 +14,7 @@ import { zainicjujWyspe } from './ui/wyspa.js';
 import { zakladkaCzasownikiPl } from './ui/czasowniki-pl.js';
 import { zakladkaTlumaczPl } from './ui/tlumacz-pl.js';
 import { HISP, t as T, ustawJezyk } from './jezyk.js';
+import { plikIcs, pobierzIcs, plakietkaDostepna, wlaczPlakietke, ustawPlakietke } from './przypomnienia.js';
 
 const stan = wczytaj();
 const ZAKLADKI = ['slowka', 'egzamin', 'czasowniki', 'zwroty', 'tlumacz'];
@@ -94,6 +95,7 @@ function rysujNaglowek() {
   $('#wyspa-luk').style.strokeDasharray = `${obw * Math.min(1, ile / cel)} ${obw}`;
   $('#wyspa').classList.toggle('cel-osiagniety', ile >= cel);
   $('#wyspa-poziom').textContent = stan.ui.poziom;
+  if (stan.ust.plakietka) { const t0 = Date.now(); ustawPlakietke(Object.values(stan.srs).filter(x => doPowtorki(x, t0)).length); }
   $('#wyspa-btn').setAttribute('aria-label', T(`Poziom ${stan.ui.poziom}, dziś ${ile} z ${cel}. Rozwiń, aby zobaczyć statystyki i opcje`, `Nivel ${stan.ui.poziom}, hoy ${ile} de ${cel}. Despliega para ver estadísticas y opciones`));
 }
 function modalDnia() {
@@ -194,6 +196,10 @@ function modalUstawien() {
         ${glosy.some(v => m.jakoscGlosu(v) > 0) ? '' : `<p class="male">${T('Najlepiej brzmią głosy Premium. iPhone: Ustawienia → Dostępność → Treść mówiona → Głosy → Hiszpański → Mónica (Premium).', 'Las voces Premium suenan mejor. iPhone: Ajustes → Accesibilidad → Contenido leído → Voces → Polaco → Zosia (Premium).')}</p>`}`
         : `<p class="ostrzezenie">${T('Ta przeglądarka nie ma hiszpańskiego głosu. iPhone: Ustawienia → Dostępność → Treść mówiona → Głosy → Hiszpański. Android: Ustawienia → Zamiana tekstu na mowę → hiszpański.', 'Este navegador no tiene voz en polaco. iPhone: Ajustes → Accesibilidad → Contenido leído → Voces → Polaco. Android: Ajustes → Síntesis de voz → polaco.')}</p>`)
         : `<p class="ostrzezenie">${T('Ta przeglądarka nie obsługuje syntezy mowy.', 'Este navegador no admite síntesis de voz.')}</p>`}</div>
+    <div class="cc-blok"><p class="etykieta">${T('Codzienne przypomnienie', 'Recordatorio diario')}</p>
+      <div class="szukaj"><input class="pole" type="time" id="u-godz" value="${esc(u.przyp || '19:00')}" aria-label="${T('Godzina przypomnienia', 'Hora del recordatorio')}"><button type="button" class="btn btn--male" id="u-kal">${T('Dodaj do Kalendarza', 'Añadir al Calendario')}</button></div>
+      <p class="male">${T('iPhone będzie codziennie o tej godzinie przypominał o nauce (wydarzenie z alarmem i linkiem do aplikacji).', 'El iPhone te lo recordará cada día a esta hora (evento con alarma y enlace a la app).')}</p>
+      ${plakietkaDostepna() ? `<label class="cc-kafel cc-kafel--szeroki"><input type="checkbox" id="u-plak" ${u.plakietka ? 'checked' : ''}><span class="tgl" aria-hidden="true"></span><b>${T('Plakietka na ikonie', 'Globo en el icono')}</b><small>${T('liczba słów do powtórki na ikonie aplikacji', 'número de palabras para repasar en el icono de la app')}</small></label>` : ''}</div>
     <details class="zwin cc-blok"><summary>${T('Styl Liquid Glass', 'Estilo Liquid Glass')}</summary>
       <div class="style-siatka" id="u-style">${window.STYLE.lista.map(s => `<button type="button" data-styl="${s.id}" aria-pressed="${document.documentElement.dataset.styl === s.id}" style="background:radial-gradient(70% 70% at 20% 20%, ${s.plamy[0]}, transparent 70%), radial-gradient(70% 70% at 90% 35%, ${s.plamy[1]}, transparent 70%), radial-gradient(80% 80% at 50% 100%, ${s.plamy[2]}, transparent 70%), ${s.tlo}"><span style="color:${s.tx};background:${s.t === 'd' ? 'rgba(255,255,255,.12)' : 'rgba(255,255,255,.55)'}">${esc(s.n)}</span></button>`).join('')}</div></details>
     <details class="zwin cc-blok"><summary>${T('Kopia zapasowa i reset', 'Copia de seguridad y reinicio')}</summary>
@@ -211,6 +217,15 @@ function modalUstawien() {
   tresc.addEventListener('change', e => {
     if (e.target.id === 'u-vosotros') { u.bezVosotros = e.target.checked; app.zapisz(); odswiezModuly(); }
     if (e.target.id === 'u-auto') { u.auto = e.target.checked; app.zapisz(); }
+    if (e.target.id === 'u-godz' && e.target.value) { u.przyp = e.target.value; app.zapisz(); }
+    if (e.target.id === 'u-plak') {
+      const pole = e.target;
+      if (!pole.checked) { u.plakietka = false; app.zapisz(); ustawPlakietke(0); return; }
+      wlaczPlakietke().then(w => {
+        if (w === 'ok') { u.plakietka = true; app.zapisz(); rysujNaglowek(); toast(T('Plakietka włączona.', 'Globo activado.')); }
+        else { pole.checked = false; toast(w === 'odmowa' ? T('Bez zgody na powiadomienia plakietka nie zadziała.', 'Sin permiso de notificaciones el globo no funciona.') : T('Plakietka działa po dodaniu aplikacji do ekranu głównego.', 'El globo funciona al añadir la app a la pantalla de inicio.')); }
+      });
+    }
     if (e.target.id === 'u-glos') { u.glos = e.target.value; app.zapisz(); app.mowa.odswiez(); app.mowa.powiedz(T('Hola, ¿qué tal? Vamos a practicar.', 'Cześć! Poćwiczymy trochę polski?')); }
     if (e.target.id === 'u-import-plik' && e.target.files[0]) {
       e.target.files[0].text().then(t => {
@@ -240,6 +255,16 @@ function modalUstawien() {
       const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = HISP ? `polaco-progreso-${dzien()}.json` : `espanol-postepy-${dzien()}.json`;
       document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500);
       toast(HISP ? 'Archivo de progreso guardado.' : 'Zapisano plik z postępami.'); return;
+    }
+    if (t.closest('#u-kal')) {
+      const godz = $('#u-godz', tresc).value || u.przyp || '19:00';
+      u.przyp = godz; app.zapisz();
+      const url = location.href.split('#')[0].split('?')[0];
+      pobierzIcs(plikIcs({ godzina: godz, url,
+        tytul: T(`Hiszpański: ${u.cel} pozycji na dziś`, `Polaco: ${u.cel} tarjetas para hoy`),
+        opis: T('Codzienna nauka – utrzymaj serię dni.', 'Práctica diaria: mantén tu racha.') }), T('nauka-hiszpanskiego.ics', 'aprender-polaco.ics'));
+      toast(T('Otwórz pobrany plik i stuknij „Dodaj wszystko”.', 'Abre el archivo descargado y toca «Añadir todo».'));
+      return;
     }
     if (t.closest('#u-reset')) { $('#u-reset-potw', tresc).hidden = false; return; }
     if (t.closest('#u-reset-nie')) { $('#u-reset-potw', tresc).hidden = true; return; }

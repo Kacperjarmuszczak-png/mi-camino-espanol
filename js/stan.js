@@ -13,6 +13,8 @@ export const domyslneUstawienia = () => ({
   skala: 2,               // 2 przyciski (Jeszcze nie / Umiem) albo 4 (Nie wiem / Trudne / Dobrze / Łatwe)
   styl: 'andalucia',
   styl3: true,            // styl ustawiony już po zmianie domyślnego na Andalucía
+  przyp: '19:00',         // godzina codziennego przypomnienia (Kalendarz)
+  plakietka: false,       // liczba powtórek na ikonie aplikacji
 });
 
 export const nowyStanAplikacji = () => ({
