@@ -733,3 +733,12 @@ textarea { font: inherit; color: inherit; }
 /* góra ekranu: płynne przejście od koloru paska stanu (theme-color = --tlo) do płynącego tła – bez widocznej krawędzi */
 .gora-tlo { position: fixed; z-index: 1; top: 0; left: 0; right: 0; height: calc(env(safe-area-inset-top, 0px) + 96px); pointer-events: none;
   background: linear-gradient(to bottom, var(--tlo) 0, var(--tlo) env(safe-area-inset-top, 0px), color-mix(in srgb, var(--tlo) 55%, transparent) calc(env(safe-area-inset-top, 0px) + 40px), transparent); }
+/* dock zawsze w tym samym miejscu: liczony od najmniejszej wysokości okna (100svh – z widocznym paskiem Safari),
+   więc nie podskakuje, gdy Safari chowa / pokazuje swój dolny pasek przy przewijaniu */
+:root { --dock-h: 66px; }
+#zakladki.dock { bottom: auto; top: calc(100svh - var(--dock-h) - 14px - env(safe-area-inset-bottom, 0px));
+  transform: translate3d(-50%, 0, 0); will-change: transform; backface-visibility: hidden; }
+@supports not (height: 100svh) { #zakladki.dock { top: auto; bottom: calc(14px + env(safe-area-inset-bottom, 0px)); } }
+@media (min-width: 760px) { #zakladki.dock { top: calc(100svh - var(--dock-h) - 20px); } }
+.wyspa { transform: translate3d(-50%, 0, 0); backface-visibility: hidden; }
+html, body { overscroll-behavior-y: none; }
