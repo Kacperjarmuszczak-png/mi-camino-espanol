@@ -712,3 +712,15 @@ input:focus-visible + .tgl { outline: 2px solid var(--zloto); outline-offset: 2p
 .link { border: 0; background: none; padding: 0; color: var(--zloto); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
 /* pasek liter nad dockiem (komputer i wąskie okno z myszką) */
 @media (min-width: 760px) { .znaki { bottom: calc(var(--pasek-dol) + 10px); } }
+/* rozwinięta kapsuła: zawartość nigdy szersza niż kapsuła (Safari liczy kolumny siatki z min-content) */
+.wyspa { max-width: calc(100vw - 24px); box-sizing: border-box; }
+.wyspa-panel, .wyspa-wnetrze { grid-template-columns: minmax(0, 1fr); min-width: 0; width: 100%; }
+.wyspa-wnetrze > * { min-width: 0; max-width: 100%; }
+.wyspa .poziomy { grid-template-columns: repeat(6, minmax(0, 1fr)); width: 100%; }
+.wyspa #wyspa-tryby { grid-auto-columns: minmax(0, 1fr); width: 100%; }
+.wyspa #wyspa-tryby button { min-width: 0; overflow: hidden; text-overflow: ellipsis; padding-inline: 2px; }
+.wyspa-staty { min-width: 0; }
+.wyspa-staty .poziom-linia { min-width: 0; overflow: hidden; }
+.wyspa-staty .poziom-linia > span:first-child { flex: none; }
+.wyspa-akcje button { min-width: 0; }
+.wyspa-akcje span { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
