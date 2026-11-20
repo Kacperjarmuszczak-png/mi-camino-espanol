@@ -1,6 +1,6 @@
 // Service worker: aplikacja działa offline i można ją dodać do ekranu głównego.
 // Strategia „najpierw sieć”: online zawsze najnowsza wersja z GitHub Pages, bez sieci – ostatnia zapisana kopia.
-const WERSJA = '0c66d99da8';
+const WERSJA = 'b38993cbbe';
 const PAMIEC = 'espanol-' + WERSJA;
 const PLIKI = [
   './',
@@ -38,6 +38,7 @@ const PLIKI = [
   './js/dane/zwroty.js',
   './js/egzamin.js',
   './js/filtry.js',
+  './js/gry.js',
   './js/jezyk.js',
   './js/kontekst.js',
   './js/lib/qrcode.js',
@@ -63,22 +64,27 @@ const PLIKI = [
   './js/ui/egzamin.js',
   './js/ui/falszywi.js',
   './js/ui/gramatyka.js',
+  './js/ui/gry-pula.js',
   './js/ui/karty.js',
   './js/ui/kontekst-dane.js',
   './js/ui/kultura.js',
   './js/ui/lekcja-dnia.js',
   './js/ui/lista.js',
+  './js/ui/memory.js',
   './js/ui/moje.js',
   './js/ui/motywacja.js',
   './js/ui/przypadki.js',
   './js/ui/pula.js',
+  './js/ui/rodzajnik.js',
   './js/ui/rozmowa.js',
   './js/ui/slowka.js',
   './js/ui/suwak.js',
   './js/ui/tlumacz-pl.js',
   './js/ui/tlumacz.js',
   './js/ui/uloz.js',
+  './js/ui/wisielec.js',
   './js/ui/wspolne.js',
+  './js/ui/wykreslanka.js',
   './js/ui/wyspa.js',
   './js/ui/wyzwania.js',
   './js/ui/zwroty.js',

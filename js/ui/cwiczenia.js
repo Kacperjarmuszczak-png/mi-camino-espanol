@@ -27,7 +27,7 @@ export function zakladkaCwiczenia(root, app, cfg) {
       <div class="szukaj cw-szukaj"><input class="pole" type="search" id="cw-q" placeholder="${tr('Szukaj: słowo, zwrot, czasownik, tekst…', 'Buscar: palabra, frase, verbo, texto…')}" autocomplete="off" spellcheck="false" aria-label="${tr('Szukaj wszędzie', 'Buscar en todo')}"></div>
       <div id="cw-wyniki" hidden></div>
       <div id="cw-kafle-wrap">${cfg.pasekXp()}
-      <div class="cw-kafle">${kafelki().map(k => `<button type="button" class="cw-kafel" data-cwk="${k.id}"><span class="cw-ik" aria-hidden="true">${k.ikona}</span><b>${esc(k.n)}</b><small>${esc(k.o)}</small></button>`).join('')}</div></div>`;
+      ${(cfg.grupy || [['', '']]).map(([g, nazwa]) => { const l = kafelki().filter(k => (k.grupa || '') === g); return l.length ? `${nazwa ? `<p class="etykieta cw-grupa">${esc(nazwa)}</p>` : ''}<div class="cw-kafle">${l.map(k => `<button type="button" class="cw-kafel" data-cwk="${k.id}"><span class="cw-ik" aria-hidden="true">${k.ikona}</span><b>${esc(k.n)}</b><small>${esc(k.o)}</small></button>`).join('')}</div>` : ''; }).join('')}</div>`;
   }
   function otworz(id, arg) {
     const k = cfg.kafelki.find(x => x.id === id); if (!k) return;

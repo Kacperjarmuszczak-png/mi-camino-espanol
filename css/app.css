@@ -880,3 +880,42 @@ html, body { overscroll-behavior-y: none; }
 .fp-tak { color: var(--ok); }
 .fp-prz { display: grid; grid-template-columns: 1fr auto; gap: 2px 8px; align-items: center; padding: 8px 10px; border-radius: 12px; background: var(--pole); font-size: .95rem; }
 .fp-prz small { grid-column: 1; color: var(--szary); }
+.cw-grupa { margin-top: 6px; }
+/* gry */
+.mem-siatka { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+@media (min-width: 520px) { .mem-siatka { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.mem-karta { min-height: 78px; padding: 6px; border-radius: 16px; border: 1px solid var(--szklo-brzeg); color: var(--tekst); font-weight: 600; font-size: .9rem; line-height: 1.2;
+  background: linear-gradient(160deg, rgba(255,255,255,.16), rgba(255,255,255,.02) 60%), var(--pole); transition: transform .35s var(--ios), background .25s; overflow-wrap: anywhere; }
+.mem-karta span { font-size: 1.4rem; color: var(--szary); }
+.mem-karta.odkryta { background: color-mix(in srgb, var(--zloto) 18%, var(--pole)); }
+.mem-karta.odkryta.cel { color: var(--zloto); }
+.mem-karta.ok { background: color-mix(in srgb, var(--ok) 22%, var(--pole)); border-color: var(--ok); opacity: .75; }
+.wis { display: grid; grid-template-columns: 110px 1fr; gap: 14px; align-items: center; }
+.wis-rys { width: 110px; height: 120px; stroke: var(--tekst); stroke-width: 3; fill: none; stroke-linecap: round; }
+.wis-prawa { display: grid; gap: 4px; }
+.wis-prawa small { color: var(--zloto); font-size: .68rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
+.wis-slowo { display: flex; justify-content: center; gap: 6px; flex-wrap: wrap; margin: 0; font: 700 1.8rem var(--font-tytul); letter-spacing: .02em; }
+.wis-slowo span { min-width: .8em; text-align: center; border-bottom: 2px solid var(--linia); }
+.wis-slowo .brak { color: var(--zle); }
+.wis-klaw { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 5px; }
+.wis-klaw button { height: 42px; border-radius: 10px; border: 1px solid var(--szklo-brzeg); background: var(--pole); color: var(--tekst); font-weight: 700; font-size: 1rem; }
+.wis-klaw button.tak { background: color-mix(in srgb, var(--ok) 30%, transparent); }
+.wis-klaw button.nie { opacity: .35; }
+.wk-siatka { display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 2px; padding: 6px; border-radius: 16px; background: var(--pole); border: 1px solid var(--linia); touch-action: manipulation; }
+.wk-pole { aspect-ratio: 1; border: 0; border-radius: 6px; background: none; color: var(--tekst); font-weight: 700; font-size: clamp(.8rem, 3.6vw, 1.05rem); padding: 0; }
+.wk-pole.zn { background: color-mix(in srgb, var(--ok) 35%, transparent); }
+.wk-pole.st { background: var(--zloto); color: var(--na-zlocie); }
+.wk-lista { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
+.wk-lista li { display: grid; padding: 8px 10px; border-radius: 12px; background: var(--pole); font-size: .85rem; }
+.wk-lista li span { color: var(--szary); }
+.wk-lista li.zn b { color: var(--ok); }
+.rz-start { display: grid; gap: 10px; }
+.rd-pasek { height: 6px; border-radius: 6px; background: var(--pole); overflow: hidden; }
+.rd-pasek i { display: block; height: 100%; width: 100%; background: var(--zloto); }
+.rd-karta { display: grid; place-items: center; gap: 4px; min-height: 170px; border-radius: var(--r); border: 1px solid var(--szklo-brzeg); touch-action: pan-y;
+  background: linear-gradient(160deg, rgba(255,255,255,.14), rgba(255,255,255,.02) 58%), var(--pole); transition: border-color .2s, background .2s; }
+.rd-karta b { font: 700 2.1rem var(--font-tytul); }
+.rd-karta small { color: var(--szary); }
+.rd-karta.ok { border-color: var(--ok); background: color-mix(in srgb, var(--ok) 18%, var(--pole)); }
+.rd-karta.zle { border-color: var(--zle); background: color-mix(in srgb, var(--zle) 18%, var(--pole)); }
+.rd-przyciski { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
