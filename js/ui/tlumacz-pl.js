@@ -40,7 +40,7 @@ export function zakladkaTlumaczPl(root, app) {
   function rysujKier() {
     root.querySelectorAll('[data-tk]').forEach(b => b.setAttribute('aria-pressed', b.dataset.tk === kier()));
     pole.setAttribute('lang', kier());
-    pole.toggleAttribute('data-znaki', kier() === 'pl');
+    pole.setAttribute('data-znaki', '');
     pole.placeholder = kier() === 'pl' ? 'Escribe una frase en polaco, p. ej. «Gdzie jest najbliższa apteka?»' : 'Escribe una frase en español, p. ej. «¿Dónde está la estación?»';
     $('#t-przyklady').innerHTML = PRZYKLADY[kier()].map(p => `<button type="button" class="pigulka" data-tp="${esc(p)}">${esc(p)}</button>`).join('');
     $('#t-info-online').textContent = online.checked

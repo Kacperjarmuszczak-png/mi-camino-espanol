@@ -724,3 +724,9 @@ input:focus-visible + .tgl { outline: 2px solid var(--zloto); outline-offset: 2p
 .wyspa-staty .poziom-linia > span:first-child { flex: none; }
 .wyspa-akcje button { min-width: 0; }
 .wyspa-akcje span { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* pasek liter: mała szklana kapsuła tuż nad klawiaturą (pozycja z JS, --y) */
+#znaki.znaki { top: 0; bottom: auto; left: 50%; right: auto; transform: translate(-50%, var(--y, -200px)); width: min(520px, calc(100vw - 16px));
+  display: flex; gap: 4px; padding: 5px; border-radius: 20px; border: 1px solid var(--szklo-brzeg); z-index: 85;
+  transition: transform .25s var(--ios); }
+#znaki.znaki button { flex: 1 1 0; min-width: 0; max-width: none; height: 40px; border-radius: 14px; font-size: 1.1rem; }
+textarea { font: inherit; color: inherit; }

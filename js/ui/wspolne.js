@@ -124,27 +124,42 @@ export function podlaczZakres(input, format, naZmiane) {
 }
 export const modalOtwarty = () => !$('#modal').hidden;
 
-// --- pływający pasek znaków hiszpańskich (nad klawiaturą telefonu) ---
-const ZNAKI = HISP ? ['ą', 'ć', 'ę', 'ł', 'ń', 'ó', 'ś', 'ź', 'ż'] : ['á', 'é', 'í', 'ó', 'ú', 'ü', 'ñ', '¿', '¡'];
+// --- pływający pasek znaków (nad klawiaturą telefonu): litery języka pola, do którego piszesz ---
+const ZNAKI = { es: ['á', 'é', 'í', 'ó', 'ú', 'ü', 'ñ', '¿', '¡'], pl: ['ą', 'ć', 'ę', 'ł', 'ń', 'ó', 'ś', 'ź', 'ż'] };
 export function zainicjujZnaki() {
   const pasek = $('#znaki');
-  pasek.innerHTML = ZNAKI.map(z => `<button type="button" tabindex="-1" data-znak="${z}" aria-label="${tr('Wstaw', 'Insertar')} ${z}">${z}</button>`).join('')
-    + `<button type="button" tabindex="-1" data-znak="⇧" class="wielkie" aria-label="${tr('Wielkie litery', 'Mayúsculas')}" aria-pressed="false">⇧</button>`;
-  let pole = null, wielkie = false;
+  let pole = null, wielkie = false, zestaw = '';
+  const rysuj = j => {
+    if (j === zestaw) return;
+    zestaw = j;
+    pasek.innerHTML = ZNAKI[j].map(z => `<button type="button" tabindex="-1" data-znak="${z}" aria-label="${tr('Wstaw', 'Insertar')} ${z}">${z}</button>`).join('')
+      + `<button type="button" tabindex="-1" data-znak="⇧" class="wielkie" aria-label="${tr('Wielkie litery', 'Mayúsculas')}" aria-pressed="${wielkie}">⇧</button>`;
+  };
+  // pozycja liczona od widocznego obszaru (visualViewport): tuż nad klawiaturą, a bez klawiatury nad dolnym dockiem
   const ustawPozycje = () => {
+    if (pasek.hidden) return;
     const vv = window.visualViewport;
-    const dol = vv ? Math.max(0, window.innerHeight - vv.height - vv.offsetTop) : 0;
-    pasek.style.setProperty('--dol', dol + 'px');
+    const gora = vv ? vv.offsetTop : 0, wys = vv ? vv.height : window.innerHeight;
+    const klawiatura = window.innerHeight - wys > 120;
+    let dol = gora + wys;
+    const dock = $('#zakladki');
+    if (!klawiatura && dock && getComputedStyle(dock).display !== 'none') dol = Math.min(dol, dock.getBoundingClientRect().top + gora);
+    pasek.style.setProperty('--y', Math.max(gora + 8, dol - pasek.offsetHeight - 8) + 'px');
   };
   document.addEventListener('focusin', e => {
     const t = e.target;
-    if (t.matches && t.matches('input[data-znaki], textarea[data-znaki]')) { pole = t; pasek.hidden = false; document.body.classList.add('z-znakami'); ustawPozycje(); }
+    if (t.matches && t.matches('input[data-znaki], textarea[data-znaki]')) {
+      pole = t; rysuj((t.getAttribute('lang') || (HISP ? 'pl' : 'es')).startsWith('pl') ? 'pl' : 'es');
+      pasek.hidden = false; document.body.classList.add('z-znakami');
+      ustawPozycje(); setTimeout(ustawPozycje, 300); setTimeout(ustawPozycje, 700);
+    }
   });
   document.addEventListener('focusout', () => setTimeout(() => {
     const a = document.activeElement;
     if (!(a && a.matches && a.matches('input[data-znaki], textarea[data-znaki]'))) { pasek.hidden = true; document.body.classList.remove('z-znakami'); }
   }, 120));
   if (window.visualViewport) { visualViewport.addEventListener('resize', ustawPozycje); visualViewport.addEventListener('scroll', ustawPozycje); }
+  window.addEventListener('scroll', ustawPozycje, { passive: true });
   pasek.addEventListener('pointerdown', e => e.preventDefault());   // pole nie traci fokusu
   pasek.addEventListener('click', e => {
     const b = e.target.closest('button'); if (!b || !pole) return;
