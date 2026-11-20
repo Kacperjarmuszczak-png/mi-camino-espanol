@@ -207,6 +207,7 @@ export function zakladkaCzasowniki(root, app) {
   root.querySelector('#c-widoki').addEventListener('click', e => { const b = e.target.closest('[data-cw]'); if (!b) return; ui.cWidok = b.dataset.cw; app.zapisz(); pokazWidok(); });
 
   return {
+    pokaz(inf) { const v = CZAS.find(x => x.inf === inf); if (v) { pokazCzasownik(v); tab.scrollIntoView({ block: 'start' }); } },
     poziom() {
       $('#c-grupa', tab).value = ui.cGrupa || '';
       if (!czasyNaPoziomie(ui.poziom).includes(ui.cCzas || 'presente') && !ui.cCzas) ui.cCzas = 'presente';

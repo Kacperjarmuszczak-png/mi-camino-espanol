@@ -8,9 +8,10 @@ import { zakladkaSlowka } from './ui/slowka.js';
 import { zakladkaEgzamin } from './ui/egzamin.js';
 import { zakladkaCzasowniki } from './ui/czasowniki.js';
 import { zakladkaZwroty } from './ui/zwroty.js';
+import { zakladkaTlumacz } from './ui/tlumacz.js';
 
 const stan = wczytaj();
-const ZAKLADKI = ['slowka', 'egzamin', 'czasowniki', 'zwroty'];
+const ZAKLADKI = ['slowka', 'egzamin', 'czasowniki', 'zwroty', 'tlumacz'];
 if (!POZIOMY.includes(stan.ui.poziom)) stan.ui.poziom = 'A1';
 if (!ZAKLADKI.includes(stan.ui.zakladka)) stan.ui.zakladka = 'slowka';
 
@@ -111,6 +112,14 @@ const moduly = {
   egzamin: zakladkaEgzamin($('#z-egzamin'), app),
   czasowniki: zakladkaCzasowniki($('#z-czasowniki'), app),
   zwroty: zakladkaZwroty($('#z-zwroty'), app),
+  tlumacz: zakladkaTlumacz($('#z-tlumacz'), app),
+};
+app.otworzCzasownik = inf => {
+  stan.ui.cWidok = 'tabela';
+  zainicjowane.add('czasowniki');
+  pokazZakladke('czasowniki', { przewin: true });
+  moduly.czasowniki.poziom();
+  moduly.czasowniki.pokaz(inf);
 };
 function ustawKapsule() {
   const b = $(`#zakladki [data-z="${stan.ui.zakladka}"]`), nav = $('#zakladki'), k = $('#zakladki .kapsula');

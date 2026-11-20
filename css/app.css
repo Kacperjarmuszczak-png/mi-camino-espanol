@@ -121,11 +121,11 @@ mark { background: color-mix(in srgb, var(--zloto) 28%, transparent); color: inh
 .fiszka, .karta-obszar, .drill-karta, .egz { scroll-margin-top: 12px; scroll-margin-bottom: calc(var(--pasek-dol) + 96px); }
 
 /* ===== zakładki: kapsuła ===== */
-.zakladki { position: fixed; z-index: 20; left: max(12px, env(safe-area-inset-left, 0px)); right: max(12px, env(safe-area-inset-right, 0px));
-  bottom: calc(10px + env(safe-area-inset-bottom, 0px)); display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); padding: 5px; border-radius: 26px;
+.zakladki { position: fixed; z-index: 20; left: max(10px, env(safe-area-inset-left, 0px)); right: max(10px, env(safe-area-inset-right, 0px));
+  bottom: calc(10px + env(safe-area-inset-bottom, 0px)); display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); padding: 5px; border-radius: 26px;
   max-width: 560px; margin: 0 auto; }
 .zakladki button { position: relative; z-index: 1; border: 0; background: none; display: grid; justify-items: center; gap: 2px; padding: 7px 0 6px; border-radius: 21px;
-  color: var(--szary); font-size: .72rem; font-weight: 600; transition: color .2s; }
+  color: var(--szary); font-size: .68rem; font-weight: 600; transition: color .2s; }
 .zakladki svg { width: 23px; height: 23px; }
 .zakladki button[aria-selected="true"] { color: var(--zloto); }
 .kapsula { position: absolute; z-index: 0; top: 5px; bottom: 5px; left: 0; width: 0; border-radius: 21px; pointer-events: none;
@@ -427,3 +427,42 @@ button.lista-tekst:hover { background: var(--pole); }
   .seg button { padding: 7px 9px; }
   .marka h1 { font-size: 1.6rem; }
 }
+
+/* ===== tłumacz ===== */
+.pole--tekst { min-height: 110px; resize: vertical; font-size: 1.05rem; line-height: 1.45; }
+#t-przyklady .pigulka { text-align: left; }
+.tlumaczenie { padding: 14px; border-radius: var(--r-m); border: 1px solid color-mix(in srgb, var(--zloto) 45%, transparent); background: var(--pole); display: grid; gap: 6px; margin-bottom: 12px; }
+.tlumaczenie p { margin: 0; }
+.tlumaczenie-tekst { font-size: 1.15rem; font-weight: 600; }
+.tlumaczenie--blad { border-color: color-mix(in srgb, var(--uwaga) 55%, transparent); }
+.ladowanie { color: var(--szary); animation: puls 1.2s ease-in-out infinite alternate; }
+@keyframes puls { from { opacity: .45; } }
+.podsumowanie-analizy { margin: 4px 0 10px; }
+.analiza-zdanie { display: grid; gap: 10px; padding: 14px 0; border-top: 1px solid var(--linia); }
+.zdanie-gora { display: flex; gap: 10px; align-items: flex-start; justify-content: space-between; }
+.zdanie-tekst { margin: 0; font: 600 1.2rem/1.35 var(--font-tytul); }
+.slowa-chipy { display: flex; flex-wrap: wrap; gap: 6px; }
+.slowo-chip { display: grid; justify-items: center; gap: 1px; min-width: 52px; padding: 7px 10px 6px; border-radius: 14px; border: 1px solid var(--szklo-brzeg);
+  background: linear-gradient(160deg, rgba(255,255,255,.16), rgba(255,255,255,.02) 60%), var(--pole); box-shadow: inset 0 1px 0 var(--blask); transition: transform .2s var(--sprezyna); }
+.slowo-chip b { font-size: 1rem; font-weight: 600; }
+.slowo-chip small { font-size: .68rem; color: var(--szary); max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.slowo-chip.typ-cz { border-bottom: 3px solid var(--zloto); }
+.slowo-chip.typ-rz { border-bottom: 3px solid #9cc4ff; }
+.slowo-chip.typ-pz { border-bottom: 3px solid var(--ok); }
+.slowo-chip.typ-fn { opacity: .85; }
+.slowo-chip.typ-nz { border-style: dashed; }
+.slowo-chip.blad { border-color: var(--zle); box-shadow: inset 0 0 0 1px var(--zle); }
+.slowo-chip[aria-expanded="true"] { transform: translateY(-2px); box-shadow: inset 0 1px 0 var(--blask), 0 0 0 2px var(--zloto); }
+.slowo-chip:active { transform: scale(.96); }
+.slowo-szczegol { padding: 14px; border-radius: var(--r-m); background: var(--pole); border: 1px solid var(--szklo-brzeg); display: grid; gap: 8px; animation: wejscie .3s var(--sprezyna); }
+.slowo-szczegol p { margin: 0; }
+.szczegol-gora { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.szczegol-gora h3 { margin: 0; font-size: 1.25rem; }
+.szczegol-gora h3 span { color: var(--zloto); font-weight: 600; }
+.doslownie { margin: 0; color: var(--szary); font-size: .92rem; }
+.doslownie b { color: var(--tekst); }
+.uwagi { margin: 0; padding-left: 20px; display: grid; gap: 8px; }
+.uwaga { display: grid; gap: 2px; }
+.uwaga span { font-size: .9rem; color: var(--szary); }
+.uwaga--blad b { color: var(--zle); }
+@media (max-width: 380px) { .zakladki button span { font-size: .62rem; } .zakladki svg { width: 21px; height: 21px; } }

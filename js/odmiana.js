@@ -342,6 +342,243 @@ dormirse:zasypiać:ue
 ponerse:zakładać, stawać się:=poner
 irse:odchodzić, wyjeżdżać:=ir
 reírse:śmiać się (z czegoś):=reír
+abandonar:porzucać, opuszczać
+aburrirse:nudzić się
+acercarse:zbliżać się
+aclarar:wyjaśniać
+acostumbrarse:przyzwyczajać się
+adelantar:wyprzedzać, przyspieszać
+adorar:uwielbiać
+afectar:wpływać, dotyczyć
+agarrar:chwytać
+alegrarse:cieszyć się
+alejarse:oddalać się
+analizar:analizować
+animar:zachęcać, dodawać otuchy
+anotar:zapisywać, notować
+aplaudir:klaskać
+apreciar:doceniać
+aprovechar:wykorzystywać
+apuntar:zapisywać, celować
+apuntarse:zapisać się (na coś)
+atacar:atakować
+avanzar:posuwać się naprzód
+bastar:wystarczać
+bostezar:ziewać
+brillar:błyszczeć
+bromear:żartować
+calcular:obliczać
+callarse:milknąć
+calmar:uspokajać
+cargar:ładować, nieść
+causar:powodować
+cazar:polować
+charlar:gawędzić
+chocar:zderzać się
+cobrar:pobierać opłatę, zarabiać
+colaborar:współpracować
+colocar:układać, umieszczać
+combinar:łączyć
+comentar:komentować
+comparar:porównywać
+complicar:komplikować
+comprobar:sprawdzać:ue
+comunicar:komunikować
+confirmar:potwierdzać
+conectar:łączyć, podłączać
+conservar:zachowywać
+consultar:konsultować, sprawdzać
+contaminar:zanieczyszczać
+contratar:zatrudniać
+controlar:kontrolować
+conversar:rozmawiać
+criticar:krytykować
+cruzar:przechodzić (przez)
+culpar:obwiniać
+curar:leczyć
+dañar:uszkadzać
+decorar:dekorować
+dedicar:poświęcać
+dedicarse:zajmować się (zawodowo)
+demostrar:udowadniać:ue
+depender:zależeć
+desarrollar:rozwijać
+desear:pragnąć, życzyć
+despegar:startować (samolot)
+destacar:wyróżniać się
+disculparse:przepraszać
+diseñar:projektować
+dudar:wątpić
+educar:wychowywać
+eliminar:usuwać
+empujar:pchać
+engañar:oszukiwać
+ensayar:próbować (próba)
+entrenar:trenować
+envolver:zawijać:ue
+esconder:chować
+evaluar:oceniać:ú
+exagerar:przesadzać
+examinar:badać, egzaminować
+fallar:zawodzić, chybić
+felicitar:gratulować
+fijarse:zwracać uwagę
+formar:tworzyć, kształcić
+fracasar:ponieść porażkę
+frenar:hamować
+golpear:uderzać
+grabar:nagrywać
+guardar:przechowywać, zachowywać
+heredar:dziedziczyć
+indicar:wskazywać
+influir:wpływać
+iniciar:rozpoczynać
+instalar:instalować
+interesar:interesować
+interesarse:interesować się
+investigar:badać
+juntar:łączyć, zbierać
+lanzar:rzucać
+levantar:podnosić
+limitar:ograniczać
+luchar:walczyć
+marcharse:wychodzić, wyjeżdżać
+matar:zabijać
+mencionar:wspominać
+merendar:jeść podwieczorek:ie
+mojar:moczyć
+molestar:przeszkadzać
+mudarse:przeprowadzać się
+navegar:żeglować, surfować (w sieci)
+nombrar:mianować, wymieniać
+observar:obserwować
+obligar:zmuszać
+ocultar:ukrywać
+olvidarse:zapominać (o czymś)
+opinar:sądzić, mieć zdanie
+ordenar:porządkować, rozkazywać
+padecer:cierpieć (na):zc
+pasear:spacerować
+pegar:kleić, uderzyć
+pelear:walczyć, kłócić się
+pescar:łowić ryby
+picar:kłuć, podjadać
+pintar:malować
+planchar:prasować
+plantar:sadzić
+prometer:obiecywać
+pronunciar:wymawiać
+provocar:wywoływać
+publicar:publikować
+rechazar:odrzucać
+rellenar:wypełniać
+renovar:odnawiać:ue
+reparar:naprawiać
+repasar:powtarzać (materiał)
+representar:przedstawiać
+respetar:szanować
+respirar:oddychać
+retrasar:opóźniać
+revisar:sprawdzać
+rezar:modlić się
+rogar:prosić, błagać:ue
+secar:suszyć
+señalar:wskazywać
+sobrar:zostawać (w nadmiarze)
+soportar:znosić
+sorprender:zaskakiwać
+sospechar:podejrzewać
+subrayar:podkreślać
+sudar:pocić się
+sumar:dodawać
+superar:pokonywać, przewyższać
+suspender:oblać, zawiesić
+tardar:zajmować (czas), zwlekać
+transformar:przekształcać
+tropezar:potykać się:ie
+vaciar:opróżniać:í
+valorar:cenić, oceniać
+vigilar:pilnować
+acabarse:kończyć się
+apetecer:mieć ochotę:zc
+aterrizar:lądować
+averiar:uszkadzać:í
+bucear:nurkować
+confundir:mylić
+confundirse:pomylić się
+convivir:mieszkać razem
+cuidarse:dbać o siebie
+debatir:debatować
+decidirse:zdecydować się
+dejarse:zostawić (przez pomyłkę)
+desconectar:odłączać, odpoczywać
+despedirse:żegnać się:i
+dirigirse:zwracać się, kierować się
+disfrazarse:przebierać się
+divorciarse:rozwodzić się
+emborracharse:upijać się
+emocionarse:wzruszać się
+empeorar:pogarszać się
+enfermar:zachorować
+enterarse:dowiadywać się
+esforzarse:starać się:ue
+estropear:psuć
+ganarse:zarabiać (na)
+hacerse:stawać się:=hacer
+imaginarse:wyobrażać sobie
+informarse:dowiadywać się
+inscribirse:zapisywać się
+jubilarse:przejść na emeryturę
+llenar:napełniać
+llevarse:zabierać, dogadywać się
+meterse:wchodzić, wtrącać się
+mirarse:przeglądać się
+moverse:ruszać się:ue
+negarse:odmawiać:ie
+ocuparse:zajmować się
+parecerse:być podobnym:zc
+pararse:zatrzymywać się
+pasarse:przesadzić, wpaść
+perderse:zgubić się:ie
+portarse:zachowywać się
+preguntarse:zastanawiać się
+prepararse:przygotowywać się
+presentarse:przedstawiać się, zgłaszać się
+quitarse:zdejmować (z siebie)
+recuperarse:dochodzić do siebie
+referirse:odnosić się:ie
+relacionarse:utrzymywać kontakty
+retirarse:wycofać się
+romperse:złamać się
+salvarse:ocaleć
+secarse:wycierać się
+separarse:rozstać się
+subirse:wsiadać
+tumbarse:kłaść się (położyć)
+volverse:stawać się, odwracać się:ue
+acordar:uzgadniać:ue
+alimentar:karmić
+ampliar:rozszerzać:í
+arrepentirse:żałować:ie
+atreverse:odważyć się
+cansar:męczyć
+compensar:rekompensować, opłacać się
+concentrarse:koncentrować się
+conformarse:zadowalać się
+dañarse:zranić się
+detectar:wykrywać
+disminuir:zmniejszać
+distraerse:rozpraszać się:=traer
+encargar:zamawiać, zlecać
+entretenerse:zabawiać się:=tener
+implicar:pociągać za sobą
+plantear:przedstawiać (problem)
+reaccionar:reagować
+realizar:realizować
+reflexionar:zastanawiać się
+regresar:wracać
+resultar:okazywać się
+reunirse:spotykać się:ú
 `.trim().split('\n').map(l => { const [inf, pl, f = ''] = l.split(':'); return { inf, pl, f }; });
 
   // --- nieregularne bazy ---

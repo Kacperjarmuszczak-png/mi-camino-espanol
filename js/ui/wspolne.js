@@ -69,11 +69,11 @@ export function zainicjujZnaki() {
   };
   document.addEventListener('focusin', e => {
     const t = e.target;
-    if (t.matches && t.matches('input[data-znaki]')) { pole = t; pasek.hidden = false; document.body.classList.add('z-znakami'); ustawPozycje(); }
+    if (t.matches && t.matches('input[data-znaki], textarea[data-znaki]')) { pole = t; pasek.hidden = false; document.body.classList.add('z-znakami'); ustawPozycje(); }
   });
   document.addEventListener('focusout', () => setTimeout(() => {
     const a = document.activeElement;
-    if (!(a && a.matches && a.matches('input[data-znaki]'))) { pasek.hidden = true; document.body.classList.remove('z-znakami'); }
+    if (!(a && a.matches && a.matches('input[data-znaki], textarea[data-znaki]'))) { pasek.hidden = true; document.body.classList.remove('z-znakami'); }
   }, 120));
   if (window.visualViewport) { visualViewport.addEventListener('resize', ustawPozycje); visualViewport.addEventListener('scroll', ustawPozycje); }
   pasek.addEventListener('pointerdown', e => e.preventDefault());   // pole nie traci fokusu

@@ -51,7 +51,7 @@ export const WARIANTY = {
 };
 
 // Rzeczowniki rodzaju żeńskiego z rodzajnikiem „el” (przed akcentowanym a-/ha-) i inne wyjątki rodzaju.
-export const RODZAJ_WYJATKI = { 'el agua': 'f', 'el agua con gas': 'f', 'el agua sin gas': 'f', 'el aula': 'f', 'el hambre': 'f', 'el arma': 'f' };
+export const RODZAJ_WYJATKI = { 'el agua': 'f', 'el agua con gas': 'f', 'el agua sin gas': 'f', 'el aula': 'f', 'el hambre': 'f', 'el arma': 'f', 'el águila': 'f', 'el aula': 'f' };
 
 // Liczba mnoga, której nie da się bezpiecznie policzyć regułą.
 export const MNOGA = {
