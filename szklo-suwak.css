@@ -1,0 +1,44 @@
+/* Suwak z szklaną soczewką (szklo-suwak.js) i przełącznik iOS (.szk-przel): panel i przełącznik języka na podstronach (19.11) */
+/* --- suwak segmentów (zakładki, Pakiet / Kwota) --- */
+.szk-seg { position: relative; isolation: isolate; touch-action: pan-y; -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent; }
+.szk-seg__lens { position: absolute; z-index: 0; top: var(--szk-pad, 4px); left: 0; height: calc(100% - 2 * var(--szk-pad, 4px)); border-radius: 999px; pointer-events: none;
+  transition: transform .5s cubic-bezier(.3, 1.35, .45, 1); will-change: transform; }
+.szk-seg.is-drag .szk-seg__lens { transition: none; }
+.szk-seg.is-drag.is-dogon .szk-seg__lens { transition: transform .2s cubic-bezier(.25, .9, .35, 1); }
+/* soczewka zawsze w pełni zaokrąglona, nawet gdy pojemnik ma własny styl dla <span> (np. kalkulator: 14 px, ramka) */
+.szk-seg > .szk-seg__lens, .szk-seg .soczewka__szklo { border-radius: 999px; border: 0; padding: 0; }
+.szk-seg > :not(.szk-seg__lens) { position: relative; z-index: 1; background: none !important; transition: color .25s ease, transform .3s ease; }
+.tabs.szk-seg button[aria-current="true"], .szk-seg .is-wyb { color: var(--gold); }
+.szk-seg.is-drag .is-pod { transform: scale(1.08); }
+
+/* przełącznik języka na podstronach (prywatność, regulamin bonów, przygotowanie): szkło jak wyspa i kula (kropla.css) */
+.jezyki.szk-seg { --szk-pad: 3px; gap: 2px; border: 0 !important; background: var(--kropla-tlo); box-shadow: var(--kropla-cien);
+  -webkit-backdrop-filter: var(--kropla-filtr); backdrop-filter: var(--kropla-filtr); }
+.jezyki.szk-seg a { padding: 7px 12px; color: var(--muted) !important; -webkit-touch-callout: none; -webkit-user-drag: none; }
+.jezyki.szk-seg a.is-wyb { color: var(--gold-light, #e2c98b) !important; }
+/* soczewka wybranego języka cały czas wygląda jak przy dotknięciu (wybór klienta 19.11, zrzut ze środkowym stanem):
+   powiększona ponad szkło, jaśniejsza, z mieniącą się krawędzią (soczewka.css) */
+.jezyki.szk-seg .soczewka__szklo { transform: scale(1.32);
+  background: linear-gradient(180deg, rgba(255, 255, 255, .16), rgba(255, 255, 255, .04)); }
+.jezyki.szk-seg .soczewka__szklo::after { opacity: 1; }
+/* --- przełącznik jak w iOS: tor w szkle, gałka szklana, po włączeniu tor złoty --- */
+input[type="checkbox"].szk-przel {
+  -webkit-appearance: none; appearance: none; flex: none; position: relative; width: 50px !important; height: 30px !important;
+  margin: 0; padding: 0; border: 0; border-radius: 999px; cursor: pointer;
+  background: rgba(255, 255, 255, .12); box-shadow: inset 0 0 0 .5px rgba(255, 255, 255, .25), inset 0 1px 2px rgba(0, 0, 0, .35);
+  transition: background-color .25s ease;
+}
+input[type="checkbox"].szk-przel:checked { background: var(--gold); }
+input[type="checkbox"].szk-przel::before {
+  content: ""; position: absolute; top: 2px; left: 2px; width: 26px; height: 26px; border-radius: 999px;
+  background: linear-gradient(180deg, #fff, #ece8df); box-shadow: 0 2px 6px rgba(0, 0, 0, .35), inset 0 .5px 0 rgba(255, 255, 255, .9);
+  transition: transform .45s cubic-bezier(.3, 1.45, .45, 1);
+}
+input[type="checkbox"].szk-przel:checked::before { transform: translateX(20px); }
+/* przy dotknięciu gałka zmienia się w szklaną soczewkę: większa, przejrzysta, z mieniącą się krawędzią */
+input[type="checkbox"].szk-przel:active::before {
+  transform: scale(1.32, 1.2); background: var(--kropla-blask), rgba(255, 255, 255, .18); box-shadow: var(--kropla-cien);
+  transition: transform .16s ease-out;
+}
+input[type="checkbox"].szk-przel:checked:active::before { transform: translateX(20px) scale(1.32, 1.2); }
+@media (prefers-reduced-motion: reduce) { .szk-seg__lens, input.szk-przel::before { transition-duration: 1ms !important; } }

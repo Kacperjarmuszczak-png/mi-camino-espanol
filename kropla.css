@@ -1,0 +1,24 @@
+/* Szkło „kropla” jak w iOS 26 (wybór klienta 19.11): przejrzyste, lekkie rozmycie i nasycenie tego, co pod spodem,
+   jasny brzeg u góry, mieniąca się krawędź (błękit / ciepłe złoto). Jedno źródło dla strony (kula, karuzela,
+   „Na górę / Na dół”, wyspa, języki, czat - kula-karuzela.css, kula-pion.css) i panelu (panel-szklo.css). */
+:root {
+  --kropla-blask: radial-gradient(120% 90% at 30% 18%, rgba(255, 255, 255, .3), rgba(255, 255, 255, .05) 42%, rgba(255, 255, 255, 0) 60%),
+    radial-gradient(90% 70% at 70% 92%, rgba(255, 255, 255, .14), transparent 60%);
+  --kropla-tlo: var(--kropla-blask), rgba(16, 22, 18, .18);
+  /* małe okrągłe przyciski z ikoną: blask na środku u góry, żeby ikona nie wyglądała na przesuniętą (zrzut klienta 19.11) */
+  --kropla-blask-srodek: radial-gradient(110% 80% at 50% 12%, rgba(255, 255, 255, .26), rgba(255, 255, 255, .04) 45%, rgba(255, 255, 255, 0) 62%),
+    radial-gradient(90% 60% at 50% 100%, rgba(255, 255, 255, .12), transparent 60%);
+  --kropla-cien-srodek: inset 0 1.5px 1px rgba(255, 255, 255, .8), inset 0 -1.5px 2px rgba(255, 255, 255, .25),
+    inset 2.5px 0 3px -1px rgba(140, 210, 255, .4), inset -2.5px 0 3px -1px rgba(255, 185, 125, .4),
+    0 8px 18px -10px rgba(0, 0, 0, .7), 0 0 0 .5px rgba(255, 255, 255, .35);
+  --kropla-filtr: blur(3px) saturate(185%) brightness(1.12);
+  --kropla-cien: inset 0 1.5px 1px rgba(255, 255, 255, .85), inset 0 -1.5px 2px rgba(255, 255, 255, .25),
+    inset 2.5px 0 3px -1px rgba(140, 210, 255, .45), inset -2.5px 0 3px -1px rgba(255, 185, 125, .4),
+    0 10px 24px -10px rgba(0, 0, 0, .7), 0 0 0 .5px rgba(255, 255, 255, .35);
+  /* przyciemnienie pod tekstem (otwarte menu wyspy, czat, karty panelu) */
+  --kropla-ciemno: rgba(16, 22, 18, .5);
+  /* złoto przycisków: jedno dla całej strony, jak .btn--gold na stronie głównej (style.css + effects.css) -
+     klient 19.11: „ten złotszy u góry, a nie ten wyblakły” (płaskie #CEB588 w czacie, panelu, galerii, bonie) */
+  --zloto: linear-gradient(135deg, #e2c98b, #c5a253);
+  --zloto-cien: inset 0 1px 0 rgba(255, 255, 255, .55), 0 10px 22px -14px rgba(30, 40, 33, .45);
+}

@@ -1,0 +1,56 @@
+/* Wszystkie przyciski w szkle jak kula, wyspa i kapsułki (kropla.css) - zatwierdzone przez klienta 19.11
+   (wcześniej podgląd ?przyciski=1):
+   - złote przyciski bez zmian (oryginalne złoto - klient 19.11),
+   - pozostałe: przejrzysta kropla, wybór (filtry galerii, „Nowa rozmowa / Mam już kod”, pakiety w kalkulatorze)
+     jako suwak z soczewką (szklo-suwak.js, przyciski-szklo.js), pola wyboru w kalkulatorze jako przełączniki iOS,
+   - dotknięcie: lekkie sprężyste wciśnięcie (tylko transform). */
+/* Złote przyciski (.btn--gold, przyciski czatu, wybrany dzień kalendarza) zostają w oryginalnym wyglądzie -
+   prośba klienta 19.11: złote szkło psuło kolory. */
+/* przejrzysta kropla */
+html .btn--ghost, html .btn--glass, html .kal__nav button,
+html .kalk__stepper button, html .msg__close, html .msg__logout,
+html .msg__kopiuj, html .msg__notify-no,
+html .filters, html .msg__tabs, html .kalk__seg {
+  background: var(--kropla-tlo) !important; border: 0 !important; box-shadow: var(--kropla-cien) !important;
+  -webkit-backdrop-filter: var(--kropla-filtr); backdrop-filter: var(--kropla-filtr);
+}
+html .btn--ghost { color: var(--on-dark, #f1ede2) !important; }
+html .kal__nav button:disabled { opacity: .35; }
+/* wolne dni w kalendarzu: małe szklane kafelki */
+html .kal__d.is-free:not(.is-selected) {
+  background: var(--kropla-blask), rgba(226, 201, 139, .07); border-color: transparent;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .35), inset 0 0 0 .5px rgba(226, 201, 139, .45), 0 6px 14px -10px rgba(0, 0, 0, .7);
+}
+/* wciśnięcie jak w iOS (bez złotych przycisków - te zachowują się jak dawniej) */
+html .btn--ghost, html .btn--glass, html .kal__nav button,
+html .kalk__stepper button, html .kal__d.is-free:not(.is-selected) { transition: transform .45s cubic-bezier(.3, 1.55, .45, 1), filter .2s ease; }
+html .btn--ghost:active, html .btn--glass:active,
+html .kal__nav button:active, html .kalk__stepper button:active, html .kal__d.is-free:not(.is-selected):active {
+  transform: scale(.95); filter: brightness(1.12); transition: transform .12s ease-out, filter .12s ease-out;
+}
+html .btn--ghost:hover, html .btn--glass:hover { transform: none; }
+
+/* suwaki wyboru z soczewką: pojemnik pigułka, opcje bez własnego tła i ramki */
+html .szk-seg { --szk-pad: 4px; border-radius: 999px !important; padding: 4px; gap: 0; }
+html .szk-seg > :not(.szk-seg__lens), html .kalk__seg.szk-seg label > span {
+  border: 0 !important; background: none !important; box-shadow: none !important; color: rgba(241, 237, 226, .72) !important;
+}
+html .szk-seg .is-wyb, html .kalk__seg.szk-seg .is-wyb > span { color: var(--gold-light, #e2c98b) !important; }
+html .kalk__seg.szk-seg label > span { border-radius: 999px; }
+/* pigułka filtrów na środku sekcji (zrzut klienta 19.11: stała przy lewej krawędzi) */
+html .filters.szk-seg { display: flex; flex-wrap: nowrap; width: fit-content; max-width: 100%; margin-left: auto; margin-right: auto; }
+
+/* małe okrągłe przyciski z ikoną: ikona zawsze dokładnie na środku (też w Safari) i symetryczny blask */
+html .msg__close, html .kal__nav button, html .kalk__stepper button {
+  display: grid !important; place-items: center; padding: 0 !important; line-height: 0; gap: 0;
+  background: var(--kropla-blask-srodek), rgba(16, 22, 18, .18) !important; box-shadow: var(--kropla-cien-srodek) !important;
+}
+html .msg__close svg, html .kal__nav button svg { display: block; margin: 0; }
+/* więcej kategorii (zdjęcia z panelu, 19.11): na telefonie ciaśniejsze napisy, a gdy i tak się nie mieszczą - przewijanie w bok */
+@media (max-width: 760px) {
+  html .filters.szk-seg { overflow-x: auto; scrollbar-width: none; }
+  html .filters.szk-seg::-webkit-scrollbar { display: none; }
+  html .filters.szk-seg .filter { flex: none; padding: .55rem .72rem; letter-spacing: .1em; font-size: .72rem; }
+}
+/* „Wyloguj z tego urządzenia” w czacie: szklana pigułka, zaokrąglone rogi (zrzut klienta 19.11) */
+html .msg__logout { border-radius: 999px !important; padding: 8px 16px !important; text-decoration: none !important; }

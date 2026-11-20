@@ -1,0 +1,452 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <!-- Strona do nauki hiszpańskiego: wygląd skopiowany ze strony Fotografia JKF (repozytorium Fotografia-jkf) -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#1c241f">
+  <meta name="color-scheme" content="dark">
+  <style>html { background: #1c241f; } html.jasny { background: #f4efe3; }</style>
+  <script>try { if (localStorage.getItem('jkf-motyw') === 'jasny') { document.documentElement.classList.add('jasny'); document.querySelector('meta[name="theme-color"]').content = '#f4efe3'; } } catch (e) {}</script>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Español JKF">
+  <meta name="format-detection" content="telephone=no">
+  <title>Español JKF</title>
+  <meta name="description" content="Nauka hiszpańskiego: ponad 800 słówek do codziennej rozmowy, ponad 300 czasowników odmienionych w 7 czasach, fiszki, quiz, zwroty i gramatyka.">
+  <link rel="preload" href="fonts/jost-latin-300-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="fonts/cormorant-garamond-latin-500-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="czcionki.css">
+  <link rel="preload" as="image" href="img/hero.jpg">
+  <link rel="preload" as="image" href="img/hero-2.jpg">
+  <script>
+    if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+    if (location.hash) history.replaceState(null, '', location.pathname + location.search);
+  </script>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="effects.css">
+  <link rel="stylesheet" href="wyspa.css">
+  <link rel="stylesheet" href="wydajnosc.css">
+  <link rel="stylesheet" href="pasek.css">
+  <link rel="stylesheet" href="kropla.css">
+  <link rel="stylesheet" href="kula-pion.css">
+  <link rel="stylesheet" href="kula-karuzela.css">
+  <link rel="stylesheet" href="soczewka.css">
+  <link rel="stylesheet" href="szklo-suwak.css">
+  <link rel="stylesheet" href="przyciski-szklo.css">
+  <link rel="stylesheet" href="jasny.css">
+  <link rel="stylesheet" href="nauka.css">
+</head>
+<body>
+
+<!-- ============ NAGŁÓWEK ============ -->
+<header class="topbar" id="top">
+  <div class="wrap topbar__inner">
+    <a href="#top" class="brand" aria-label="Na górę strony">
+      <span class="logo-slot logo-slot--small"><img src="img/logo-znak.svg" alt="Español JKF"></span>
+    </a>
+
+    <div class="island" id="island">
+      <button type="button" class="island__pill" aria-expanded="false" aria-controls="island-panel">
+        <img class="island__logo" src="img/logo-znak.svg" alt="" aria-hidden="true">
+        <span class="island__label island__label--menu">Menu</span>
+        <span class="island__label island__label--close" aria-hidden="true">Zamknij</span>
+        <img class="island__jkf" src="img/logo-jkf.svg" alt="" aria-hidden="true">
+      </button>
+      <div class="island__panel" id="island-panel">
+        <div class="island__content">
+        <button type="button" class="island__close" aria-label="Zamknij menu">
+          <img class="island__logo" src="img/logo-znak.svg" alt="" aria-hidden="true">
+          <span class="island__label">Zamknij</span>
+          <img class="island__jkf" src="img/logo-jkf.svg" alt="" aria-hidden="true">
+        </button>
+        <nav class="island__menu" aria-label="Menu główne">
+          <a href="#fiszki"><small>01</small><span>Fiszki</span></a>
+          <a href="#quiz"><small>02</small><span>Quiz</span></a>
+          <a href="#odmiana"><small>03</small><span>Odmiana czasowników</span></a>
+          <a href="#slownik"><small>04</small><span>Słownik</span></a>
+          <a href="#zwroty"><small>05</small><span>Zwroty</span></a>
+          <a href="#gramatyka"><small>06</small><span>Gramatyka</span></a>
+          <a href="#wymowa" class="btn btn--gold"><span>Wymowa w pigułce</span></a>
+        </nav>
+        </div>
+      </div>
+    </div>
+
+    <nav class="nav" id="nav">
+      <a href="#fiszki">Fiszki</a>
+      <a href="#quiz">Quiz</a>
+      <a href="#odmiana">Odmiana</a>
+      <a href="#slownik">Słownik</a>
+      <a href="#zwroty">Zwroty</a>
+      <a href="#fiszki" class="btn btn--gold btn--sm">Zacznij naukę</a>
+    </nav>
+
+    <button class="burger" id="burger" aria-label="Menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<main>
+
+<!-- ============ HERO ============ -->
+<section class="hero">
+  <div class="orbs" aria-hidden="true"><span></span><span></span><span></span></div>
+  <div class="wrap hero__grid">
+    <div class="hero__text">
+      <div class="logo-slot logo-slot--big logo-es" aria-label="Español JKF">
+        <span class="logo-es__gora">Español</span>
+        <img src="img/logo-znak.svg" alt="">
+        <span class="logo-es__dol">JKF</span>
+      </div>
+
+      <p class="eyebrow">Hiszpański do codziennej rozmowy</p>
+      <h1>Słowa, które<br><em>otwierają drzwi</em></h1>
+      <p class="lead">Ucz się hiszpańskiego po kawałku: słówka z wymową, czasowniki odmienione we wszystkich najważniejszych czasach, gotowe zwroty na wyjazd i krótkie zasady gramatyki. Postęp zapisuje się w Twoim telefonie.</p>
+      <div class="hero__cta">
+        <a href="#fiszki" class="btn btn--gold">Zacznij od fiszek</a>
+        <a href="#odmiana" class="btn btn--ghost">Odmień czasownik</a>
+      </div>
+    </div>
+
+    <div class="hero__media">
+      <figure class="photo photo--tall" style="--plik:url('img/hero.jpg'); --pos:50% 50%"></figure>
+      <figure class="photo photo--small" style="--plik:url('img/hero-2.jpg'); --pos:50% 50%"></figure>
+      <span class="hero__frame" aria-hidden="true"></span>
+      <div class="hero__chip glass"><i>✦</i> Słówka · Czasowniki · Zwroty</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PASEK ============ -->
+<div class="ribbon">
+  <div class="wrap ribbon__inner">
+    <span>Słówka</span><i>✦</i>
+    <span>Czasowniki</span><i>✦</i>
+    <span>Zwroty</span><i>✦</i>
+    <span>Wymowa</span><i>✦</i>
+    <span>Gramatyka</span><i>✦</i>
+    <span>Quiz</span>
+  </div>
+</div>
+
+<!-- ============ MANIFEST ============ -->
+<section class="statement" data-scroll>
+  <div class="statement__sticky">
+    <div class="wrap">
+      <p class="statement__text" id="statement">Język zostaje w głowie, gdy <em>używasz go codziennie</em>: kilka słówek rano, jedno zdanie na głos wieczorem. Po miesiącu to te minuty <em>mówią najwięcej.</em></p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ O NAUCE ============ -->
+<section class="section" id="o-nauce">
+  <div class="wrap about">
+    <figure class="photo photo--portrait" style="--plik:url('img/o-mnie.jpg'); --pos:50% 50%"></figure>
+    <div class="about__text">
+      <p class="eyebrow">O nauce</p>
+      <h2>Hiszpański <em>bez stresu</em></h2>
+      <p>Wszystko jest na jednej stronie i działa bez logowania. Zacznij od słówek z fiszek, potem sprawdź się w quizie. Gdy chcesz budować zdania, otwórz odmianę czasowników: wpisz dowolny z listy, a zobaczysz go w siedmiu czasach.</p>
+      <p>Przy każdym słowie jest przycisk wymowy. Telefon czyta je hiszpańskim głosem, więc od razu słyszysz, jak to brzmi.</p>
+      <ul class="stats">
+        <li><strong id="ile-slow">880+</strong><span>słówek</span></li>
+        <li><strong id="ile-czas">330+</strong><span>czasowników</span></li>
+        <li><strong>7</strong><span>czasów w odmianie</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CZEGO SIĘ NAUCZYSZ ============ -->
+<section class="section section--sage" id="program">
+  <div class="orbs" aria-hidden="true"><span></span><span></span><span></span></div>
+  <div class="wrap">
+    <div class="section__head">
+      <p class="eyebrow">Program</p>
+      <h2>Czego się nauczysz</h2>
+    </div>
+    <div class="cards">
+      <article class="card"><span class="card__num">01</span><h3>Słówka na co dzień</h3><p>Ponad 800 słów w 25 tematach: jedzenie, dom, miasto, podróże, zdrowie, praca, uczucia i wiele więcej. Rzeczowniki od razu z rodzajnikiem.</p></article>
+      <article class="card"><span class="card__num">02</span><h3>Czasowniki</h3><p>Ponad 300 najczęstszych czasowników, także nieregularne i zwrotne. Każdy odmieniony w 7 czasach, z imiesłowem i gerundio.</p></article>
+      <article class="card"><span class="card__num">03</span><h3>Gotowe zwroty</h3><p>Ponad 150 zdań na restaurację, zakupy, hotel, drogę, wizytę u lekarza i rozmowę przez telefon.</p></article>
+      <article class="card"><span class="card__num">04</span><h3>Wymowa</h3><p>Każde słowo i zdanie możesz odsłuchać. Krótka ściąga pokazuje, jak czytać ll, ñ, j, rr i resztę liter.</p></article>
+      <article class="card"><span class="card__num">05</span><h3>Gramatyka</h3><p>Ser czy estar, por czy para, tú czy usted. Najważniejsze zasady krótko i z przykładami.</p></article>
+      <article class="card"><span class="card__num">06</span><h3>Sprawdzanie siebie</h3><p>Quiz, fiszki i ćwiczenie odmiany pokazują, co już umiesz. Wynik zapisuje się na Twoim urządzeniu.</p></article>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ZOOM ============ -->
+<section class="zoom" data-scroll>
+  <div class="zoom__sticky">
+    <figure class="photo zoom__photo" style="--plik:url('img/duze.jpg'); --pos:50% 50%" data-tel="img/duze-tel.jpg" data-tel-pos="50% 50%"></figure>
+    <div class="zoom__caption glass">
+      <p class="eyebrow">Każdy dzień</p>
+      <h2>Codziennie <em>po trochu</em></h2>
+      <p>Dziesięć minut dziennie daje więcej niż dwie godziny raz w tygodniu. Wróć jutro, a fiszki pokażą najpierw słowa, których jeszcze nie umiesz.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FISZKI ============ -->
+<section class="section" id="fiszki">
+  <div class="orbs" aria-hidden="true"><span></span><span></span><span></span></div>
+  <div class="wrap">
+    <div class="section__head">
+      <p class="eyebrow">Fiszki</p>
+      <h2>Ucz się <em>słówek</em></h2>
+    </div>
+    <div class="nk-panel">
+      <div class="nk-wiersz">
+        <label class="nk-wybor"><span>Temat</span><select id="f-temat" aria-label="Temat fiszek"></select></label>
+        <div class="nk-seg" id="f-kier" role="group" aria-label="Najpierw pokazuj">
+          <button type="button" data-k="es" class="is-active">ES → PL</button>
+          <button type="button" data-k="pl">PL → ES</button>
+        </div>
+      </div>
+      <div class="nk-pasek" aria-hidden="true"><i id="f-pasek"></i></div>
+      <div class="nk-scena">
+        <div class="nk-fiszka" id="fiszka" tabindex="0" role="button" aria-label="Odwróć kartę">
+          <div class="nk-strona"><small id="f-podp1"></small><b id="f-przod"></b><span class="nk-podpowiedz">stuknij, żeby odwrócić</span></div>
+          <div class="nk-strona nk-strona--tyl"><small id="f-podp2"></small><b id="f-tyl"></b></div>
+        </div>
+      </div>
+      <div class="nk-wiersz nk-wiersz--srodek">
+        <span class="nk-licznik" id="f-licznik"></span>
+        <button type="button" class="nk-glos" id="f-glos" aria-label="Posłuchaj wymowy"></button>
+      </div>
+      <div class="nk-przyciski">
+        <button type="button" class="btn btn--ghost" id="f-nie">Jeszcze nie</button>
+        <button type="button" class="btn btn--gold" id="f-tak">Umiem</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ QUIZ ============ -->
+<section class="section section--sage" id="quiz">
+  <div class="orbs" aria-hidden="true"><span></span><span></span><span></span></div>
+  <div class="wrap">
+    <div class="section__head">
+      <p class="eyebrow">Quiz</p>
+      <h2>Sprawdź, <em>ile umiesz</em></h2>
+    </div>
+    <div class="nk-panel">
+      <div class="nk-wiersz">
+        <label class="nk-wybor"><span>Temat</span><select id="q-temat" aria-label="Temat quizu"></select></label>
+        <div class="nk-seg" id="q-kier" role="group" aria-label="Kierunek pytań">
+          <button type="button" data-k="es" class="is-active">ES → PL</button>
+          <button type="button" data-k="pl">PL → ES</button>
+        </div>
+      </div>
+      <div id="q-tresc" aria-live="polite"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ODMIANA ============ -->
+<section class="section" id="odmiana">
+  <div class="wrap">
+    <div class="section__head">
+      <p class="eyebrow">Czasowniki</p>
+      <h2>Odmiana <em>czasowników</em></h2>
+    </div>
+    <div class="nk-panel">
+      <div class="nk-szukaj">
+        <input id="o-szukaj" type="search" list="o-lista" placeholder="Wpisz czasownik, np. tener albo „mieć”" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Szukaj czasownika">
+        <datalist id="o-lista"></datalist>
+        <button type="button" class="btn btn--ghost btn--sm" id="o-losuj">Losuj</button>
+      </div>
+      <div class="nk-czas-naglowek">
+        <h3 id="o-bezok"></h3>
+        <p id="o-znaczenie"></p>
+        <p class="nk-male" id="o-formy"></p>
+      </div>
+      <div class="nk-czasy" id="o-czasy" role="tablist" aria-label="Czas"></div>
+      <p class="nk-male" id="o-opis"></p>
+      <div class="nk-tabela"><table id="o-tabela"></table></div>
+
+      <div class="nk-cwicz">
+        <p class="eyebrow">Ćwiczenie</p>
+        <p class="nk-zadanie" id="c-zadanie"></p>
+        <form class="nk-pole" id="c-form" autocomplete="off">
+          <input id="c-wpis" type="text" placeholder="wpisz formę" autocapitalize="off" autocorrect="off" spellcheck="false" aria-label="Forma czasownika">
+          <button class="btn btn--gold btn--sm" id="c-sprawdz" type="submit">Sprawdź</button>
+        </form>
+        <div class="nk-klawisze" id="c-klawisze"></div>
+        <p class="nk-komunikat" id="c-komunikat" aria-live="polite"></p>
+        <p class="nk-male">Seria dobrych odpowiedzi: <b id="c-seria">0</b> · najlepsza: <b id="c-najlepsza">0</b></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ JAK SIĘ UCZYĆ ============ -->
+<section class="section section--deep">
+  <div class="wrap">
+    <div class="section__head section__head--light">
+      <p class="eyebrow">Jak się uczyć</p>
+      <h2>Cztery proste kroki</h2>
+    </div>
+    <ol class="steps">
+      <li><span>1</span><h3>Słówka</h3><p>Wybierz temat w fiszkach i przejdź talię. „Umiem” odkłada słowo na bok.</p></li>
+      <li><span>2</span><h3>Głos</h3><p>Odsłuchaj każde słowo i powtórz na głos. Wymowa zostaje w pamięci razem ze słowem.</p></li>
+      <li><span>3</span><h3>Zdania</h3><p>Odmień czasownik i ułóż z nim krótkie zdanie o sobie: hoy como paella.</p></li>
+      <li><span>4</span><h3>Sprawdzian</h3><p>Raz w tygodniu zrób quiz. Pomyłki wróć przejrzeć w fiszkach.</p></li>
+    </ol>
+  </div>
+</section>
+
+<!-- ============ SŁOWNIK ============ -->
+<section class="section" id="slownik">
+  <div class="wrap">
+    <div class="section__head">
+      <p class="eyebrow">Słownik</p>
+      <h2>Słowa na <em>każdy dzień</em></h2>
+    </div>
+    <div class="nk-panel">
+      <div class="nk-szukaj">
+        <input id="s-szukaj" type="search" placeholder="Szukaj po polsku albo po hiszpańsku" autocomplete="off" spellcheck="false" aria-label="Szukaj słowa">
+      </div>
+      <div class="nk-wiersz">
+        <label class="nk-wybor"><span>Temat</span><select id="s-temat" aria-label="Temat słownika"></select></label>
+        <span class="nk-licznik" id="s-ile"></span>
+      </div>
+      <ul class="nk-lista" id="s-lista"></ul>
+      <button type="button" class="btn btn--ghost btn--sm nk-wiecej" id="s-wiecej" hidden>Pokaż więcej</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ZWROTY ============ -->
+<section class="section section--sage" id="zwroty">
+  <div class="orbs" aria-hidden="true"><span></span><span></span><span></span></div>
+  <div class="wrap">
+    <div class="section__head">
+      <p class="eyebrow">Zwroty</p>
+      <h2>Gotowe <em>zdania</em></h2>
+    </div>
+    <div class="nk-panel">
+      <div class="nk-wiersz">
+        <label class="nk-wybor"><span>Sytuacja</span><select id="z-temat" aria-label="Sytuacja"></select></label>
+        <span class="nk-licznik" id="z-ile"></span>
+      </div>
+      <ul class="nk-lista nk-lista--zdania" id="z-lista"></ul>
+    </div>
+  </div>
+</section>
+
+<!-- ============ GRAMATYKA ============ -->
+<section class="section" id="gramatyka">
+  <div class="wrap">
+    <div class="section__head">
+      <p class="eyebrow">Gramatyka</p>
+      <h2>Najważniejsze <em>zasady</em></h2>
+    </div>
+    <div class="faq">
+      <details class="faq__q">
+        <summary>Ser czy estar? Oba znaczą „być”</summary>
+        <p><strong>Ser</strong> mówi, kim lub czym ktoś jest na stałe: pochodzenie, zawód, cechy, godzina. <em>Soy de Polonia. Es médico. Son las tres.</em><br><strong>Estar</strong> mówi o stanie i miejscu: <em>Estoy cansado. Madrid está en España.</em></p>
+      </details>
+      <details class="faq__q">
+        <summary>Tú czy usted?</summary>
+        <p><strong>Tú</strong> to „ty”: do znajomych, rówieśników, rodziny. <strong>Usted</strong> to „Pan / Pani” i odmienia się jak 3. osoba: <em>¿Cómo está usted?</em> W Hiszpanii szybko przechodzi się na „tú”. W liczbie mnogiej: <strong>vosotros</strong> (wy) w Hiszpanii, <strong>ustedes</strong> w Ameryce Łacińskiej i grzecznościowo.</p>
+      </details>
+      <details class="faq__q">
+        <summary>Rodzaj: el czy la?</summary>
+        <p>Większość słów na <strong>-o</strong> jest męska (<em>el libro</em>), na <strong>-a</strong> żeńska (<em>la casa</em>). Wyjątki warto zapamiętać: <em>el día, el mapa, el problema, la mano, la foto</em>. Słowa na <strong>-ción, -dad</strong> są żeńskie: <em>la estación, la ciudad</em>. Liczba mnoga: <em>los</em> i <em>las</em>.</p>
+      </details>
+      <details class="faq__q">
+        <summary>Liczba mnoga</summary>
+        <p>Po samogłosce dodajesz <strong>-s</strong> (<em>casa → casas</em>), po spółgłosce <strong>-es</strong> (<em>ciudad → ciudades</em>). Końcówka -z zmienia się w -ces: <em>lápiz → lápices</em>.</p>
+      </details>
+      <details class="faq__q">
+        <summary>Por czy para?</summary>
+        <p><strong>Para</strong> to cel i odbiorca: <em>Es para ti. Estudio para hablar con amigos.</em><br><strong>Por</strong> to przyczyna, droga, czas i wymiana: <em>Gracias por todo. Paseo por el parque. Por la mañana. Lo compré por diez euros.</em></p>
+      </details>
+      <details class="faq__q">
+        <summary>Jak powiedzieć „lubię”?</summary>
+        <p>Przez <strong>gustar</strong>, czyli „podobać się”: <em>Me gusta el café</em> (podoba mi się kawa). Przy liczbie mnogiej: <em>Me gustan los gatos</em>. Kto lubi: <em>me, te, le, nos, os, les</em>. Tak samo działa <em>encantar</em> (uwielbiać) i <em>doler</em> (boleć): <em>Me duele la cabeza.</em></p>
+      </details>
+      <details class="faq__q">
+        <summary>Przeczenie i pytania</summary>
+        <p>„Nie” stawiasz przed czasownikiem: <em>No hablo inglés.</em> Podwójne przeczenie jest poprawne: <em>No tengo nada. No viene nadie.</em> Pytanie i wykrzyknienie mają znak także na początku: <strong>¿</strong>Qué tal<strong>?</strong> <strong>¡</strong>Hola<strong>!</strong></p>
+      </details>
+      <details class="faq__q">
+        <summary>Akcent: kiedy piszę kreskę?</summary>
+        <p>Słowa na samogłoskę, -n albo -s akcentujesz na przedostatnią sylabę (<em>casa, hablan</em>), resztę na ostatnią (<em>hablar, ciudad</em>). Kreska (<em>á, é, í, ó, ú</em>) pokazuje wyjątek: <em>café, árbol, teléfono</em>. Odróżnia też słowa: <em>si</em> (jeśli) i <em>sí</em> (tak), <em>tu</em> (twój) i <em>tú</em> (ty).</p>
+      </details>
+      <details class="faq__q">
+        <summary>Który czas przeszły wybrać?</summary>
+        <p><strong>Perfecto</strong> (he comido) to czas, który jeszcze trwa: dziś, w tym tygodniu. <strong>Indefinido</strong> (comí) to zamknięta przeszłość: wczoraj, w 2020. <strong>Imperfecto</strong> (comía) opisuje tło i zwyczaje: <em>Cuando era niño, comía mucho.</em></p>
+      </details>
+      <details class="faq__q">
+        <summary>Przyszłość bez czasu przyszłego</summary>
+        <p>W rozmowie najczęściej mówi się <strong>ir a + bezokolicznik</strong>: <em>Voy a comer. Vamos a viajar a México.</em> To tak, jak polskie „będę jadł”.</p>
+      </details>
+      <details class="faq__q">
+        <summary>„Hay”, czyli „jest / są”</summary>
+        <p><strong>Hay</strong> mówi, że coś istnieje: <em>Hay un bar aquí. Hay muchas personas.</em> Pytanie: <em>¿Hay wifi?</em> „Trzeba” to <strong>hay que</strong>: <em>Hay que pagar.</em></p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ============ WYMOWA ============ -->
+<section class="section section--sage" id="wymowa">
+  <div class="orbs" aria-hidden="true"><span></span><span></span><span></span></div>
+  <div class="wrap contact">
+    <div class="contact__info">
+      <p class="eyebrow">Wymowa w pigułce</p>
+      <ul class="contact__list nk-wymowa" id="wymowa-lista">
+        <li><span>ll, y</span><b data-mow="calle, yo">jak polskie „j”: calle, yo</b></li>
+        <li><span>ñ</span><b data-mow="España, mañana">jak „ń”: España, mañana</b></li>
+        <li><span>j, ge, gi</span><b data-mow="jamón, gente">jak „ch”: jamón, gente</b></li>
+        <li><span>h</span><b data-mow="hola, hotel">nieme: hola, hotel</b></li>
+        <li><span>ce, ci, z</span><b data-mow="cerveza, zapato">w Hiszpanii jak angielskie „th”: cerveza</b></li>
+        <li><span>que, qui</span><b data-mow="queso, aquí">„ke”, „ki”: queso, aquí</b></li>
+        <li><span>gue, gui</span><b data-mow="guerra, guitarra">„ge”, „gi”: guerra, guitarra</b></li>
+        <li><span>rr</span><b data-mow="perro, Roma">mocne, drżące „r”: perro, Roma</b></li>
+        <li><span>v</span><b data-mow="vino, vaso">jak „b”: vino, vaso</b></li>
+      </ul>
+      <p class="nk-male">Stuknij wiersz, żeby usłyszeć przykład.</p>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ============ STOPKA ============ -->
+<footer class="footer">
+  <div class="wrap footer__inner">
+    <span class="logo-slot logo-slot--small logo-slot--light"><img src="img/logo-znak.svg" alt="Español JKF"></span>
+    <p>© <span id="year"></span> Español JKF · Kacper Jarmuszczak. Postęp nauki zapisuje się tylko na tym urządzeniu.
+      <button type="button" class="nk-reset" id="reset">Wyzeruj postęp</button><span id="reset-pyt" hidden> Na pewno? <button type="button" class="nk-reset" id="reset-tak">Tak, wyzeruj</button></span></p>
+    <button type="button" class="motyw" id="motyw" aria-pressed="false"><span class="motyw__ik" aria-hidden="true"></span><span class="motyw__t"></span></button>
+  </div>
+</footer>
+
+<!-- Dolna kula (tylko telefon): stuknij albo przesuń w bok - działy nauki; przytrzymaj - na górę / na dół -->
+<nav class="quickbar suwak" id="quickbar" aria-label="Działy nauki">
+  <span class="suwak__track" aria-hidden="true"></span>
+  <a href="#fiszki" class="suwak__opt suwak__opt--l" tabindex="-1"><span>Fiszki</span></a>
+  <a href="#odmiana" class="suwak__opt suwak__opt--r" tabindex="-1"><span>Odmiana</span></a>
+  <button type="button" class="suwak__knob" aria-expanded="false" aria-label="Działy nauki: stuknij albo przesuń w bok; przytrzymaj, aby przewinąć na górę lub na dół">
+    <svg class="i-arrows" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.5 7.5 5 12l4.5 4.5M14.5 7.5 19 12l-4.5 4.5"/></svg>
+  </button>
+</nav>
+
+<script src="soczewka.js"></script>
+<script src="szklo-suwak.js"></script>
+<script src="wyspa.js"></script>
+<script src="script.js"></script>
+<script src="pasek.js"></script>
+<script src="kula-pion.js"></script>
+<script src="kula-karuzela.js"></script>
+<script src="motyw.js"></script>
+<script src="slowa.js"></script>
+<script src="czasowniki.js"></script>
+<script src="zwroty.js"></script>
+<script src="nauka.js"></script>
+</body>
+</html>

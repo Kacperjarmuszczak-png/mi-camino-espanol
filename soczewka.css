@@ -1,0 +1,15 @@
+/* Soczewka jak w iOS 26 (soczewka.js, 19.11): wygląd szkła w .soczewka__szklo, skalowanie tylko transformem.
+   Element .soczewka tylko ustawia położenie (jego tło i cień przejmuje szkło). */
+.soczewka { background: none !important; box-shadow: none !important; overflow: visible; }
+.soczewka__szklo { position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+  background: linear-gradient(180deg, rgba(255, 255, 255, .22), rgba(255, 255, 255, .07));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .42), inset 0 0 0 1px rgba(255, 255, 255, .14), inset 0 -1px 0 rgba(206, 181, 136, .3), 0 6px 16px -8px rgba(0, 0, 0, .65);
+  transition: transform .55s cubic-bezier(.3, 1.55, .45, 1); }
+.soczewka.is-wcisnieta .soczewka__szklo { transition: transform .16s ease-out;
+  background: linear-gradient(180deg, rgba(255, 255, 255, .16), rgba(255, 255, 255, .04)); }
+/* mieniąca się krawędź (błękit z lewej, ciepłe złoto z prawej) i jaśniejszy brzeg - pojawia się przy dotknięciu */
+.soczewka__szklo::after { content: ""; position: absolute; inset: 0; border-radius: inherit; opacity: 0; transition: opacity .3s ease;
+  box-shadow: inset 0 1.5px 1px rgba(255, 255, 255, .8), inset 0 -1px 1px rgba(255, 255, 255, .3),
+    inset 3px 0 4px -1px rgba(130, 210, 255, .5), inset -3px 0 4px -1px rgba(255, 180, 120, .45), 0 14px 30px -12px rgba(0, 0, 0, .75); }
+.soczewka.is-wcisnieta .soczewka__szklo::after { opacity: 1; }
+@media (prefers-reduced-motion: reduce) { .soczewka__szklo { transition-duration: 1ms !important; } }

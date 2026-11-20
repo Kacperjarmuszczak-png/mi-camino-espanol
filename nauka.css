@@ -1,0 +1,189 @@
+/* Nauka hiszpańskiego: elementy, których nie ma na stronie fotografii (fiszki, quiz, odmiana, słownik).
+   Kolory i szkło ze strony fotografii (style.css, effects.css, kropla.css). */
+:root {
+  --nk-tlo: rgba(16, 22, 18, .45);
+  --nk-brzeg: rgba(255, 255, 255, .14);
+  --nk-pole: rgba(255, 255, 255, .06);
+  --nk-ok: #9fd3a9;
+  --nk-zle: #f0a49a;
+}
+html.jasny {
+  --nk-tlo: rgba(255, 255, 255, .6);
+  --nk-brzeg: rgba(138, 106, 42, .22);
+  --nk-pole: rgba(255, 255, 255, .75);
+  --nk-ok: #2e7a43;
+  --nk-zle: #b3402f;
+}
+
+/* logo w hero: „ESPAÑOL” nad monogramem, „JKF” pod nim (jak logo-hero.svg z „FOTOGRAFIA”) */
+.logo-es { flex-direction: column; align-items: center; justify-content: center !important; gap: 10px; }
+.logo-es img { height: 64% !important; width: auto; }
+.logo-es span { font-family: var(--sans); font-weight: 300; color: #ceb588; text-transform: uppercase; line-height: 1; }
+.logo-es__gora { letter-spacing: .32em; font-size: 1.15rem; margin-right: -.32em; }
+.logo-es__dol { letter-spacing: .5em; font-size: 1.5rem; margin-right: -.5em; }
+html.jasny .logo-es span { color: #8a6a28; }
+
+/* panel ćwiczenia: jak karty i pytania FAQ na stronie fotografii */
+.nk-panel {
+  max-width: 760px; margin: 0 auto; display: grid; gap: 1.1rem; padding: 1.4rem;
+  border-radius: 24px; border: 1px solid var(--nk-brzeg); background: var(--nk-tlo);
+  -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+}
+@media (max-width: 560px) { .nk-panel { padding: 1.1rem; border-radius: 20px; } }
+.nk-wiersz { display: flex; flex-wrap: wrap; gap: .8rem 1rem; align-items: center; justify-content: space-between; }
+.nk-wiersz--srodek { justify-content: center; }
+.nk-male { margin: 0; font-size: .88rem; color: var(--on-dark-muted); }
+.nk-licznik { font-size: .85rem; color: var(--on-dark-muted); font-variant-numeric: tabular-nums; letter-spacing: .04em; }
+
+/* wybór tematu */
+.nk-wybor { display: flex; align-items: center; gap: .6rem; flex: 1 1 220px; min-width: 0; }
+.nk-wybor > span { font-size: .72rem; letter-spacing: .24em; text-transform: uppercase; color: var(--gold-light); flex: none; }
+html.jasny .nk-wybor > span { color: #8a6a28; }
+.nk-wybor select {
+  flex: 1; min-width: 0; appearance: none; -webkit-appearance: none; font: 400 1rem var(--sans); color: var(--on-dark);
+  padding: .65rem 2.4rem .65rem 1rem; border-radius: 999px; border: 0; cursor: pointer;
+  background: var(--kropla-blask) , var(--nk-pole);
+  box-shadow: var(--kropla-cien);
+}
+.nk-wybor { position: relative; }
+.nk-wybor::after { content: ""; position: absolute; right: 1rem; top: 50%; width: 8px; height: 8px; margin-top: -6px; pointer-events: none;
+  border-right: 1.5px solid var(--gold-light); border-bottom: 1.5px solid var(--gold-light); transform: rotate(45deg); }
+.nk-wybor select option { background: #1c241f; color: #f1ede2; }
+html.jasny .nk-wybor select option { background: #fff; color: #26302a; }
+
+/* przełącznik ES → PL (suwak z soczewką, szklo-suwak.js) */
+.nk-seg { display: inline-flex; position: relative; border-radius: 999px; padding: 4px; flex: none;
+  background: var(--kropla-tlo); box-shadow: var(--kropla-cien); -webkit-backdrop-filter: var(--kropla-filtr); backdrop-filter: var(--kropla-filtr); }
+.nk-seg button { position: relative; z-index: 1; border: 0; background: none; color: rgba(241, 237, 226, .72); cursor: pointer;
+  font: 500 .74rem var(--sans); letter-spacing: .14em; text-transform: uppercase; padding: .55rem .95rem; border-radius: 999px; }
+.nk-seg button.is-wyb, .nk-seg button.is-active { color: var(--gold-light); }
+html.jasny .nk-seg button { color: rgba(38, 48, 42, .7); }
+html.jasny .nk-seg button.is-wyb { color: #8a6a28; }
+
+/* pasek postępu */
+.nk-pasek { height: 3px; background: var(--nk-brzeg); border-radius: 9px; overflow: hidden; }
+.nk-pasek i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--gold-light), var(--gold)); transform-origin: left; transition: width .5s var(--ease-apple); }
+
+/* fiszka: obrót 3D (tylko transform) */
+.nk-scena { perspective: 1400px; }
+.nk-fiszka { position: relative; height: 240px; cursor: pointer; transform-style: preserve-3d; transition: transform .6s var(--ease-apple); outline: none; }
+.nk-fiszka.is-tyl { transform: rotateY(180deg); }
+.nk-fiszka:focus-visible .nk-strona { box-shadow: 0 0 0 2px var(--gold-light); }
+.nk-strona {
+  position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .6rem;
+  padding: 1.4rem; text-align: center; border-radius: 22px; backface-visibility: hidden; -webkit-backface-visibility: hidden;
+  background: radial-gradient(120% 90% at 30% 15%, rgba(226, 201, 139, .14), rgba(255, 255, 255, .02) 55%), rgba(16, 22, 18, .5);
+  border: 1px solid rgba(226, 201, 139, .35);
+}
+.nk-strona--tyl { transform: rotateY(180deg); background: radial-gradient(120% 90% at 70% 85%, rgba(156, 175, 136, .25), rgba(255, 255, 255, .02) 60%), rgba(16, 22, 18, .55); }
+html.jasny .nk-strona { background: radial-gradient(120% 90% at 30% 15%, rgba(226, 201, 139, .3), rgba(255, 255, 255, .6) 55%), #fffdf8; }
+.nk-strona b { font-family: var(--serif); font-weight: 500; font-size: clamp(2rem, 8vw, 3rem); line-height: 1.1; color: var(--on-dark); overflow-wrap: anywhere; }
+.nk-strona small { font-size: .7rem; letter-spacing: .28em; text-transform: uppercase; color: var(--gold-light); }
+html.jasny .nk-strona small { color: #8a6a28; }
+.nk-podpowiedz { font-size: .8rem; color: var(--on-dark-muted); }
+.nk-przyciski { display: grid; grid-template-columns: 1fr 1fr; gap: .7rem; }
+.nk-przyciski .btn { padding-inline: .5rem; }
+
+/* okrągły przycisk wymowy (jak małe przyciski w kropli) */
+.nk-glos { flex: none; width: 42px; height: 42px; border-radius: 50%; border: 0; cursor: pointer; display: inline-grid; place-items: center; color: var(--gold-light);
+  background: var(--kropla-blask-srodek), rgba(16, 22, 18, .25); box-shadow: var(--kropla-cien-srodek);
+  transition: transform .45s cubic-bezier(.3, 1.55, .45, 1); }
+.nk-glos:active { transform: scale(.9); transition-duration: .12s; }
+.nk-glos svg { width: 19px; height: 19px; }
+html.jasny .nk-glos { color: #8a6a28; background: var(--kropla-blask-srodek), rgba(255, 255, 255, .6); }
+.nk-glos[hidden] { display: none; }
+
+/* quiz */
+.nk-pytanie { font-family: var(--serif); font-weight: 500; font-size: clamp(2rem, 7vw, 2.8rem); line-height: 1.1; text-align: center; margin: .4rem 0 .2rem; color: var(--on-dark); }
+.nk-opcje { display: grid; grid-template-columns: 1fr 1fr; gap: .6rem; }
+@media (max-width: 520px) { .nk-opcje { grid-template-columns: 1fr; } }
+.nk-opcja { text-align: left; padding: .9rem 1.1rem; border-radius: 16px; border: 1px solid var(--nk-brzeg); background: var(--nk-pole); color: var(--on-dark);
+  font: 400 1.02rem var(--sans); cursor: pointer; transition: border-color .25s, background .25s, transform .3s cubic-bezier(.3, 1.55, .45, 1); }
+.nk-opcja:hover:not(:disabled) { border-color: var(--gold-light); }
+.nk-opcja:active:not(:disabled) { transform: scale(.97); }
+.nk-opcja.is-dobra { border-color: var(--nk-ok); color: var(--nk-ok); background: rgba(159, 211, 169, .1); font-weight: 500; }
+.nk-opcja.is-zla { border-color: var(--nk-zle); color: var(--nk-zle); background: rgba(240, 164, 154, .08); }
+.nk-wynik { text-align: center; display: grid; gap: .6rem; justify-items: center; }
+.nk-wynik strong { font-family: var(--serif); font-weight: 500; font-size: 4.2rem; line-height: 1; color: var(--gold-light); }
+.nk-wynik strong small { font-size: 1.6rem; color: var(--on-dark-muted); }
+.nk-bledy { list-style: none; margin: 0; padding: 0; width: 100%; display: grid; }
+.nk-bledy li { display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap; padding: .55rem 0; border-bottom: 1px solid var(--nk-brzeg); }
+.nk-bledy b { font-weight: 500; color: var(--on-dark); }
+.nk-bledy span { color: var(--on-dark-muted); }
+
+/* szukanie */
+.nk-szukaj { display: flex; gap: .6rem; align-items: center; }
+.nk-szukaj input, .nk-pole input {
+  flex: 1; min-width: 0; font: 400 1.05rem var(--sans); color: var(--on-dark); padding: .8rem 1.1rem; border-radius: 999px;
+  border: 1px solid var(--nk-brzeg); background: var(--nk-pole); outline: none; transition: border-color .25s;
+}
+.nk-szukaj input:focus, .nk-pole input:focus { border-color: var(--gold-light); }
+.nk-szukaj input::placeholder, .nk-pole input::placeholder { color: var(--on-dark-muted); opacity: .8; }
+.nk-szukaj .btn { flex: none; }
+
+/* odmiana */
+.nk-czas-naglowek { display: grid; gap: .15rem; }
+.nk-czas-naglowek h3 { margin: 0; font-size: 2.4rem; color: var(--gold-light); }
+html.jasny .nk-czas-naglowek h3 { color: #8a6a28; }
+.nk-czas-naglowek p { margin: 0; color: var(--on-dark-muted); }
+.nk-czasy { display: flex; gap: .4rem; overflow-x: auto; scrollbar-width: none; padding: 2px; margin: 0 -2px; }
+.nk-czasy::-webkit-scrollbar { display: none; }
+.nk-czasy button { flex: none; border: 1px solid var(--nk-brzeg); background: var(--nk-pole); color: var(--on-dark-muted); cursor: pointer;
+  font: 500 .72rem var(--sans); letter-spacing: .14em; text-transform: uppercase; padding: .55rem .9rem; border-radius: 999px; }
+.nk-czasy button[aria-selected="true"] { background: var(--zloto); color: var(--forest); border-color: transparent; box-shadow: var(--zloto-cien); }
+.nk-tabela { overflow-x: auto; }
+.nk-tabela table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+.nk-tabela td { padding: .6rem .4rem; border-bottom: 1px solid var(--nk-brzeg); vertical-align: middle; }
+.nk-tabela td:first-child { color: var(--on-dark-muted); font-size: .92rem; width: 42%; }
+.nk-tabela td:first-child small { display: block; font-size: .78rem; opacity: .75; }
+.nk-tabela td.f { font-family: var(--serif); font-size: 1.35rem; font-weight: 500; color: var(--on-dark); }
+.nk-tabela td.g { width: 46px; text-align: right; }
+.nk-tabela td.g .nk-glos { width: 34px; height: 34px; }
+.nk-tabela td.g .nk-glos svg { width: 15px; height: 15px; }
+.nk-tabela tr.is-teraz td { background: rgba(226, 201, 139, .1); }
+
+.nk-cwicz { display: grid; gap: .8rem; padding-top: 1.2rem; border-top: 1px solid var(--nk-brzeg); }
+.nk-cwicz .eyebrow { margin: 0; color: var(--gold-light); }
+.nk-zadanie { margin: 0; font-size: 1.05rem; color: var(--on-dark); line-height: 1.5; }
+.nk-zadanie b { font-family: var(--serif); font-size: 1.6rem; font-weight: 500; color: var(--gold-light); }
+.nk-zadanie span { display: inline-block; font-size: .72rem; letter-spacing: .14em; text-transform: uppercase; padding: .25rem .6rem; border-radius: 999px;
+  border: 1px solid var(--nk-brzeg); margin: .15rem .2rem 0 0; color: var(--on-dark-muted); }
+.nk-zadanie span.os { border-color: var(--gold-light); color: var(--gold-light); }
+.nk-pole { display: flex; gap: .6rem; }
+.nk-pole input.is-ok { border-color: var(--nk-ok); }
+.nk-pole input.is-zle { border-color: var(--nk-zle); }
+.nk-klawisze { display: flex; flex-wrap: wrap; gap: .4rem; }
+.nk-klawisze button { width: 40px; height: 40px; border-radius: 12px; border: 0; cursor: pointer; font: 400 1.1rem var(--sans); color: var(--on-dark);
+  background: var(--kropla-blask-srodek), rgba(16, 22, 18, .2); box-shadow: var(--kropla-cien-srodek); }
+html.jasny .nk-klawisze button { background: var(--kropla-blask-srodek), rgba(255, 255, 255, .7); }
+.nk-komunikat { margin: 0; min-height: 1.5em; font-weight: 400; }
+.nk-komunikat.is-ok { color: var(--nk-ok); }
+.nk-komunikat.is-zle { color: var(--nk-zle); }
+.nk-komunikat.is-uwaga { color: var(--gold-light); }
+
+/* listy: słownik i zwroty */
+.nk-lista { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 1.4rem; }
+.nk-lista--zdania { grid-template-columns: minmax(0, 1fr); }
+@media (max-width: 640px) { .nk-lista { grid-template-columns: minmax(0, 1fr); } }
+.nk-lista li { display: flex; align-items: center; gap: .8rem; padding: .7rem 0; border-bottom: 1px solid var(--nk-brzeg); min-width: 0; }
+.nk-lista li > div { flex: 1; min-width: 0; }
+.nk-lista .es { display: block; font-family: var(--serif); font-size: 1.3rem; font-weight: 500; color: var(--on-dark); line-height: 1.2; }
+.nk-lista .pl { display: block; font-size: .92rem; color: var(--on-dark-muted); }
+.nk-lista .kat { display: block; font-size: .68rem; letter-spacing: .18em; text-transform: uppercase; color: var(--gold-light); opacity: .8; margin-top: .15rem; }
+.nk-lista .nk-glos { width: 36px; height: 36px; }
+.nk-lista .nk-glos svg { width: 16px; height: 16px; }
+.nk-lista li.is-znane .es::after { content: "✓"; font-family: var(--sans); font-size: .8rem; color: var(--nk-ok); margin-left: .45rem; vertical-align: middle; }
+.nk-pusto { color: var(--on-dark-muted); text-align: center; padding: 1rem 0; grid-column: 1 / -1; }
+.nk-wiecej { justify-self: center; }
+
+/* wymowa: wiersze do stuknięcia */
+.nk-wymowa li { cursor: pointer; }
+.nk-wymowa b { font-weight: 300; }
+.nk-wymowa li:active b { color: var(--gold-light); }
+
+.nk-reset { background: none; border: 0; padding: 0; color: inherit; font: inherit; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; opacity: .75; }
+
+@media (prefers-reduced-motion: reduce) { .nk-fiszka, .nk-pasek i { transition: none; } }
+/* tryb jasny: suwak ES → PL czytelny na jasnym tle (przyciski-szklo.css wymusza jasny tekst) */
+html.jasny .nk-seg.szk-seg > button { color: rgba(38, 48, 42, .7) !important; }
+html.jasny .nk-seg.szk-seg > button.is-wyb { color: #8a6a28 !important; }
