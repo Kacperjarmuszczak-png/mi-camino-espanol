@@ -1,6 +1,6 @@
 // Service worker: aplikacja działa offline i można ją dodać do ekranu głównego.
 // Strategia „najpierw sieć”: online zawsze najnowsza wersja z GitHub Pages, bez sieci – ostatnia zapisana kopia.
-const WERSJA = '7704aedc7d';
+const WERSJA = '8d43837706';
 const PAMIEC = 'espanol-' + WERSJA;
 const PLIKI = [
   './',
@@ -23,6 +23,7 @@ const PLIKI = [
   './js/dane/slowa-codzienne-c.js',
   './js/dane/slowa-codzienne-d.js',
   './js/dane/slowa-codzienne-e.js',
+  './js/dane/slowa-zaawansowane.js',
   './js/dane/slowa.js',
   './js/dane/tematy-es.js',
   './js/dane/warianty.js',

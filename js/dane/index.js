@@ -5,6 +5,7 @@ import { SLOWA_CODZIENNE_B } from './slowa-codzienne-b.js';
 import { SLOWA_CODZIENNE_C } from './slowa-codzienne-c.js';
 import { SLOWA_CODZIENNE_D } from './slowa-codzienne-d.js';
 import { SLOWA_CODZIENNE_E } from './slowa-codzienne-e.js';
+import { SLOWA_ZAAWANSOWANE } from './slowa-zaawansowane.js';
 import { PRZYKLADY } from './przyklady.js';
 import { WARIANTY, RODZAJ_WYJATKI, MNOGA } from './warianty.js';
 import { ZWROTY } from './zwroty.js';
@@ -25,7 +26,7 @@ export const OPIS_POZIOMU = {
   C2: { n: 'Biegły', o: 'Idiomy, język literacki i książkowy, precyzyjne czasowniki, niuanse rejestru.' },
 };
 
-const PAKIETY_SLOW = [SLOWA, SLOWA_CODZIENNE_A, SLOWA_CODZIENNE_B, SLOWA_CODZIENNE_C, SLOWA_CODZIENNE_D, SLOWA_CODZIENNE_E];
+const PAKIETY_SLOW = [SLOWA, SLOWA_CODZIENNE_A, SLOWA_CODZIENNE_B, SLOWA_CODZIENNE_C, SLOWA_CODZIENNE_D, SLOWA_CODZIENNE_E, SLOWA_ZAAWANSOWANE];
 const PAKIETY_ZWROTOW = [ZWROTY];
 
 const ROD = { el: 'm', la: 'f', los: 'mpl', las: 'fpl' };

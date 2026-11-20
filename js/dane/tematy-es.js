@@ -36,6 +36,15 @@ export const TEMATY_ES = {
   'Praca biurowa i e-mail': 'Oficina y correo electrónico', 'Życie codzienne – wyrażenia': 'Vida diaria – expresiones', 'Rzeczowniki ogólne – B1': 'Sustantivos generales – B1',
   'Charakter i zachowanie – B1': 'Carácter y comportamiento – B1', 'Środowisko i klimat – B2': 'Medio ambiente y clima – B2', 'Technologia – B2': 'Tecnología – B2',
   'Edukacja i rozwój – B2': 'Educación y desarrollo – B2',
+  'Praca i biznes – B2': 'Trabajo y negocios – B2', 'Media i debata – B2': 'Medios y debate – B2', 'Zdrowie i psychika – B2': 'Salud y mente – B2',
+  'Środowisko i miasto – B2': 'Medio ambiente y ciudad – B2', 'Emocje i relacje – B2': 'Emociones y relaciones – B2', 'Prawo i administracja – C1': 'Derecho y administración – C1',
+  'Nauka i argumentacja – C1': 'Ciencia y argumentación – C1', 'Gospodarka i społeczeństwo – C1': 'Economía y sociedad – C1', 'Charakter i postawy – C1': 'Carácter y actitudes – C1',
+  'Wyrażenia C1 – więcej': 'Expresiones C1 – más', 'Język literacki – więcej': 'Lenguaje literario – más', 'Idiomy – więcej': 'Modismos – más',
+  'Rejestr wysoki – C2': 'Registro culto – C2', 'Mowa potoczna – C2': 'Lenguaje coloquial – C2',
+  'Dom i remont – B2': 'Casa y reformas – B2', 'Podróże i kłopoty – B2': 'Viajes e imprevistos – B2', 'Technologia – więcej B2': 'Tecnología – más B2',
+  'Kuchnia i smak – B2': 'Cocina y sabor – B2', 'Polityka i państwo – C1': 'Política y Estado – C1', 'Medycyna – C1': 'Medicina – C1',
+  'Kultura i sztuka – C1': 'Cultura y arte – C1', 'Pieniądze i finanse – C1': 'Dinero y finanzas – C1', 'Czasowniki precyzyjne – więcej': 'Verbos precisos – más',
+  'Przymiotniki wyszukane – C2': 'Adjetivos cultos – C2', 'Przysłowia – C2': 'Refranes – C2',
 };
 
 export const KATEGORIE_ES = {
