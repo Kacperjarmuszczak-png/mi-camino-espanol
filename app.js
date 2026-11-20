@@ -62,12 +62,19 @@
   const przyciskGlosu = t => mowa ? `<button type="button" class="glos" data-mow="${esc(t)}" aria-label="Posłuchaj: ${esc(t)}">${IK_GLOS}</button>` : '';
   document.addEventListener('click', e => { const b = e.target.closest('[data-mow]'); if (b) powiedz(b.dataset.mow); });
 
-  // --- motyw ---
-  $('#motyw').addEventListener('click', () => {
-    const ciemny = matchMedia('(prefers-color-scheme: dark)').matches;
-    const teraz = document.documentElement.dataset.theme || (ciemny ? 'dark' : 'light');
-    stan.motyw = teraz === 'dark' ? 'light' : 'dark';
-    document.documentElement.dataset.theme = stan.motyw; zapisz();
+  // --- styl Liquid Glass (20 do wyboru) ---
+  const stylBtn = $('#styl-btn'), stylPanel = $('#style-panel'), stylSiatka = $('#style-siatka');
+  const podglad = s => `radial-gradient(70% 70% at 20% 20%, ${s.plamy[0]}, transparent 70%), radial-gradient(70% 70% at 90% 35%, ${s.plamy[1]}, transparent 70%), radial-gradient(80% 80% at 50% 100%, ${s.plamy[2]}, transparent 70%), ${s.tlo}`;
+  function rysujStyle() {
+    const teraz = document.documentElement.dataset.styl;
+    stylSiatka.innerHTML = STYLE.lista.map(s => `<button type="button" data-s="${s.id}" aria-pressed="${s.id === teraz}" aria-label="Styl ${esc(s.n)}" style="background:${podglad(s)}"><span style="color:${s.tx};background:${s.t === 'd' ? 'rgba(255,255,255,.12)' : 'rgba(255,255,255,.5)'}">${esc(s.n)}</span></button>`).join('');
+  }
+  const pokazStyle = otworz => { stylPanel.hidden = !otworz; stylBtn.setAttribute('aria-expanded', otworz); if (otworz) rysujStyle(); };
+  stylBtn.addEventListener('click', () => pokazStyle(stylPanel.hidden));
+  $('#styl-zamknij').addEventListener('click', () => pokazStyle(false));
+  stylSiatka.addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    stan.styl = STYLE.zastosuj(b.dataset.s).id; zapisz(); rysujStyle();
   });
 
   // --- poziomy i zakładki ---

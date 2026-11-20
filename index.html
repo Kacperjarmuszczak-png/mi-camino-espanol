@@ -6,23 +6,26 @@
   <meta name="theme-color" content="#0f1a15">
   <meta name="description" content="Nauka hiszpańskiego od A1 do C2: słówka, egzamin, odmiana czasowników i zwroty.">
   <title>Español JKF</title>
-  <script>try { var m = JSON.parse(localStorage.getItem('es-nauka') || '{}').motyw; if (m) document.documentElement.dataset.theme = m; } catch (e) {}</script>
-  <link rel="preload" href="fonts/jost-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="czcionki.css">
+  <script src="style.js"></script>
   <link rel="stylesheet" href="styl.css">
 </head>
 <body>
   <header class="gora">
     <h1>Español <span>JKF</span></h1>
-    <button type="button" class="ikona" id="motyw" aria-label="Zmień jasny / ciemny motyw">
-      <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M12 3a9 9 0 1 0 9 9 7 7 0 0 1-9-9z"/></svg>
+    <button type="button" class="ikona szklo" id="styl-btn" aria-label="Wybierz styl strony" aria-expanded="false" aria-controls="style-panel">
+      <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M12 3a9 9 0 0 0 0 18c1.1 0 1.8-.8 1.8-1.8 0-.5-.2-.9-.5-1.2-.3-.3-.5-.7-.5-1.2 0-1 .8-1.8 1.8-1.8H17a4 4 0 0 0 4-4c0-4.4-4-8-9-8zm-5.5 9a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm3-4a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm3 4a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"/></svg>
     </button>
   </header>
+
+  <section class="style-panel szklo" id="style-panel" hidden aria-label="Styl strony">
+    <div class="wiersz"><p class="etykieta">Styl Liquid Glass</p><button type="button" class="btn btn--male" id="styl-zamknij">Gotowe</button></div>
+    <div class="style-siatka" id="style-siatka"></div>
+  </section>
 
   <nav class="poziomy" id="poziomy" aria-label="Poziom"></nav>
   <p class="opis" id="opis"></p>
 
-  <nav class="zakladki" id="zakladki" aria-label="Sekcje">
+  <nav class="zakladki szklo" id="zakladki" aria-label="Sekcje">
     <button type="button" data-z="slowka">Słówka</button>
     <button type="button" data-z="egzamin">Egzamin</button>
     <button type="button" data-z="czasowniki">Czasowniki</button>
@@ -31,7 +34,7 @@
 
   <main>
     <!-- SŁÓWKA -->
-    <section class="panel" id="z-slowka">
+    <section class="panel szklo" id="z-slowka">
       <div class="wiersz">
         <label class="wybor"><span>Temat</span><select id="f-temat"></select></label>
         <div class="seg" id="f-kier" role="group" aria-label="Najpierw pokazuj">
@@ -61,12 +64,12 @@
     </section>
 
     <!-- EGZAMIN -->
-    <section class="panel" id="z-egzamin" hidden>
+    <section class="panel szklo" id="z-egzamin" hidden>
       <div id="e-tresc" aria-live="polite"></div>
     </section>
 
     <!-- CZASOWNIKI -->
-    <section class="panel" id="z-czasowniki" hidden>
+    <section class="panel szklo" id="z-czasowniki" hidden>
       <div class="szukaj">
         <input id="o-szukaj" type="search" list="o-lista" placeholder="Czasownik, np. tener albo „mieć”" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Szukaj czasownika">
         <datalist id="o-lista"></datalist>
@@ -94,13 +97,13 @@
     </section>
 
     <!-- ZWROTY -->
-    <section class="panel" id="z-zwroty" hidden>
+    <section class="panel szklo" id="z-zwroty" hidden>
       <label class="wybor"><span>Sytuacja</span><select id="z-temat"></select></label>
       <ul class="lista" id="z-lista"></ul>
     </section>
   </main>
 
-  <section class="glos-ustawienia" id="glos-ustawienia">
+  <section class="glos-ustawienia szklo" id="glos-ustawienia">
     <label class="wybor"><span>Głos</span><select id="glos-wybor" aria-label="Głos lektora"></select></label>
     <p class="male" id="glos-rada" hidden>Żeby brzmiało jak Siri: na iPhonie otwórz Ustawienia → Dostępność → Treść mówiona → Głosy → Hiszpański → Hiszpania i pobierz <b>Mónica (Premium)</b> albo <b>Jorge (Rozszerzony)</b>. Potem odśwież stronę.</p>
   </section>
