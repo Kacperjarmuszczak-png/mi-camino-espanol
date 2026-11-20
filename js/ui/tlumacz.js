@@ -17,13 +17,15 @@ export function zakladkaTlumacz(root, app) {
       <button type="button" data-tk="es">Hiszpański → polski</button><button type="button" data-tk="pl">Polski → hiszpański</button>
     </div>
     <textarea class="pole pole--tekst" id="t-tekst" rows="4" data-znaki spellcheck="false" autocapitalize="sentences" aria-label="Tekst do przetłumaczenia"></textarea>
-    <div class="pigulki" id="t-przyklady" aria-label="Przykłady"></div>
-    <label class="przelacznik"><input type="checkbox" id="t-online"><span></span>Pełne tłumaczenie online</label>
-    <p class="male" id="t-info-online"></p>
     <div class="wiersz">
       <button type="button" class="btn btn--akcent" id="t-start">Przetłumacz i wyjaśnij <kbd>Ctrl + Enter</kbd></button>
       <button type="button" class="btn btn--male btn--cichy" id="t-wyczysc">Wyczyść</button>
     </div>
+    <div class="wiersz-narzedzi">
+      <label class="przelacznik przelacznik--maly"><input type="checkbox" id="t-online"><span></span>Tłumaczenie online</label>
+      <details class="zwin zwin--i"><summary aria-label="Informacja o tłumaczeniu online">ⓘ</summary><p class="male" id="t-info-online"></p></details>
+    </div>
+    <details class="zwin"><summary>Przykładowe zdania</summary><div class="pigulki" id="t-przyklady" aria-label="Przykłady"></div></details>
     <div id="t-wynik" aria-live="polite"></div>`;
   const pole = $('#t-tekst', root), wynikEl = $('#t-wynik', root), online = $('#t-online', root);
   online.checked = ui.tOnline !== false;

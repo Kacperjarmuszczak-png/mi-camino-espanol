@@ -1,5 +1,5 @@
 // Zakładka „Czasowniki”: tabela odmiany z podświetleniem końcówek i nieregularności + drill zdań z luką.
-import { $, esc, przyciskGlosu, przyciskGwiazdki } from './wspolne.js';
+import { $, esc, przyciskGlosu, przyciskGwiazdki, otworzModal, zamknijModal, sygnalModalu, kapsulaOpcji } from './wspolne.js';
 import { utworzListe } from './lista.js';
 import { CZAS, POZIOMY } from '../dane/index.js';
 import { CZASY, OSOBY, OSOBY_ROZKAZ, GRUPY, formy, czesciFormy, regula, zwrotny } from '../odmiana.js';
@@ -26,14 +26,12 @@ export function zakladkaCzasowniki(root, app) {
 
   // ---------- TABELA ----------
   tab.innerHTML = `
-    <div class="wiersz">
-      <label class="wybor"><span>Grupa</span><select class="pole" id="c-grupa" aria-label="Rodzaj czasowników">${GRUPY.map(([k, n]) => `<option value="${k}">${n}</option>`).join('')}</select></label>
-    </div>
     <div class="szukaj">
       <input class="pole" id="c-szukaj" type="search" list="c-podpowiedzi" placeholder="Czasownik, np. tener albo „mieć”" autocomplete="off" autocapitalize="off" spellcheck="false" data-znaki aria-label="Szukaj czasownika">
       <datalist id="c-podpowiedzi"></datalist>
       <button type="button" class="btn btn--male" id="c-losuj">Losuj</button>
     </div>
+    <div class="wiersz-narzedzi">${kapsulaOpcji('c-grupa-kapsula', '')}</div>
     <div class="czas-naglowek" id="c-naglowek"></div>
     <div class="czasy" id="c-czasy" role="tablist" aria-label="Czas"></div>
     <p class="male" id="c-opis"></p>
@@ -81,21 +79,50 @@ export function zakladkaCzasowniki(root, app) {
   $('#c-szukaj', tab).addEventListener('change', szukaj);
   $('#c-szukaj', tab).addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); szukaj(); } });
   $('#c-losuj', tab).addEventListener('click', () => { const p = pulaTabeli().filter(doPoziomu); pokazCzasownik(losowy(p.length ? p : CZAS)); });
-  $('#c-grupa', tab).addEventListener('change', e => { ui.cGrupa = e.target.value; app.zapisz(); lista.rysuj(); if (!wGrupie(V)) { const p = pulaTabeli().filter(doPoziomu); if (p.length) pokazCzasownik(p[0]); } });
+  // grupa czasowników: kapsuła → panel z wyborem
+  const rysujGrupe = () => { $('#c-grupa-kapsula span', tab).innerHTML = `Grupa: <b>${esc(NAZWA_GRUPY[ui.cGrupa || ''])}</b>`; };
+  const pigulkiGrup = () => `<div class="pigulki pigulki--pion">${GRUPY.map(([k, n]) => `<button type="button" class="pigulka" data-cg="${k}" aria-pressed="${k === (ui.cGrupa || '')}">${esc(n)} (${CZAS.filter(v => doPoziomu(v) && (!k || (k === 'zwrotny' ? zwrotny(v) : v.grupa === k))).length})</button>`).join('')}</div>`;
+  function ustawGrupe(k) {
+    ui.cGrupa = k; app.zapisz(); rysujGrupe(); lista.rysuj();
+    if (!wGrupie(V)) { const p = pulaTabeli().filter(doPoziomu); if (p.length) pokazCzasownik(p[0]); }
+  }
+  $('#c-grupa-kapsula', tab).addEventListener('click', () => {
+    const el = otworzModal('Grupa czasowników', `<div class="arkusz">${pigulkiGrup()}<p class="male">Liczby w nawiasach: czasowniki do Twojego poziomu.</p></div>`);
+    el.addEventListener('click', e => { const b = e.target.closest('[data-cg]'); if (b) { ustawGrupe(b.dataset.cg); zamknijModal(); } }, { signal: sygnalModalu() });
+  });
   $('#c-czasy', tab).addEventListener('click', e => { const b = e.target.closest('[data-czas]'); if (!b) return; ui.cCzas = b.dataset.czas; app.zapisz(); rysujTabele(); });
 
   // ---------- DRILL ----------
   const D = { kolejka: [], nr: 0, dobrze: 0, bledy: [], pyt: null, ile: 10 };
   const czasyDrillu = () => (ui.dCzasy && ui.dCzasy.length ? ui.dCzasy : czasyNaPoziomie(ui.poziom)).filter(k => czasyNaPoziomie(ui.poziom).includes(k));
   function ustawieniaDrillu() {
-    const dost = czasyNaPoziomie(ui.poziom), wybr = czasyDrillu();
-    return `<div class="drill-ust">
-      <p class="etykieta">Czasy w drillu</p>
-      <div class="pigulki" role="group" aria-label="Czasy">${dost.map(k => `<button type="button" class="pigulka" data-dczas="${k}" aria-pressed="${wybr.includes(k)}">${esc(czasNazwa(k))}</button>`).join('')}</div>
-      <div class="wiersz">
-        <label class="wybor"><span>Grupa</span><select class="pole" id="d-grupa">${GRUPY.map(([k, n]) => `<option value="${k}"${k === (ui.cGrupa || '') ? ' selected' : ''}>${n}</option>`).join('')}</select></label>
-        <div class="seg" role="group" aria-label="Sposób odpowiedzi"><button type="button" data-dtryb="wpisz" aria-pressed="${(ui.dTryb || 'wpisz') === 'wpisz'}">Wpisz</button><button type="button" data-dtryb="wybor" aria-pressed="${ui.dTryb === 'wybor'}">Wybierz</button></div>
-      </div></div>`;
+    const nazwy = czasyDrillu().map(czasNazwa).map(n => n.replace(/^Pretérito /, '').replace('Presente de subjuntivo', 'Subjuntivo'));
+    return `<div class="wiersz-narzedzi drill-ust">${kapsulaOpcji('d-opcje', `<b>${esc(nazwy.length > 2 ? nazwy.slice(0, 2).join(', ') + ` +${nazwy.length - 2}` : nazwy.join(', '))}</b> · ${(ui.dTryb || 'wpisz') === 'wpisz' ? 'wpisywanie' : 'wybór'}${ui.cGrupa ? ' · ' + esc(NAZWA_GRUPY[ui.cGrupa]) : ''}`)}</div>`;
+  }
+  function otworzOpcjeDrillu() {
+    const tresc = () => {
+      const dost = czasyNaPoziomie(ui.poziom), wybr = czasyDrillu();
+      return `<div class="arkusz">
+        <p class="etykieta">Czasy</p>
+        <div class="pigulki" role="group" aria-label="Czasy">${dost.map(k => `<button type="button" class="pigulka" data-dczas="${k}" aria-pressed="${wybr.includes(k)}">${esc(czasNazwa(k))}</button>`).join('')}</div>
+        <p class="etykieta">Odpowiedź</p>
+        <div class="seg seg--pelny" role="group" aria-label="Sposób odpowiedzi"><button type="button" data-dtryb="wpisz" aria-pressed="${(ui.dTryb || 'wpisz') === 'wpisz'}">Wpisz</button><button type="button" data-dtryb="wybor" aria-pressed="${ui.dTryb === 'wybor'}">Wybierz z 4</button></div>
+        <p class="etykieta">Grupa czasowników</p>${pigulkiGrup()}
+        <button type="button" class="btn btn--akcent btn--szeroki" data-zamknij>Gotowe</button></div>`;
+    };
+    const el = otworzModal('Ustawienia drillu', tresc());
+    el.addEventListener('click', e => {
+      const t = e.target;
+      const dc = t.closest('[data-dczas]');
+      if (dc) {
+        let w = czasyDrillu().slice();
+        w = w.includes(dc.dataset.dczas) ? w.filter(k => k !== dc.dataset.dczas) : [...w, dc.dataset.dczas];
+        ui.dCzasy = w.length ? w : [dc.dataset.dczas];
+      } else if (t.closest('[data-dtryb]')) ui.dTryb = t.closest('[data-dtryb]').dataset.dtryb;
+      else if (t.closest('[data-cg]')) { ustawGrupe(t.closest('[data-cg]').dataset.cg); }
+      else return;
+      app.zapisz(); el.innerHTML = tresc(); startDrill();
+    }, { signal: sygnalModalu() });
   }
   function startDrill(wlasne = null) {
     const pula = CZAS.filter(v => doPoziomu(v) && wGrupie(v) && !BEZ_DRILLU.has(v.inf.replace(/se$/, '')) && !BEZ_DRILLU.has(v.inf));
@@ -185,19 +212,12 @@ export function zakladkaCzasowniki(root, app) {
   drill.addEventListener('submit', e => { e.preventDefault(); ocenOdpowiedz($('#d-wpis', drill).value); });
   drill.addEventListener('click', e => {
     const t = e.target;
-    const dc = t.closest('[data-dczas]');
-    if (dc) {
-      let w = czasyDrillu().slice();
-      w = w.includes(dc.dataset.dczas) ? w.filter(k => k !== dc.dataset.dczas) : [...w, dc.dataset.dczas];
-      ui.dCzasy = w.length ? w : [dc.dataset.dczas]; app.zapisz(); startDrill(); return;
-    }
-    const dt = t.closest('[data-dtryb]'); if (dt) { ui.dTryb = dt.dataset.dtryb; app.zapisz(); startDrill(); return; }
+    if (t.closest('#d-opcje')) return otworzOpcjeDrillu();
     const o = t.closest('[data-dopc]'); if (o) return ocenOdpowiedz(o.dataset.dopc);
     if (t.closest('#d-dalej')) return nastepne();
     if (t.closest('#d-bledne')) return startDrill(D.bledy.map(p => ({ ...p, zrobione: false })));
     if (t.closest('#d-nowy')) return startDrill();
   });
-  drill.addEventListener('change', e => { if (e.target.id === 'd-grupa') { ui.cGrupa = e.target.value; $('#c-grupa', tab).value = ui.cGrupa; app.zapisz(); startDrill(); } });
 
   function pokazWidok() {
     root.querySelectorAll('[data-cw]').forEach(b => b.setAttribute('aria-pressed', b.dataset.cw === widok()));
@@ -209,7 +229,7 @@ export function zakladkaCzasowniki(root, app) {
   return {
     pokaz(inf) { const v = CZAS.find(x => x.inf === inf); if (v) { pokazCzasownik(v); tab.scrollIntoView({ block: 'start' }); } },
     poziom() {
-      $('#c-grupa', tab).value = ui.cGrupa || '';
+      rysujGrupe();
       if (!czasyNaPoziomie(ui.poziom).includes(ui.cCzas || 'presente') && !ui.cCzas) ui.cCzas = 'presente';
       pokazCzasownik(V); lista.rysuj(); pokazWidok();
     },

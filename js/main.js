@@ -9,6 +9,7 @@ import { zakladkaEgzamin } from './ui/egzamin.js';
 import { zakladkaCzasowniki } from './ui/czasowniki.js';
 import { zakladkaZwroty } from './ui/zwroty.js';
 import { zakladkaTlumacz } from './ui/tlumacz.js';
+import { zainicjujSuwaki } from './ui/suwak.js';
 
 const stan = wczytaj();
 const ZAKLADKI = ['slowka', 'egzamin', 'czasowniki', 'zwroty', 'tlumacz'];
@@ -50,21 +51,14 @@ const czesc = (lista, p) => { const el = lista.filter(x => x.p === p); return [e
 function rysujPoziomy() {
   $('#poziomy').innerHTML = POZIOMY.map(p => {
     const s = statystyki(p);
-    return `<button type="button" class="poziom szklo" data-p="${p}" aria-pressed="${p === stan.ui.poziom}" aria-label="Poziom ${p}: ${s.procent}% postępu">
-      <b>${p}</b><small>${s.procent}%</small><span class="poziom-pasek"><i style="width:${s.procent}%"></i></span>${stan.egz[p] >= 70 ? '<span class="zdany" title="Egzamin zdany">✓</span>' : ''}</button>`;
+    return `<button type="button" class="poziom" data-p="${p}" aria-pressed="${p === stan.ui.poziom}" aria-label="Poziom ${p}: ${s.procent}% postępu">
+      <b>${p}${stan.egz[p] >= 70 ? '<i class="zdany" title="Egzamin zdany">✓</i>' : ''}</b><small>${s.procent}%</small></button>`;
   }).join('');
 }
 function rysujInfo() {
   const p = stan.ui.poziom, s = statystyki(p), o = OPIS_POZIOMU[p];
-  const [so, sr] = czesc(SLOWKA, p), [co, cr] = czesc(CZAS, p), [zo, zr] = czesc(ZWROTY_LISTA, p);
-  $('#poziom-info').innerHTML = `
-    <div class="info-gora"><div><p class="etykieta">${p} · ${esc(o.n)}</p><p class="info-opis">${esc(o.o)}</p></div>
-      <button type="button" class="btn btn--male" id="info-szczegoly">Statystyki</button></div>
-    <div class="info-liczby">
-      <span><b>${so}</b>/${sr} słówek</span><span><b>${co}</b>/${cr} czasowników</span>${zr ? `<span><b>${zo}</b>/${zr} zwrotów</span>` : ''}
-      <span class="${s.powtorka ? 'akcent' : ''}"><b>${s.powtorka}</b> do powtórki</span>
-      <span>egzamin: <b>${s.egz != null ? s.egz + '%' : '–'}</b></span>
-    </div>`;
+  const [so, sr] = czesc(SLOWKA, p);
+  $('#poziom-info').innerHTML = `<span><b>${p}</b> · ${esc(o.n)}</span><span class="linia-liczby">${so}/${sr} słówek${s.powtorka ? ` · <b class="akcent">${s.powtorka} do powtórki</b>` : ''}${s.egz != null ? ` · egzamin ${s.egz}%` : ''}</span><span class="linia-i" aria-hidden="true">ⓘ</span>`;
 }
 function modalStatystyk() {
   const p = stan.ui.poziom, s = statystyki(p);
@@ -121,20 +115,12 @@ app.otworzCzasownik = inf => {
   moduly.czasowniki.poziom();
   moduly.czasowniki.pokaz(inf);
 };
-function ustawKapsule() {
-  const b = $(`#zakladki [data-z="${stan.ui.zakladka}"]`), nav = $('#zakladki'), k = $('#zakladki .kapsula');
-  if (!b) return;
-  const rb = b.getBoundingClientRect(), rn = nav.getBoundingClientRect();
-  k.style.transform = `translateX(${rb.left - rn.left - nav.clientLeft}px)`;
-  k.style.width = rb.width + 'px';
-}
 const zainicjowane = new Set();
 function pokazZakladke(z, { przewin = false } = {}) {
   stan.ui.zakladka = z; app.zapisz();
   $$('#zakladki [data-z]').forEach(b => { const a = b.dataset.z === z; b.setAttribute('aria-selected', a); b.setAttribute('aria-current', a ? 'page' : 'false'); });
   ZAKLADKI.forEach(k => { $('#z-' + k).hidden = k !== z; });
   if (!zainicjowane.has(z)) { zainicjowane.add(z); moduly[z].poziom(); }
-  ustawKapsule();
   app.mowa.stop();
   if (przewin) $('#tresc').scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
 }
@@ -248,11 +234,10 @@ document.addEventListener('click', e => {
 });
 $('#poziomy').addEventListener('click', e => { const b = e.target.closest('[data-p]'); if (b && b.dataset.p !== stan.ui.poziom) zmienPoziom(b.dataset.p); });
 $('#zakladki').addEventListener('click', e => { const b = e.target.closest('[data-z]'); if (b) pokazZakladke(b.dataset.z); });
-$('#poziom-info').addEventListener('click', e => { if (e.target.closest('#info-szczegoly')) modalStatystyk(); });
+$('#poziom-info').addEventListener('click', modalStatystyk);
 $('#dzis').addEventListener('click', modalDnia);
 $('#ustawienia-btn').innerHTML = IKONY.ustawienia;
 $('#ustawienia-btn').addEventListener('click', modalUstawien);
-window.addEventListener('resize', ustawKapsule);
 
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape' && modalOtwarty()) { zamknijModal(); return; }
@@ -280,5 +265,5 @@ zainicjujPolysk();
 rysujNaglowek(); rysujPoziomy(); rysujInfo();
 pokazZakladke(stan.ui.zakladka);
 app.mowa.naZmiane(() => {});
-requestAnimationFrame(() => { ustawKapsule(); document.body.classList.add('gotowe'); });
-if (document.fonts && document.fonts.ready) document.fonts.ready.then(ustawKapsule);
+zainicjujSuwaki();
+requestAnimationFrame(() => document.body.classList.add('gotowe'));

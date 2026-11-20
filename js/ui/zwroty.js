@@ -1,5 +1,5 @@
 // Zakładka „Zwroty”: przegląd z dialogami, fiszki (SRS), dobieranie reakcji do sytuacji i dialog z luką.
-import { $, esc, przyciskGlosu, przyciskGwiazdki, podswietl, bezGwiazdek } from './wspolne.js';
+import { $, esc, przyciskGlosu, przyciskGwiazdki, podswietl, bezGwiazdek, otworzModal, zamknijModal, sygnalModalu, kapsulaOpcji } from './wspolne.js';
 import { silnikKart } from './karty.js';
 import { utworzListe } from './lista.js';
 import { ZWROTY_LISTA, KATEGORIE_ZWROTOW, POZIOMY } from '../dane/index.js';
@@ -11,18 +11,16 @@ const REJESTR = { form: 'formalny', nieform: 'nieformalny', neutr: 'neutralny' }
 export function zakladkaZwroty(root, app) {
   const ui = app.stan.ui;
   root.innerHTML = `
-    <div class="wiersz">
-      <label class="wybor"><span>Sytuacja</span><select class="pole" id="z-kat" aria-label="Kategoria zwrotów"></select></label>
-    </div>
     <div class="seg seg--pelny" role="group" aria-label="Widok" id="z-widoki">${WIDOKI.map(([k, n]) => `<button type="button" data-widok="${k}">${n}</button>`).join('')}</div>
+    <div class="wiersz-narzedzi">${kapsulaOpcji('z-kat-kapsula', '')}</div>
     <div id="z-tresc"></div>
     <div id="z-karty"></div>
     <div id="z-lista"></div>`;
-  const sel = $('#z-kat', root), tresc = $('#z-tresc', root), kartyEl = $('#z-karty', root);
+  const tresc = $('#z-tresc', root), kartyEl = $('#z-karty', root);
   const dostepneKat = () => KATEGORIE_ZWROTOW.filter(k => POZIOMY.indexOf(k.p) <= POZIOMY.indexOf(ui.poziom));
   const pula = () => ZWROTY_LISTA.filter(z => (ui.zKat ? z.t === ui.zKat : dostepneKat().some(k => k.t === z.t)));
   const zDialogiem = () => pula().filter(z => z.dialog.length);
-  const silnik = silnikKart(kartyEl, { app, rodzaj: 'zwroty', pula, pelnaPula: () => ZWROTY_LISTA });
+  const silnik = silnikKart(kartyEl, { app, rodzaj: 'zwroty', pula, pelnaPula: () => ZWROTY_LISTA, etykietaZakresu: () => ui.zKat || 'wszystkie sytuacje' });
   const lista = utworzListe($('#z-lista', root), {
     id: 'z-lista-szuflada', app, tytul: 'Lista zwrotów', pobierz: pula,
     opis: z => esc(z.pl) + ` <i>· ${REJESTR[z.reg]}</i>`, mow: z => z.es,
@@ -33,8 +31,19 @@ export function zakladkaZwroty(root, app) {
   function rysujKategorie() {
     const k = dostepneKat();
     if (ui.zKat && !k.some(x => x.t === ui.zKat)) ui.zKat = '';
-    sel.innerHTML = `<option value="">Wszystkie dostępne (${ZWROTY_LISTA.filter(z => k.some(x => x.t === z.t)).length})</option>` +
-      k.map(x => `<option value="${esc(x.t)}"${x.t === ui.zKat ? ' selected' : ''}>${esc(x.t)} · ${x.p}</option>`).join('');
+    $('#z-kat-kapsula span', root).innerHTML = `Sytuacja: <b>${esc(ui.zKat || 'wszystkie')}</b>`;
+  }
+  function otworzKategorie() {
+    const k = dostepneKat();
+    const el = otworzModal('Sytuacja', `<div class="arkusz">
+      <div class="pigulki pigulki--pion">
+        <button type="button" class="pigulka" data-zk="" aria-pressed="${!ui.zKat}">Wszystkie dostępne (${ZWROTY_LISTA.filter(z => k.some(x => x.t === z.t)).length})</button>
+        ${k.map(x => `<button type="button" class="pigulka" data-zk="${esc(x.t)}" aria-pressed="${x.t === ui.zKat}">${esc(x.t)} · ${x.p} (${ZWROTY_LISTA.filter(z => z.t === x.t).length})</button>`).join('')}
+      </div><p class="male">Kategorie z wyższych poziomów pojawią się, gdy wybierzesz wyższy poziom.</p></div>`);
+    el.addEventListener('click', e => {
+      const b = e.target.closest('[data-zk]'); if (!b) return;
+      ui.zKat = b.dataset.zk; app.zapisz(); zamknijModal(); rysujKategorie(); pokaz(); lista.rysuj();
+    }, { signal: sygnalModalu() });
   }
   function rysujWidoki() {
     root.querySelectorAll('[data-widok]').forEach(b => b.setAttribute('aria-pressed', b.dataset.widok === widok()));
@@ -109,7 +118,7 @@ export function zakladkaZwroty(root, app) {
     else { C.nr = 0; C.dobrze = 0; C.bledy = []; nowePytanie(); }
   }
 
-  sel.addEventListener('change', () => { ui.zKat = sel.value; app.zapisz(); pokaz(); lista.rysuj(); });
+  $('#z-kat-kapsula', root).addEventListener('click', otworzKategorie);
   root.addEventListener('click', e => {
     const w = e.target.closest('[data-widok]');
     if (w) { ui.zWidok = w.dataset.widok; app.zapisz(); pokaz(); return; }

@@ -75,11 +75,15 @@ mark { background: color-mix(in srgb, var(--zloto) 28%, transparent); color: inh
 .marka { display: flex; align-items: baseline; gap: 8px; }
 .marka h1 { margin: 0; font: 700 1.85rem/1 var(--font-tytul); letter-spacing: -.025em; }
 .marka span { color: var(--zloto); font-size: .7rem; font-weight: 700; letter-spacing: .3em; }
-.gora-akcje { display: flex; gap: 8px; align-items: center; }
+.kapsula-gora { display: flex; align-items: center; height: 46px; padding: 0 4px 0 2px; border-radius: 999px; }
+.kapsula-gora .kreska { width: 1px; height: 24px; background: var(--szklo-brzeg); margin: 0 2px; }
+.ikona-wew { width: 40px; height: 40px; border: 0; background: none; border-radius: 50%; display: grid; place-items: center; color: var(--zloto); }
+.ikona-wew svg { width: 21px; height: 21px; }
+.ikona-wew:active { transform: scale(.92); }
 .ikona { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; color: var(--zloto); border: 1px solid var(--szklo-brzeg); }
 .ikona svg { width: 22px; height: 22px; }
 .ikona--mala { width: 36px; height: 36px; font-size: 1rem; background: var(--pole); }
-.dzis { display: flex; align-items: center; gap: 8px; height: 44px; padding: 0 12px 0 6px; border-radius: 999px; }
+.dzis { display: flex; align-items: center; gap: 7px; height: 40px; padding: 0 10px 0 4px; border-radius: 999px; border: 0; background: none; }
 .pierscien { width: 34px; height: 34px; transform: rotate(-90deg); }
 .pierscien circle { fill: none; stroke-width: 4; }
 .pierscien .tor { stroke: var(--linia); }
@@ -91,35 +95,20 @@ mark { background: color-mix(in srgb, var(--zloto) 28%, transparent); color: inh
 .seria { display: inline-flex; align-items: center; gap: 2px; color: var(--uwaga); font-weight: 700; font-size: .9rem; }
 .seria svg { width: 17px; height: 17px; }
 
-/* ===== poziomy ===== */
-.poziomy { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 6px; }
-.poziom { position: relative; display: grid; justify-items: center; gap: 1px; padding: 9px 0 10px; border-radius: var(--r-m); border: 1px solid var(--szklo-brzeg);
-  transition: transform .25s var(--sprezyna), background .25s; }
-.poziom b { font-size: 1.05rem; font-weight: 700; }
-.poziom small { font-size: .7rem; color: var(--szary); font-variant-numeric: tabular-nums; }
-.poziom-pasek { position: absolute; left: 8px; right: 8px; bottom: 5px; height: 3px; border-radius: 3px; background: var(--linia); overflow: hidden; }
-.poziom-pasek i { display: block; height: 100%; background: var(--zloto); border-radius: 3px; }
-.poziom .zdany { position: absolute; top: 3px; right: 6px; font-size: .62rem; color: var(--ok); font-weight: 800; }
-.poziom[aria-pressed="true"] { background: linear-gradient(160deg, rgba(255,255,255,.42), rgba(255,255,255,0) 60%), var(--zloto); color: var(--na-zlocie); border-color: transparent;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.6), 0 8px 22px -10px var(--zloto); }
-.poziom[aria-pressed="true"] small { color: inherit; opacity: .85; }
-.poziom[aria-pressed="true"] .poziom-pasek { background: rgba(0,0,0,.15); }
-.poziom[aria-pressed="true"] .poziom-pasek i { background: var(--na-zlocie); }
-.poziom[aria-pressed="true"] .zdany { color: var(--na-zlocie); }
-
-.poziom-info { margin-top: 10px; padding: 12px 14px; border-radius: var(--r); display: grid; gap: 8px; }
-.info-gora { display: flex; gap: 10px; align-items: flex-start; justify-content: space-between; }
-.info-opis { margin: 2px 0 0; font-size: .88rem; color: var(--szary); }
-.info-liczby { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: .82rem; color: var(--szary); font-variant-numeric: tabular-nums; }
-.info-liczby b { color: var(--tekst); }
-.info-liczby .akcent b, .info-liczby .akcent { color: var(--zloto); }
-@media (max-width: 759px) {
-  .poziom-info { padding: 10px 12px; gap: 6px; }
-  .info-opis { display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
-  .info-liczby { gap: 4px 10px; font-size: .78rem; }
-}
-.fiszka, .karta-obszar, .drill-karta, .egz { scroll-margin-top: 12px; scroll-margin-bottom: calc(var(--pasek-dol) + 96px); }
-
+/* ===== poziomy: jeden szklany suwak ===== */
+.poziomy { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); padding: 4px; border-radius: 22px; }
+.poziom { position: relative; display: grid; justify-items: center; gap: 0; padding: 7px 0 6px; border: 0; background: none; border-radius: 18px; color: var(--tekst); }
+.poziom b { font-size: 1.02rem; font-weight: 700; position: relative; }
+.poziom small { font-size: .68rem; color: var(--szary); font-variant-numeric: tabular-nums; }
+.poziom .zdany { position: absolute; top: -4px; right: -9px; font-size: .58rem; font-style: normal; color: var(--ok); }
+.poziom[aria-pressed="true"], .poziom[aria-pressed="true"] small, .poziom[aria-pressed="true"] .zdany { color: var(--na-zlocie); }
+.poziom-linia { display: flex; align-items: center; gap: 8px; width: 100%; margin-top: 8px; padding: 4px 6px; border: 0; background: none; color: var(--szary);
+  font-size: .82rem; text-align: left; border-radius: 10px; }
+.poziom-linia b { color: var(--tekst); }
+.poziom-linia .akcent { color: var(--zloto); }
+.poziom-linia .linia-liczby { margin-left: auto; font-variant-numeric: tabular-nums; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.linia-i { color: var(--zloto); }
+.poziom-linia:active { background: var(--pole); }
 /* ===== zakładki: kapsuła ===== */
 .zakladki { position: fixed; z-index: 20; left: max(10px, env(safe-area-inset-left, 0px)); right: max(10px, env(safe-area-inset-right, 0px));
   bottom: calc(10px + env(safe-area-inset-bottom, 0px)); display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); padding: 5px; border-radius: 26px;
@@ -128,11 +117,7 @@ mark { background: color-mix(in srgb, var(--zloto) 28%, transparent); color: inh
   color: var(--szary); font-size: .68rem; font-weight: 600; transition: color .2s; }
 .zakladki svg { width: 23px; height: 23px; }
 .zakladki button[aria-selected="true"] { color: var(--zloto); }
-.kapsula { position: absolute; z-index: 0; top: 5px; bottom: 5px; left: 0; width: 0; border-radius: 21px; pointer-events: none;
-  background: linear-gradient(160deg, rgba(255,255,255,.3), rgba(255,255,255,.05) 60%), var(--pole);
-  border: 1px solid var(--szklo-brzeg); box-shadow: inset 0 1px 0 var(--blask), 0 4px 14px -6px var(--cien);
-  transition: transform .45s var(--sprezyna), width .45s var(--sprezyna); }
-body:not(.gotowe) .kapsula { transition: none; }
+.zakladki button { -webkit-touch-callout: none; }
 @media (min-width: 760px) {
   body { padding-bottom: 32px; }
   .zakladki { position: sticky; top: calc(8px + env(safe-area-inset-top, 0px)); bottom: auto; left: auto; right: auto; margin: 14px 0; max-width: none; }
@@ -158,7 +143,8 @@ select.pole option { color: #111; background: #fff; }
 
 .seg { display: inline-flex; padding: 3px; gap: 2px; border-radius: 999px; border: 1px solid var(--szklo-brzeg); background: var(--pole); max-width: 100%; }
 .seg button { border: 0; background: none; padding: 7px 12px; border-radius: 999px; font-size: .8rem; font-weight: 600; color: var(--szary); white-space: nowrap; transition: background .25s, color .25s; }
-.seg button[aria-pressed="true"] { background: linear-gradient(160deg, rgba(255,255,255,.35), rgba(255,255,255,0) 60%), var(--zloto); color: var(--na-zlocie); box-shadow: inset 0 1px 0 rgba(255,255,255,.5); }
+.seg button[aria-pressed="true"] { color: var(--na-zlocie); }
+.seg:not(.szk-seg) button[aria-pressed="true"] { background: var(--zloto); }
 .seg--pelny { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); width: 100%; }
 .seg--pelny button { padding: 8px 4px; white-space: normal; line-height: 1.2; }
 .seg--maly button { font-size: .74rem; padding: 6px 10px; }
@@ -466,3 +452,62 @@ button.lista-tekst:hover { background: var(--pole); }
 .uwaga span { font-size: .9rem; color: var(--szary); }
 .uwaga--blad b { color: var(--zle); }
 @media (max-width: 380px) { .zakladki button span { font-size: .62rem; } .zakladki svg { width: 21px; height: 21px; } }
+
+/* ===== szklany suwak z soczewką (js/ui/suwak.js) ===== */
+.szk-seg:not(.zakladki) { position: relative; }
+.szk-seg { isolation: isolate; touch-action: pan-y; -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent; }
+.szk-seg > button { position: relative; z-index: 1; background: none !important; box-shadow: none !important; transition: color .25s ease, transform .3s var(--sprezyna); }
+.szk-soczewka { position: absolute; z-index: 0; top: 0; left: 0; width: 0; height: 0; border-radius: 999px; pointer-events: none;
+  transition: transform .5s cubic-bezier(.3, 1.35, .45, 1), width .35s cubic-bezier(.3, 1.2, .45, 1), height .35s ease, opacity .2s; will-change: transform; }
+.szk-seg.is-drag .szk-soczewka { transition: none; }
+.szk-seg.is-drag.is-dogon .szk-soczewka { transition: transform .2s cubic-bezier(.25, .9, .35, 1); }
+.szk-soczewka__szklo { position: absolute; inset: 0; border-radius: inherit;
+  background: radial-gradient(120% 90% at 30% 0%, rgba(255,255,255,.45), transparent 60%), var(--zloto);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.6), inset 0 -1px 0 rgba(0,0,0,.12), 0 6px 18px -8px var(--zloto);
+  transition: transform .55s cubic-bezier(.3, 1.55, .45, 1), background .25s; }
+/* przy dotyku: soczewka rośnie ponad szkło, robi się przejrzysta, krawędź mieni się (błękit z lewej, ciepło z prawej) */
+.szk-soczewka.is-wcisnieta .szk-soczewka__szklo { transition: transform .16s ease-out;
+  background: radial-gradient(120% 90% at 30% 0%, rgba(255,255,255,.35), transparent 60%), color-mix(in srgb, var(--zloto) 72%, transparent); }
+.szk-soczewka__szklo::after { content: ''; position: absolute; inset: 0; border-radius: inherit; opacity: 0; transition: opacity .3s ease;
+  box-shadow: inset 0 1.5px 1px rgba(255,255,255,.85), inset 0 -1px 1px rgba(255,255,255,.3), inset 3px 0 4px -1px rgba(130,210,255,.55), inset -3px 0 4px -1px rgba(255,180,120,.5), 0 14px 30px -12px rgba(0,0,0,.6); }
+.szk-soczewka.is-wcisnieta .szk-soczewka__szklo::after { opacity: 1; }
+.szk-seg.is-drag .is-pod { transform: scale(1.06); }
+/* zakładki: soczewka szklana (bez koloru), wybrana ikona w kolorze akcentu */
+#zakladki .szk-soczewka__szklo { background: radial-gradient(120% 90% at 30% 0%, rgba(255,255,255,.3), transparent 60%), linear-gradient(160deg, rgba(255,255,255,.22), rgba(255,255,255,.05) 60%), var(--pole);
+  box-shadow: inset 0 1px 0 var(--blask), inset 0 0 0 1px var(--szklo-brzeg), 0 4px 14px -6px var(--cien); }
+#zakladki .szk-soczewka.is-wcisnieta .szk-soczewka__szklo { background: linear-gradient(160deg, rgba(255,255,255,.2), rgba(255,255,255,.02)); }
+#zakladki.szk-seg > button[aria-selected="true"] { color: var(--zloto); }
+.poziomy.szk-seg > button { border-radius: 18px; }
+@media (prefers-reduced-motion: reduce) { .szk-soczewka, .szk-soczewka__szklo { transition-duration: 1ms !important; } }
+
+/* ===== kapsuła opcji (chowa rzadziej używane ustawienia) ===== */
+.opcje-kapsula { display: inline-flex; align-items: center; gap: 8px; max-width: 100%; padding: 8px 14px; border-radius: 999px; border: 1px solid var(--szklo-brzeg);
+  background: linear-gradient(160deg, rgba(255,255,255,.16), rgba(255,255,255,.02) 60%), var(--pole); box-shadow: inset 0 1px 0 var(--blask);
+  color: var(--szary); font-size: .82rem; font-weight: 600; }
+.opcje-kapsula span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.opcje-kapsula b { color: var(--tekst); font-weight: 600; }
+.opcje-kapsula svg { width: 16px; height: 16px; flex: none; color: var(--zloto); }
+.opcje-kapsula:active { transform: scale(.97); }
+.wiersz-narzedzi { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.zwin > summary { cursor: pointer; color: var(--zloto); font-size: .85rem; font-weight: 600; list-style: none; }
+.zwin > summary::-webkit-details-marker { display: none; }
+.zwin > summary::after { content: ' ▾'; }
+.zwin[open] > summary::after { content: ' ▴'; }
+.zwin > :not(summary) { margin-top: 8px; }
+.arkusz { display: grid; gap: 14px; }
+.arkusz .etykieta { margin-bottom: -6px; }
+.pigulki--pion { flex-direction: column; align-items: stretch; }
+.pigulki--pion .pigulka { text-align: left; padding: 11px 14px; font-size: .9rem; border-radius: 14px; }
+.drill-ust { padding-bottom: 4px; border-bottom: 0; }
+.przelacznik--maly { font-size: .85rem; gap: 8px; }
+.przelacznik--maly span { transform: scale(.85); transform-origin: left center; }
+.zwin--i > summary { font-size: 1rem; }
+.zwin--i > summary::after { content: ''; }
+.zwin--i[open] { flex-basis: 100%; }
+/* w trakcie przeciągania kolor tekstu idzie za soczewką */
+.szk-seg.is-drag > button[aria-pressed="true"]:not(.is-pod), .szk-seg.is-drag > button[aria-pressed="true"]:not(.is-pod) small { color: var(--tekst); }
+.szk-seg.is-drag > button.is-pod, .szk-seg.is-drag > button.is-pod small { color: var(--na-zlocie); }
+#zakladki.is-drag > button[aria-selected="true"]:not(.is-pod) { color: var(--szary); }
+#zakladki.is-drag > button.is-pod { color: var(--zloto); }
+#c-tabela, #c-drill, #t-wynik, .egz-start { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; }
+#c-tabela[hidden], #c-drill[hidden] { display: none; }

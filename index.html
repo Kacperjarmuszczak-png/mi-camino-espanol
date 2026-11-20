@@ -16,22 +16,22 @@
   <a class="pomin" href="#tresc">Przejdź do nauki</a>
   <header class="gora">
     <div class="marka"><h1>Español</h1><span>JKF</span></div>
-    <div class="gora-akcje">
-      <button type="button" class="dzis szklo" id="dzis" aria-label="Dzisiejsza aktywność i seria dni">
+    <div class="kapsula-gora szklo">
+      <button type="button" class="dzis" id="dzis" aria-label="Dzisiejsza aktywność i seria dni">
         <svg class="pierscien" viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="15" class="tor"/><circle cx="18" cy="18" r="15" class="wypelnienie" id="dzis-luk"/></svg>
         <span class="dzis-tekst"><b id="dzis-ile">0</b><small id="dzis-cel">/20</small></span>
         <span class="seria" id="seria" title="Seria dni z osiągniętym celem"></span>
       </button>
-      <button type="button" class="ikona szklo" id="ustawienia-btn" aria-label="Ustawienia"></button>
+      <span class="kreska" aria-hidden="true"></span>
+      <button type="button" class="ikona-wew" id="ustawienia-btn" aria-label="Ustawienia"></button>
     </div>
   </header>
 
-  <nav class="poziomy" id="poziomy" aria-label="Poziom"></nav>
+  <nav class="poziomy szklo" id="poziomy" aria-label="Poziom"></nav>
 
-  <section class="poziom-info szklo" id="poziom-info" aria-live="polite"></section>
+  <button type="button" class="poziom-linia" id="poziom-info" aria-label="Statystyki poziomu"></button>
 
   <nav class="zakladki szklo" id="zakladki" aria-label="Sekcje">
-    <span class="kapsula" aria-hidden="true"></span>
     <button type="button" data-z="slowka"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" d="M6 3h9l5 5v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2zm8 0v5h6M8 13h8M8 17h5"/></svg><span>Słówka</span></button>
     <button type="button" data-z="egzamin"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" d="M9 4h6m-7 2h8a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2zm1 7 2 2 4-4"/></svg><span>Egzamin</span></button>
     <button type="button" data-z="czasowniki"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" d="M4 6h16M4 12h10M4 18h13M17 10l3 2-3 2"/></svg><span>Czasowniki</span></button>

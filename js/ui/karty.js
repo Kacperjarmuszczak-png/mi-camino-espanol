@@ -1,5 +1,5 @@
 // Silnik sesji z kartami (słówka i zwroty): kolejka SRS, 4 tryby ćwiczeń, podpowiedzi, oceny, podsumowanie sesji.
-import { $, esc, IKONY, przyciskGlosu, przyciskGwiazdki, podswietl, bezGwiazdek, wpisZAkcentami, toast } from './wspolne.js';
+import { $, esc, IKONY, przyciskGlosu, przyciskGwiazdki, podswietl, bezGwiazdek, wpisZAkcentami, toast, otworzModal, sygnalModalu, kapsulaOpcji } from './wspolne.js';
 import { budujKolejke, poOcenie, status, doPowtorki } from '../srs.js';
 import { sprawdz, komunikat, ocenaZWyniku, tasuj, bezRodzajnika, czysc, warianty } from '../tekst.js';
 import { wWariancie, odpowiedziEs } from '../dane/index.js';
@@ -37,7 +37,7 @@ export function silnikKart(root, cfg) {
   root.innerHTML = `
     <div class="przelaczniki">
       <div class="seg seg--pelny" role="group" aria-label="Tryb ćwiczenia" data-tryby>${TRYBY.map(([k, n]) => `<button type="button" data-tryb="${k}">${n}</button>`).join('')}</div>
-      <div class="seg" role="group" aria-label="Kierunek" data-kier>${KIERUNKI.map(([k, n]) => `<button type="button" data-k="${k}">${n}</button>`).join('')}</div>
+      <div class="wiersz-narzedzi">${kapsulaOpcji(cfg.rodzaj + '-opcje', '')}</div>
     </div>
     <div class="sesja-pasek"><div class="postep"><i data-postep></i></div><span data-pozycja></span></div>
     <div class="karta-obszar" data-obszar aria-live="polite"></div>`;
@@ -46,20 +46,36 @@ export function silnikKart(root, cfg) {
   const tryb = () => ui[trybKey] || 'fiszka';
   const kier = () => ui[kierKey] || 'es';
 
+  const NAZWA_KIER = Object.fromEntries(KIERUNKI);
   function rysujPrzelaczniki() {
     root.querySelectorAll('[data-tryb]').forEach(b => b.setAttribute('aria-pressed', b.dataset.tryb === tryb()));
-    root.querySelectorAll('[data-k]').forEach(b => b.setAttribute('aria-pressed', b.dataset.k === kier()));
+    const zakres = cfg.etykietaZakresu ? cfg.etykietaZakresu() : '';
+    $(`#${cfg.rodzaj}-opcje span`, root).innerHTML = `<b>${NAZWA_KIER[kier()]}</b>${zakres ? ' · ' + esc(zakres) : ''}`;
   }
   root.querySelector('[data-tryby]').addEventListener('click', e => {
     const b = e.target.closest('[data-tryb]'); if (!b) return;
     ui[trybKey] = b.dataset.tryb; app.zapisz(); rysujPrzelaczniki();
     if (S.karta && !S.koniec) nowaKarta(S.karta.x); else start();
   });
-  root.querySelector('[data-kier]').addEventListener('click', e => {
-    const b = e.target.closest('[data-k]'); if (!b) return;
-    ui[kierKey] = b.dataset.k; app.zapisz(); rysujPrzelaczniki();
-    if (S.karta && !S.koniec) nowaKarta(S.karta.x);
-  });
+  // kapsuła opcji: kierunek + ustawienia modułu (temat, kategoria) w wysuwanym panelu
+  function otworzOpcje() {
+    const el = otworzModal('Opcje ćwiczenia', `<div class="arkusz">
+      <p class="etykieta">Kierunek</p>
+      <div class="seg seg--pelny" role="group" aria-label="Kierunek">${KIERUNKI.map(([k, n]) => `<button type="button" data-ok="${k}" aria-pressed="${k === kier()}">${n}</button>`).join('')}</div>
+      ${cfg.opcjeHtml ? cfg.opcjeHtml() : ''}
+      <p class="male">Sesja ma ${Math.min(50, Math.max(10, ust().cel))} kart (cel dzienny z ustawień). Najpierw idą powtórki, potem nowe słowa.</p>
+      <button type="button" class="btn btn--akcent btn--szeroki" data-zamknij>Gotowe</button></div>`);
+    const sygnal = { signal: sygnalModalu() };
+    el.addEventListener('click', e => {
+      const b = e.target.closest('[data-ok]'); if (!b) return;
+      ui[kierKey] = b.dataset.ok; app.zapisz();
+      el.querySelectorAll('[data-ok]').forEach(x => x.setAttribute('aria-pressed', x === b));
+      rysujPrzelaczniki();
+      if (S.karta && !S.koniec) nowaKarta(S.karta.x);
+    }, sygnal);
+    if (cfg.podlaczOpcje) cfg.podlaczOpcje(el, sygnal, () => { rysujPrzelaczniki(); start(); });
+  }
+  $(`#${cfg.rodzaj}-opcje`, root).addEventListener('click', otworzOpcje);
 
   // --- sesja ---
   function start(wlasne = null) {
@@ -387,5 +403,5 @@ export function silnikKart(root, cfg) {
     const cel = obszar.querySelector('.fiszka, [data-wpis], .opcja, [data-mow]');
     if (cel) cel.focus({ preventScroll: true });
   }
-  return { start, cwiczJeden, klawisz, aktywna: () => !!S.karta && !S.koniec };
+  return { start, cwiczJeden, klawisz, odswiezOpcje: rysujPrzelaczniki, aktywna: () => !!S.karta && !S.koniec };
 }
