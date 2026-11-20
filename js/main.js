@@ -17,6 +17,11 @@ import { zakladkaCwiczenia } from './ui/cwiczenia.js';
 import { widokGramatyki } from './ui/gramatyka.js';
 import { widokMoich } from './ui/moje.js';
 import { pasekXp, widokOdznak, widokTygodnia, htmlTygodnia } from './ui/motywacja.js';
+import { widokDyktanda } from './ui/dyktando.js';
+import { widokUkladania } from './ui/uloz.js';
+import { widokWyzwan } from './ui/wyzwania.js';
+import { widokLekcjiDnia } from './ui/lekcja-dnia.js';
+import { widokRozmowy } from './ui/rozmowa.js';
 import { xpZaOcene, poziomGracza, noweOdznaki } from './postep.js';
 import { HISP, t as T, ustawJezyk } from './jezyk.js';
 import { kalendarz, najdluzszaSeria, liczOpanowane, seriaOpanowanych, najczesciejMylone } from './statystyki.js';
@@ -187,8 +192,13 @@ const IK = d => `<svg viewBox="0 0 24 24">${d}</svg>`;
 const cwiczListe = lista => { if (!lista.length) return; pokazZakladke('slowka', { przewin: true }); moduly.slowka.cwiczListe(lista); };
 const otworzTekst = i => { stan.ui.czTekst = i; stan.ui.zWidok = 'czytanie'; zainicjowane.delete('zwroty'); pokazZakladke('zwroty', { przewin: true }); };
 const KAFELKI = [
+  { id: 'lekcja', ikona: IK('<circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4M2 12h2m16 0h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>'), n: T('Lekcja dnia', 'Lección del día'), o: T('Słowo, zwrot, reguła i quiz – 3 minuty', 'Palabra, frase, regla y test: 3 minutos'), widok: widokLekcjiDnia },
   { id: 'gramatyka', ukryj: HISP, ikona: IK('<path d="M5 4h10l4 4v12H5z"/><path d="M15 4v4h4M8 12h8M8 16h5"/>'), n: 'Gramatyka', o: '16 lekcji: reguła, przykłady, ćwiczenie', widok: widokGramatyki },
   { id: 'czytanie', ikona: IK('<path d="M4 6c3-1 5-1 8 1 3-2 5-2 8-1v12c-3-1-5-1-8 1-3-2-5-2-8-1z"/><path d="M12 7v12"/>'), n: T('Czytanie', 'Lectura'), o: T('Teksty z tłumaczeniem słów', 'Textos con traducción de palabras'), akcja: () => otworzTekst(stan.ui.czTekst ?? 0) },
+  { id: 'dyktando', ikona: IK('<path d="M4 20l4-1 11-11-3-3L5 16z"/><path d="M14 6l3 3"/>'), n: T('Dyktando', 'Dictado'), o: T('Słuchasz i wpisujesz całe zdanie', 'Escuchas y escribes la frase'), widok: widokDyktanda },
+  { id: 'uloz', ikona: IK('<rect x="3" y="5" width="7" height="5" rx="1.5"/><rect x="14" y="5" width="7" height="5" rx="1.5"/><rect x="7" y="14" width="10" height="5" rx="1.5"/>'), n: T('Ułóż zdanie', 'Ordena la frase'), o: T('Słowa w dobrej kolejności', 'Palabras en el orden correcto'), widok: widokUkladania },
+  { id: 'rozmowa', ukryj: HISP, ikona: IK('<path d="M4 5h11a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2H9l-4 3v-3H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z"/><path d="M19 9h1a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-1v3l-3-3h-4"/>'), n: 'Rozmowa', o: 'Scenki z lektorem: kawiarnia, hotel, lekarz…', widok: widokRozmowy },
+  { id: 'wyzwania', ikona: IK('<path d="M13 2 4 14h7l-1 8 9-12h-7z"/>'), n: T('Wyzwania', 'Retos'), o: T('Ekspres 60 s i bez błędu', 'Exprés 60 s y sin fallar'), widok: widokWyzwan },
   { id: 'moje', ikona: IK('<path d="M12 3.5l2.6 5.3 5.9.9-4.25 4.1 1 5.85L12 16.9l-5.25 2.75 1-5.85L3.5 9.7l5.9-.9z"/>'), n: T('Moje słowa', 'Mis palabras'), o: T('Ulubione i ćwiczenie z nich', 'Favoritas y práctica'), widok: widokMoich },
   { id: 'odznaki', ukryj: true, n: T('Odznaki', 'Insignias'), widok: widokOdznak },
   { id: 'tydzien', ukryj: true, n: T('Twój tydzień', 'Tu semana'), widok: widokTygodnia },

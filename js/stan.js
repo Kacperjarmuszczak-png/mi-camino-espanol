@@ -28,6 +28,8 @@ export const nowyStanAplikacji = () => ({
   odznaki: {},            // id odznaki → data zdobycia
   licz: {},               // liczniki aktywności (dyktando, rozmowa, lekcja dnia…)
   rekordy: {},            // najlepsze wyniki wyzwań
+  lekcjeDnia: {},         // 'RRRR-MM-DD' → wynik mini-quizu lekcji dnia
+  rozmowy: {},            // ukończone scenki rozmowy
   ust: domyslneUstawienia(),
   ui: { poziom: 'A1', zakladka: 'slowka', tryb: 'fiszka', kier: 'es', temat: '' },
 });
