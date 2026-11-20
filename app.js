@@ -36,36 +36,30 @@
 
   // --- wymowa (głos przeglądarki) ---
   const mowa = 'speechSynthesis' in window ? speechSynthesis : null;
-  let glos = null;
-  // najlepszy hiszpański głos w urządzeniu: z Hiszpanii, w wersji Premium / Rozszerzonej / neuronowej
-  const ocenGlos = v => (/^es[-_]ES/i.test(v.lang) ? 100 : /^es/i.test(v.lang) ? 10 : -1000)
-    + (/premium/i.test(v.name) ? 60 : /enhanced|mejorad|rozszerz|neural|natural|online/i.test(v.name) ? 40 : /google/i.test(v.name) ? 25 : 0)
-    + (/m[oó]nica|jorge|marisol|lucia|lucía|elvira|alvaro|álvaro/i.test(v.name) ? 10 : 0) + (v.localService ? 1 : 0);
-  const wybierzGlos = () => { if (!mowa) return; const g = mowa.getVoices().filter(v => /^es/i.test(v.lang)).sort((a, b) => ocenGlos(b) - ocenGlos(a)); glos = g[0] || null; };
-  if (mowa) { wybierzGlos(); mowa.onvoiceschanged = wybierzGlos; }
-  const syntezator = t => { if (!mowa) return; try { mowa.cancel(); const u = new SpeechSynthesisUtterance(t); u.lang = glos ? glos.lang : 'es-ES'; u.rate = .9; if (glos) u.voice = glos; mowa.speak(u); } catch (e) { /* brak głosu */ } };
-
-  // prawdziwe nagrania rodzimych użytkowników (Lingua Libre / Wikimedia Commons), a gdy ich brak: głos urządzenia
-  const NAGRANIA = window.NAGRANIA || {};
-  const COMMONS = 'https://upload.wikimedia.org/wikipedia/commons/';
-  const kluczNagrania = t => t.toLowerCase().replace(/[¿?¡!.,;:…]/g, '').replace(/\s+/g, ' ').trim();
-  const nagranie = t => { const k = kluczNagrania(t); return NAGRANIA[k] || NAGRANIA[k.replace(/^(el|la|los|las|un|una) /, '')] || null; };
-  let odtwarzacz = null;
-  const powiedz = t => {
-    const n = nagranie(t);
-    if (odtwarzacz) { odtwarzacz.pause(); odtwarzacz = null; }
-    if (mowa) mowa.cancel();
-    if (!n) return syntezator(t);
-    const plik = n[0], nazwa = plik.split('/').pop();
-    const a = new Audio(COMMONS + 'transcoded/' + plik + '/' + nazwa + '.mp3');
-    let zapas = false;
-    a.onerror = () => { if (zapas) return syntezator(t); zapas = true; a.src = COMMONS + plik; a.play().catch(() => syntezator(t)); };
-    odtwarzacz = a;
-    a.play().catch(() => { if (!zapas) a.onerror(); });
+  // jeden głos dla wszystkiego: wybrany przez użytkownika albo najlepszy hiszpański w urządzeniu
+  // (na iPhonie: Mónica / Jorge w wersji Premium lub Rozszerzonej, najbliższe brzmieniem Siri)
+  let glos = null, glosy = [];
+  const jakosc = v => /premium/i.test(v.name + v.voiceURI) ? 2 : /enhanced|mejorad|rozszerz|neural|natural|online/i.test(v.name + v.voiceURI) ? 1 : 0;
+  const ocenGlos = v => (/^es[-_]ES/i.test(v.lang) ? 100 : 10) + jakosc(v) * 30 + (/google/i.test(v.name) ? 20 : 0)
+    + (/m[oó]nica|jorge|marisol|luc[ií]a|elvira|[aá]lvaro/i.test(v.name) ? 10 : 0);
+  const glosWybor = $('#glos-wybor'), glosRada = $('#glos-rada');
+  const opisGlosu = v => `${v.name}${jakosc(v) === 2 && !/premium/i.test(v.name) ? ' (Premium)' : jakosc(v) === 1 && !/enhanced|mejorad|rozszerz/i.test(v.name) ? ' (Rozszerzony)' : ''} · ${v.lang.replace('_', '-')}`;
+  const wybierzGlos = () => {
+    if (!mowa) return;
+    glosy = mowa.getVoices().filter(v => /^es/i.test(v.lang)).sort((a, b) => ocenGlos(b) - ocenGlos(a));
+    glos = glosy.find(v => v.voiceURI === stan.glos) || glosy[0] || null;
+    glosWybor.innerHTML = glosy.map(v => `<option value="${esc(v.voiceURI)}"${v === glos ? ' selected' : ''}>${esc(opisGlosu(v))}</option>`).join('') || '<option>brak hiszpańskiego głosu</option>';
+    glosRada.hidden = glosy.some(v => jakosc(v) > 0);
   };
-  const autorNagrania = t => { const n = nagranie(t); return n ? n[1] : ''; };
+  if (mowa) { wybierzGlos(); mowa.onvoiceschanged = wybierzGlos; setTimeout(wybierzGlos, 500); }
+  else $('#glos-ustawienia').hidden = true;
+  glosWybor.addEventListener('change', () => { stan.glos = glosWybor.value; zapisz(); wybierzGlos(); powiedz('Hola, ¿qué tal?'); });
+  const powiedz = t => {
+    if (!mowa) return;
+    try { mowa.cancel(); const u = new SpeechSynthesisUtterance(t); u.lang = glos ? glos.lang : 'es-ES'; u.rate = .9; if (glos) u.voice = glos; mowa.speak(u); } catch (e) { /* brak głosu */ }
+  };
   const IK_GLOS = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 9v6h4l5 4V5L8 9H4zm12.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4zM14 3.2v2.1a7 7 0 0 1 0 13.4v2.1a9 9 0 0 0 0-17.6z"/></svg>';
-  const przyciskGlosu = t => (mowa || nagranie(t)) ? `<button type="button" class="glos${nagranie(t) ? ' glos--nagranie' : ''}" data-mow="${esc(t)}" aria-label="Posłuchaj: ${esc(t)}">${IK_GLOS}</button>` : '';
+  const przyciskGlosu = t => mowa ? `<button type="button" class="glos" data-mow="${esc(t)}" aria-label="Posłuchaj: ${esc(t)}">${IK_GLOS}</button>` : '';
   document.addEventListener('click', e => { const b = e.target.closest('[data-mow]'); if (b) powiedz(b.dataset.mow); });
 
   // --- motyw ---
@@ -110,8 +104,7 @@
     $('#f-licznik').textContent = `umiesz ${umiem} z ${pula.length}`;
     fiszka.classList.remove('pokaz');
     $('#f-przyciski').hidden = !w;
-    $('#f-glos').hidden = !w || !(mowa || nagranie(w.es));
-    $('#f-autor').textContent = w && autorNagrania(w.es) ? 'nagranie: ' + autorNagrania(w.es) : '';
+    $('#f-glos').hidden = !w || !mowa;
     if (!w) {
       $('#f-podp').textContent = 'Brawo!'; $('#f-slowo').textContent = 'Umiesz wszystkie'; $('#f-odp').textContent = '';
       $('#f-hint').textContent = 'stuknij, żeby zacząć od nowa'; return;
@@ -141,7 +134,7 @@
   function sRysuj() {
     const q = bezAkc(czysc(sSzukaj.value));
     const lista = fPula().filter(w => !q || bezAkc(czysc(w.es)).includes(q) || bezAkc(czysc(w.pl)).includes(q));
-    $('#s-lista').innerHTML = lista.map(w => `<li${stan.umiem[w.es] ? ' class="umiem"' : ''}><div><b>${esc(w.es)}</b><span>${esc(w.pl)}${autorNagrania(w.es) ? ` · <i>nagranie: ${esc(autorNagrania(w.es))}</i>` : ''}</span></div>${przyciskGlosu(w.es)}</li>`).join('') || '<li><div><span>Nic nie znaleziono.</span></div></li>';
+    $('#s-lista').innerHTML = lista.map(w => `<li${stan.umiem[w.es] ? ' class="umiem"' : ''}><div><b>${esc(w.es)}</b><span>${esc(w.pl)}</span></div>${przyciskGlosu(w.es)}</li>`).join('') || '<li><div><span>Nic nie znaleziono.</span></div></li>';
   }
   sSzukaj.addEventListener('input', sRysuj);
 

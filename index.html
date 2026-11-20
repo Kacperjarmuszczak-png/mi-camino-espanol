@@ -46,7 +46,7 @@
         <em id="f-hint">stuknij, żeby zobaczyć tłumaczenie</em>
       </button>
       <div class="wiersz">
-        <span class="male"><span id="f-licznik"></span> <i id="f-autor" class="autor"></i></span>
+        <span class="male" id="f-licznik"></span>
         <button type="button" class="glos" id="f-glos" aria-label="Posłuchaj wymowy"></button>
       </div>
       <div class="przyciski" id="f-przyciski">
@@ -100,10 +100,14 @@
     </section>
   </main>
 
-  <footer class="stopka">Postęp zapisuje się tylko na tym urządzeniu.<br>Nagrania wymowy: rodzimi użytkownicy hiszpańskiego z projektu <a href="https://lingualibre.org/">Lingua Libre</a>, licencje <a href="https://creativecommons.org/licenses/by/4.0/deed.pl">CC BY</a> i <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.pl">CC BY-SA</a> (autor podany przy słowie). Gdy nagrania brak, mówi głos telefonu.</footer>
+  <section class="glos-ustawienia" id="glos-ustawienia">
+    <label class="wybor"><span>Głos</span><select id="glos-wybor" aria-label="Głos lektora"></select></label>
+    <p class="male" id="glos-rada" hidden>Żeby brzmiało jak Siri: na iPhonie otwórz Ustawienia → Dostępność → Treść mówiona → Głosy → Hiszpański → Hiszpania i pobierz <b>Mónica (Premium)</b> albo <b>Jorge (Rozszerzony)</b>. Potem odśwież stronę.</p>
+  </section>
+
+  <footer class="stopka">Postęp i wybrany głos zapisują się tylko na tym urządzeniu.</footer>
 
   <script src="slowa.js"></script>
-  <script src="nagrania.js"></script>
   <script src="czasowniki.js"></script>
   <script src="zwroty.js"></script>
   <script src="app.js"></script>

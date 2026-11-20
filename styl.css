@@ -141,7 +141,5 @@ input::placeholder { color: var(--szary); }
 #c-wpis.ok { border-color: var(--ok); } #c-wpis.zle { border-color: var(--zle); }
 
 .stopka { margin-top: 28px; text-align: center; font-size: .8rem; color: var(--szary); }
-.autor { font-style: normal; font-size: .75rem; opacity: .75; }
-.lista i { font-style: normal; font-size: .75rem; opacity: .75; }
-.glos--nagranie { border-color: var(--zloto); }
-.stopka a { color: var(--zloto); }
+.glos-ustawienia { display: grid; gap: 8px; margin-top: 28px; padding-top: 16px; border-top: 1px solid var(--linia); }
+.glos-ustawienia b { color: var(--tekst); font-weight: 500; }
