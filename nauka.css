@@ -25,7 +25,7 @@ html.jasny .logo-es span { color: #8a6a28; }
 
 /* panel ćwiczenia: jak karty i pytania FAQ na stronie fotografii */
 .nk-panel {
-  max-width: 760px; margin: 0 auto; display: grid; gap: 1.1rem; padding: 1.4rem;
+  max-width: 760px; margin: 0 auto; display: grid; grid-template-columns: minmax(0, 1fr); gap: 1.1rem; padding: 1.4rem;
   border-radius: 24px; border: 1px solid var(--nk-brzeg); background: var(--nk-tlo);
   -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
 }
@@ -142,7 +142,7 @@ html.jasny .nk-czas-naglowek h3 { color: #8a6a28; }
 .nk-tabela td.g .nk-glos svg { width: 15px; height: 15px; }
 .nk-tabela tr.is-teraz td { background: rgba(226, 201, 139, .1); }
 
-.nk-cwicz { display: grid; gap: .8rem; padding-top: 1.2rem; border-top: 1px solid var(--nk-brzeg); }
+.nk-cwicz { display: grid; grid-template-columns: minmax(0, 1fr); gap: .8rem; padding-top: 1.2rem; border-top: 1px solid var(--nk-brzeg); }
 .nk-cwicz .eyebrow { margin: 0; color: var(--gold-light); }
 .nk-zadanie { margin: 0; font-size: 1.05rem; color: var(--on-dark); line-height: 1.5; }
 .nk-zadanie b { font-family: var(--serif); font-size: 1.6rem; font-weight: 500; color: var(--gold-light); }

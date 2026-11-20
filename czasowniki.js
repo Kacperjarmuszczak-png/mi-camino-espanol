@@ -369,7 +369,7 @@ reírse:śmiać się (z czegoś):=reír
     poder: { f: 'ue', pret: 'pud', fut: 'podr', ger: 'pudiendo' },
     andar: { pret: 'anduv' },
     ducir: { f: 'zc', pret: 'duj' },
-    'reír':{ pres: s('río ríes ríe reímos reís ríen'), indef: s('reí reíste rió reímos reísteis rieron'), subj: s('ría rías ría riamos riais rían'), ger: 'riendo' },
+    'reír':{ pres: s('río ríes ríe reímos reís ríen'), indef: s('reí reíste rio reímos reísteis rieron'), subj: s('ría rías ría riamos riais rían'), ger: 'riendo' },
     oler:  { pres: s('huelo hueles huele olemos oléis huelen'), subj: s('huela huelas huela olamos oláis huelan') },
   };
 
@@ -422,6 +422,7 @@ reírse:śmiać się (z czegoś):=reír
         let t = temat;
         if (silnaZmiana.includes(i)) t = zmianaTematu(t, f);
         if (uir && silnaZmiana.includes(i)) t += 'y';
+        if (uir && i === 4) return t + 'is';   // construis, huis (RAE 2010: bez akcentu)
         return t + e;
       });
       // 1. osoba
@@ -448,9 +449,12 @@ reírse:śmiać się (z czegoś):=reír
         if (typ === 'ir' && (i === 2 || i === 5)) t = slabaZmiana(t, f);
         if (samo && (i === 2 || i === 5)) return t + (i === 2 ? 'yó' : 'yeron');
         if (samo && !uir && (i === 1 || i === 3 || i === 4)) return t + e.replace('i', 'í');
+        if (uir && i === 0 && /^[^aeiouáéíóú]*u$/.test(t)) return t + 'i';   // hui (jednosylabowe, bez akcentu)
         return t + e;
       });
     }
+
+    if (baza === 'reír' && przed) indef[2] = 'rió';   // rio (1 sylaba), ale sonrió
 
     // imperfecto
     const imperf = irr && irr.imperf ? irr.imperf.slice() : KONC.imperf[typ].map(e => temat + e);
