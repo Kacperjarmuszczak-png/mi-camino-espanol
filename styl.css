@@ -21,7 +21,8 @@
 * { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; }
 body {
-  margin: 0 auto; max-width: 640px; min-height: 100vh; padding: 0 16px calc(24px + env(safe-area-inset-bottom));
+  margin: 0 auto; max-width: 640px; min-height: 100vh; padding-block: 0 calc(24px + env(safe-area-inset-bottom, 0px));
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
   background: var(--tlo); color: var(--tekst); font: 400 1rem/1.5 var(--sans);
 }
 button, input, select { font: inherit; color: inherit; }
