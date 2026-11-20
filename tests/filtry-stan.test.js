@@ -60,12 +60,14 @@ test('aktywność dzienna i seria dni z osiągniętym celem', () => {
   const s = nowyStanAplikacji(); s.ust.cel = 10;
   const d = n => T0 - n * DZIEN;
   s.dni[dzien(d(1))] = 12; s.dni[dzien(d(2))] = 10; s.dni[dzien(d(3))] = 4; s.dni[dzien(d(4))] = 30;
-  assert.equal(seria(s, T0), 2);                 // dziś jeszcze bez celu: seria z wczoraj trwa
+  assert.equal(seria(s, T0), 3);                 // dziś bez celu: seria z wczoraj trwa; dzień 3 zamrożony, dzień 4 się liczy
   dodajAktywnosc(s, 10, T0);
   assert.equal(s.dni[dzien(T0)], 10);
-  assert.equal(seria(s, T0), 3);
+  assert.equal(seria(s, T0), 4);
   s.dni[dzien(d(1))] = 0;
-  assert.equal(seria(s, T0), 1);
+  assert.equal(seria(s, T0), 2);                 // dziś + (wczoraj zamrożony) + dzień 2; drugi brak w tym tygodniu przerywa
+  s.dni[dzien(d(2))] = 0;
+  assert.equal(seria(s, T0), 1);                 // dwa dni z rzędu bez celu przerywają serię
 });
 
 test('eksport i import postępów', () => {

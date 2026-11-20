@@ -1,5 +1,5 @@
 // Punkt startowy: stan, poziomy A1–C2 z postępem, zakładki, nagłówek z aktywnością, statystyki, ustawienia, skróty.
-import { wczytaj, zapisz as zapiszStan, dodajAktywnosc, seria, dzien, eksportuj, importuj, nowyStanAplikacji } from './stan.js';
+import { wczytaj, zapisz as zapiszStan, dodajAktywnosc, seria, seriaSzczegoly, dzien, eksportuj, importuj, nowyStanAplikacji } from './stan.js';
 import { ocen, postep, status, doPowtorki } from './srs.js';
 import { utworzMowe } from './mowa.js';
 import { POZIOMY, OPIS_POZIOMU, SLOWKA, CZAS, ZWROTY_LISTA, POD_ID, tematy } from './dane/index.js';
@@ -16,6 +16,8 @@ import { zakladkaTlumaczPl } from './ui/tlumacz-pl.js';
 import { zakladkaCwiczenia } from './ui/cwiczenia.js';
 import { widokGramatyki } from './ui/gramatyka.js';
 import { widokMoich } from './ui/moje.js';
+import { pasekXp, widokOdznak, widokTygodnia, htmlTygodnia } from './ui/motywacja.js';
+import { xpZaOcene, poziomGracza, noweOdznaki } from './postep.js';
 import { HISP, t as T, ustawJezyk } from './jezyk.js';
 import { kalendarz, najdluzszaSeria, liczOpanowane, seriaOpanowanych, najczesciejMylone } from './statystyki.js';
 import { plikIcs, pobierzIcs, plakietkaDostepna, wlaczPlakietke, ustawPlakietke } from './przypomnienia.js';
@@ -34,13 +36,37 @@ const app = {
   ocen(id, ocena, { bezAktywnosci = false } = {}) {
     stan.srs[id] = ocen(stan.srs[id], ocena);
     stan.hist[dzien()] = liczOpanowane(stan.srs);
+    dodajXp(xpZaOcene(ocena));
     if (!bezAktywnosci) dodajAktywnosc(stan, 1);
+    sprawdzOdznaki();
     app.zapisz(); rysujNaglowek(); rysujPoziomy();
     return stan.srs[id];
   },
-  dodajAktywnosc(n) { if (n > 0) { dodajAktywnosc(stan, n); app.zapisz(); rysujNaglowek(); } },
+  dodajAktywnosc(n) { if (n > 0) { dodajAktywnosc(stan, n); dodajXp(5 * n); app.zapisz(); rysujNaglowek(); sprawdzOdznaki(); } },
+  licz(k, n = 1) { stan.licz[k] = (stan.licz[k] || 0) + n; app.zapisz(); sprawdzOdznaki(); },
+  rekord(k, v) { if (v > (stan.rekordy[k] || 0)) { stan.rekordy[k] = v; app.zapisz(); sprawdzOdznaki(); return true; } return false; },
   odswiez() { rysujNaglowek(); rysujPoziomy(); rysujInfo(); Object.values(moduly).forEach(m => m.odswiezListe && m.odswiezListe()); },
 };
+// --- XP i odznaki ---
+function dodajXp(n) {
+  const przed = poziomGracza(stan.xp || 0).poziom;
+  stan.xp = (stan.xp || 0) + n; const d = dzien(); stan.xpDni[d] = (stan.xpDni[d] || 0) + n;
+  const po = poziomGracza(stan.xp).poziom;
+  if (po > przed) setTimeout(() => toast(T(`⭐ Poziom gracza ${po}!`, `⭐ ¡Nivel de jugador ${po}!`)), 300);
+}
+let czasOdznak = 0;
+function sprawdzOdznaki() {
+  clearTimeout(czasOdznak);
+  czasOdznak = setTimeout(() => {
+    const zest = { odp: Object.values(stan.dni).reduce((a, b) => a + b, 0), najdl: Math.max(najdluzszaSeria(stan.dni, stan.ust.cel), seria(stan)), opan: liczOpanowane(stan.srs),
+      egz: stan.egz, licz: stan.licz, rekordy: stan.rekordy, poziom: poziomGracza(stan.xp || 0).poziom };
+    const nowe = noweOdznaki(zest, stan.odznaki);
+    if (!nowe.length) return;
+    nowe.forEach(o => { stan.odznaki[o.id] = dzien(); });
+    app.zapisz();
+    toast(T(`🏅 Nowa odznaka: ${nowe[0].ik} ${nowe[0].n}`, `🏅 Nueva insignia: ${nowe[0].ik} ${nowe[0].n}`) + (nowe.length > 1 ? ` (+${nowe.length - 1})` : ''));
+  }, 400);
+}
 window.addEventListener('pagehide', () => zapiszStan(stan));
 document.addEventListener('visibilitychange', () => { if (document.hidden) zapiszStan(stan); });
 
@@ -118,6 +144,9 @@ function modalDnia() {
   const el = otworzModal(T('Statystyki', 'Estadísticas'), `
     <div class="liczby liczby--4"><div><b>${stan.dni[dzien()] || 0}</b><span>${T('dziś', 'hoy')}</span></div><div><b>${seria(stan)}</b><span>${T('dni serii', 'días de racha')}</span></div>
       <div><b>${najdluzszaSeria(stan.dni, cel)}</b><span>${T('najdłuższa seria', 'racha más larga')}</span></div><div><b>${liczOpanowane(stan.srs)}</b><span>${T('opanowane', 'dominadas')}</span></div></div>
+    ${pasekXp(stan)}
+    ${(() => { const z = seriaSzczegoly(stan).zamrozone; return z.length ? `<p class="male">❄️ ${T('Zamrożenie serii uratowało dzień', 'La congelación de racha salvó el día')} ${z.map(k => k.split('-').reverse().join('.')).join(', ')}. ${T('Jeden opuszczony dzień na 7 nie przerywa serii.', 'Un día sin practicar cada 7 no rompe la racha.')}</p>` : `<p class="male">❄️ ${T('Zamrożenie serii: jeden opuszczony dzień na 7 nie przerywa serii.', 'Congelación de racha: un día sin practicar cada 7 no rompe la racha.')}</p>`; })()}
+    <p class="etykieta">${T('Ten tydzień', 'Esta semana')}</p>${htmlTygodnia(stan)}
     <p class="etykieta">${T('Kalendarz aktywności', 'Calendario de actividad')}</p>
     <div class="kalendarz" role="img" aria-label="${T(`Aktywność: ${aktywne} dni nauki, łącznie ${suma} odpowiedzi`, `Actividad: ${aktywne} días de práctica, ${suma} respuestas en total`)}">
       <div class="kal-mies">${etyk.map(m => `<span>${m}</span>`).join('')}</div>
@@ -136,6 +165,8 @@ function modalDnia() {
     <p class="etykieta">${T('Cel dzienny', 'Meta diaria')}</p>
     <div class="seg" role="group" aria-label="${T('Cel dzienny', 'Meta diaria')}">${[10, 20, 30, 50].map(n => `<button type="button" data-cel="${n}" aria-pressed="${stan.ust.cel === n}">${n}</button>`).join('')}</div>`);
   el.addEventListener('click', e => {
+    const cw = e.target.closest('[data-cwk]');
+    if (cw) { zamknijModal(); pokazZakladke('cwiczenia', { przewin: true }); moduly.cwiczenia.otworz(cw.dataset.cwk); return; }
     if (!e.target.closest('[data-cwicz-mylone]')) return;
     zamknijModal();
     pokazZakladke('slowka', { przewin: true });
@@ -159,9 +190,11 @@ const KAFELKI = [
   { id: 'gramatyka', ukryj: HISP, ikona: IK('<path d="M5 4h10l4 4v12H5z"/><path d="M15 4v4h4M8 12h8M8 16h5"/>'), n: 'Gramatyka', o: '16 lekcji: reguła, przykłady, ćwiczenie', widok: widokGramatyki },
   { id: 'czytanie', ikona: IK('<path d="M4 6c3-1 5-1 8 1 3-2 5-2 8-1v12c-3-1-5-1-8 1-3-2-5-2-8-1z"/><path d="M12 7v12"/>'), n: T('Czytanie', 'Lectura'), o: T('Teksty z tłumaczeniem słów', 'Textos con traducción de palabras'), akcja: () => otworzTekst(stan.ui.czTekst ?? 0) },
   { id: 'moje', ikona: IK('<path d="M12 3.5l2.6 5.3 5.9.9-4.25 4.1 1 5.85L12 16.9l-5.25 2.75 1-5.85L3.5 9.7l5.9-.9z"/>'), n: T('Moje słowa', 'Mis palabras'), o: T('Ulubione i ćwiczenie z nich', 'Favoritas y práctica'), widok: widokMoich },
+  { id: 'odznaki', ukryj: true, n: T('Odznaki', 'Insignias'), widok: widokOdznak },
+  { id: 'tydzien', ukryj: true, n: T('Twój tydzień', 'Tu semana'), widok: widokTygodnia },
   { id: 'egzamin', ikona: IK('<path d="M9 4h6m-7 2h8a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2zm1 7 2 2 4-4"/>'), n: T('Egzamin', 'Examen'), o: T('Poziom, test poziomujący, temat', 'Nivel, prueba de nivel, tema'), akcja: () => pokazZakladke('egzamin', { przewin: true }) },
 ];
-moduly.cwiczenia = zakladkaCwiczenia($('#z-cwiczenia'), app, { kafelki: KAFELKI, pasekXp: () => '', cwicz: cwiczListe, otworzTekst });
+moduly.cwiczenia = zakladkaCwiczenia($('#z-cwiczenia'), app, { kafelki: KAFELKI, pasekXp: () => pasekXp(stan), cwicz: cwiczListe, otworzTekst });
 app.otworzCzasownik = inf => {
   stan.ui.cWidok = 'tabela';
   zainicjowane.add('czasowniki');

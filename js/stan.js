@@ -24,6 +24,10 @@ export const nowyStanAplikacji = () => ({
   egz: {},                // poziom → najlepszy wynik %
   dni: {},                // 'RRRR-MM-DD' → liczba przećwiczonych pozycji
   hist: {},               // 'RRRR-MM-DD' → liczba opanowanych pozycji (wykres postępu)
+  xp: 0, xpDni: {},       // punkty doświadczenia: razem i na dzień
+  odznaki: {},            // id odznaki → data zdobycia
+  licz: {},               // liczniki aktywności (dyktando, rozmowa, lekcja dnia…)
+  rekordy: {},            // najlepsze wyniki wyzwań
   ust: domyslneUstawienia(),
   ui: { poziom: 'A1', zakladka: 'slowka', tryb: 'fiszka', kier: 'es', temat: '' },
 });
@@ -75,18 +79,21 @@ export function dodajAktywnosc(stan, ile = 1, teraz = Date.now()) {
 
 // Seria: kolejne dni z osiągniętym celem. Dzisiejszy dzień liczy się, gdy cel już osiągnięty;
 // jeśli jeszcze nie, seria z wczoraj trwa (do północy).
-export function seria(stan, teraz = Date.now()) {
-  const cel = stan.ust.cel;
-  let n = 0, t = teraz;
-  if ((stan.dni[dzien(t)] || 0) >= cel) n = 1;
-  t -= 864e5;
-  // przejście przez zmianę czasu: idziemy po datach, nie po stałych 24 h
-  for (let i = 0; i < 3650; i++) {
-    const d = dzien(t);
-    if ((stan.dni[d] || 0) >= cel) { n++; t -= 864e5; } else break;
+// Zamrożenie serii: jeden opuszczony dzień na 7 dni nie przerywa serii (sam się nie liczy), o ile dzień przed nim miał cel.
+export function seriaSzczegoly(stan, teraz = Date.now()) {
+  const cel = stan.ust.cel, ok = t => (stan.dni[dzien(t)] || 0) >= cel;
+  let n = ok(teraz) ? 1 : 0, ostZamr = -99;
+  const zamrozone = [];
+  let t = teraz - 864e5;
+  // idziemy po datach (dzien() liczy datę lokalną, więc zmiana czasu nie przeszkadza)
+  for (let i = 0; i < 3650; i++, t -= 864e5) {
+    if (ok(t)) { n++; continue; }
+    if (i - ostZamr >= 7 && ok(t - 864e5)) { ostZamr = i; zamrozone.push(dzien(t)); continue; }
+    break;
   }
-  return n;
+  return { n, zamrozone };
 }
+export const seria = (stan, teraz = Date.now()) => seriaSzczegoly(stan, teraz).n;
 
 // --- eksport / import ---
 export const eksportuj = stan => JSON.stringify({ aplikacja: HISP ? 'polaco-jkf' : 'espanol-jkf', ...stan }, null, 1);

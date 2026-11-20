@@ -67,6 +67,7 @@ export function widokCzytania(el, app) {
     app.dodajAktywnosc(1);
     if (odp.every(x => x.wybor != null)) {
       const dobrze = odp.filter((x, i) => x.opcje[x.wybor] === T.q[i][1][0]).length;
+      app.licz('czytanie');
       $('[data-cz-koniec]', el).innerHTML = `<p class="srodek"><b>${dobrze}/${T.q.length}</b> ${tr('poprawnych odpowiedzi', 'respuestas correctas')}</p>`;
     }
   }

@@ -363,6 +363,7 @@ export function silnikKart(root, cfg) {
         w.innerHTML = `<p>${o.wynik === 'dobrze' ? tr('Świetnie, brzmi poprawnie!', '¡Muy bien, suena correcto!') : o.wynik === 'prawie' ? tr('Prawie! Posłuchaj jeszcze raz wzoru.', '¡Casi! Escucha otra vez el modelo.') : tr('Jeszcze nie tym razem.', 'Esta vez no.')}</p><p class="male">${slyszane}</p>`;
         $('[data-szcz]', obszar).hidden = false;
         zapiszOcene(o.wynik === 'dobrze' ? 3 : o.wynik === 'prawie' ? 2 : 1);
+        if (o.wynik === 'dobrze') app.licz('mow');
         S.karta.odpowiedziano = true;
         w.insertAdjacentHTML('afterend', `<button type="button" class="btn btn--akcent btn--szeroki" data-dalej>${tr('Dalej', 'Siguiente')} <kbd>Enter</kbd></button>`);
         info.textContent = '';
