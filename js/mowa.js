@@ -21,6 +21,16 @@ export function utworzMowe(ust) {
     sluchacze.forEach(f => f());
   };
   if (synt) { odswiez(); synt.addEventListener ? synt.addEventListener('voiceschanged', odswiez) : (synt.onvoiceschanged = odswiez); setTimeout(odswiez, 400); setTimeout(odswiez, 1500); }
+  // iOS Safari: mowa działa dopiero po pierwszym wypowiedzeniu w geście użytkownika – „odblokowujemy” ją cichą wypowiedzią
+  // przy pierwszym dotknięciu, żeby późniejsza automatyczna wymowa (nowa karta) też była słyszalna.
+  if (synt && typeof document !== 'undefined') {
+    const odblokuj = () => {
+      document.removeEventListener('pointerdown', odblokuj, true); document.removeEventListener('keydown', odblokuj, true);
+      try { if (!glosy.length) odswiez(); const u = new SpeechSynthesisUtterance(' '); u.volume = 0; if (wybrany) { u.voice = wybrany; u.lang = wybrany.lang; } synt.speak(u); } catch (e) { /* brak */ }
+    };
+    document.addEventListener('pointerdown', odblokuj, true); document.addEventListener('keydown', odblokuj, true);
+  }
+  const mow = u => { try { synt.resume(); } catch (e) { /* brak */ } synt.speak(u); };
 
   return {
     get dostepna() { return !!synt; },
@@ -36,12 +46,15 @@ export function utworzMowe(ust) {
     powiedz(tekst, { wolniej = false } = {}) {
       if (!synt || !tekst) return false;
       try {
-        synt.cancel();
+        const zajety = synt.speaking || synt.pending;
+        if (zajety) synt.cancel();
+        if (!glosy.length) odswiez();
         const u = new SpeechSynthesisUtterance(String(tekst).replace(/\*/g, '').replace(/…/g, '').replace(/\([^)]*\)/g, ' '));
         u.lang = wybrany ? wybrany.lang : CEL === 'pl' ? 'pl-PL' : (ust.wariant === 'latam' ? 'es-MX' : 'es-ES');
         if (wybrany) u.voice = wybrany;
         u.rate = Math.max(0.5, 0.95 * (ust.tempo || 1) * (wolniej ? 0.7 : 1));
-        synt.speak(u);
+        // po cancel() Safari potrafi „zgubić” od razu następną wypowiedź – krótka przerwa
+        if (zajety) setTimeout(() => mow(u), 80); else mow(u);
         return true;
       } catch (e) { return false; }
     },
