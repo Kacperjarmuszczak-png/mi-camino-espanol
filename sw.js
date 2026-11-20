@@ -1,6 +1,6 @@
 // Service worker: aplikacja działa offline i można ją dodać do ekranu głównego.
 // Strategia „najpierw sieć”: online zawsze najnowsza wersja z GitHub Pages, bez sieci – ostatnia zapisana kopia.
-const WERSJA = '3310d97439';
+const WERSJA = '0c66d99da8';
 const PAMIEC = 'espanol-' + WERSJA;
 const PLIKI = [
   './',

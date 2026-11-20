@@ -814,10 +814,6 @@ html, body { overscroll-behavior-y: none; }
 .gr-regula { display: grid; gap: 8px; padding: 14px 16px; border-radius: 18px; border: 1px solid color-mix(in srgb, var(--zloto) 40%, transparent); background: var(--pole); }
 .gr-regula p { margin: 0; line-height: 1.5; }
 .gr-regula b { color: var(--zloto); }
-/* tryb skupienia */
-body.skupienie #wyspa, body.skupienie #zakladki { opacity: 0; pointer-events: none; transform: translate3d(-50%, 0, 0) scale(.92); transition: opacity .3s, transform .4s var(--ios); }
-body.skupienie { padding-top: calc(var(--gora) + 52px); }
-.skupienie-wyjdz { position: fixed; z-index: 45; top: var(--gora); right: max(12px, env(safe-area-inset-right, 0px)); padding: 9px 14px; border-radius: 999px; color: var(--tekst); font-size: .82rem; font-weight: 600; }
 /* XP i odznaki */
 .xp-pasek { display: grid; gap: 6px; padding: 12px 14px; border-radius: 18px; border: 1px solid var(--linia); background: var(--pole); }
 .xp-gora { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }

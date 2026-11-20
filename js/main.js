@@ -220,7 +220,6 @@ app.otworzCzasownik = inf => {
 };
 const zainicjowane = new Set();
 function pokazZakladke(z, { przewin = false } = {}) {
-  if (document.body.classList.contains('skupienie') && z !== stan.ui.zakladka) skupienie(false);
   stan.ui.zakladka = z; app.zapisz();
   $$('#zakladki [data-z]').forEach(b => { const a = b.dataset.z === z; b.setAttribute('aria-selected', a); b.setAttribute('aria-current', a ? 'page' : 'false'); });
   ZAKLADKI.forEach(k => { $('#z-' + k).hidden = k !== z; });
@@ -422,16 +421,6 @@ async function sprawdzLinkPrzenoszenia() {
   }, { signal: sygnalModalu() });
 }
 
-// --- tryb skupienia: sama karta, bez kapsuły i docka ---
-function skupienie(wl) {
-  document.body.classList.toggle('skupienie', wl);
-  let b = $('#skupienie-wyjdz');
-  if (wl && !b) {
-    document.body.insertAdjacentHTML('beforeend', `<button type="button" class="skupienie-wyjdz szklo" id="skupienie-wyjdz" data-skupienie>${T('Zakończ skupienie', 'Salir del modo concentración')} ✕</button>`);
-  } else if (!wl && b) b.remove();
-  if (wl) toast(T('Tryb skupienia. Esc albo przycisk u góry, żeby wyjść.', 'Modo concentración. Esc o el botón de arriba para salir.'));
-}
-
 // --- zdarzenia globalne ---
 document.addEventListener('click', e => {
   const t = e.target;
@@ -446,7 +435,6 @@ document.addEventListener('click', e => {
     return;
   }
   if (t.closest('[data-zamknij]')) return zamknijModal();
-  if (t.closest('[data-skupienie]')) return skupienie(!document.body.classList.contains('skupienie'));
   const cel = t.closest('[data-cel]');
   if (cel) { stan.ust.cel = +cel.dataset.cel; app.zapisz(); $$('[data-cel]').forEach(b => b.setAttribute('aria-pressed', b === cel)); rysujNaglowek(); return; }
 });
@@ -458,7 +446,6 @@ $('#ustawienia-btn').addEventListener('click', modalUstawien);
 
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape' && modalOtwarty()) { zamknijModal(); return; }
-  if (e.key === 'Escape' && document.body.classList.contains('skupienie')) { skupienie(false); return; }
   if (modalOtwarty() || e.metaKey || e.ctrlKey || e.altKey) return;
   const t = e.target;
   if (t.matches && t.matches('input, select, textarea, [contenteditable]')) return;
