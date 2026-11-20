@@ -1,0 +1,76 @@
+// Service worker: aplikacja działa offline i można ją dodać do ekranu głównego.
+// Strategia „najpierw sieć”: online zawsze najnowsza wersja z GitHub Pages, bez sieci – ostatnia zapisana kopia.
+const WERSJA = '40caf9f025';
+const PAMIEC = 'espanol-' + WERSJA;
+const PLIKI = [
+  './',
+  './css/app.css',
+  './img/ikona-180.png',
+  './img/ikona-192.png',
+  './img/ikona-512.png',
+  './img/ikona-maskable-512.png',
+  './index.html',
+  './js/analiza-pl.js',
+  './js/analiza.js',
+  './js/dane/czasowniki.js',
+  './js/dane/czytanie.js',
+  './js/dane/funkcyjne.js',
+  './js/dane/gramatyka.js',
+  './js/dane/index.js',
+  './js/dane/przyklady.js',
+  './js/dane/slowa-codzienne-a.js',
+  './js/dane/slowa-codzienne-b.js',
+  './js/dane/slowa-codzienne-c.js',
+  './js/dane/slowa-codzienne-d.js',
+  './js/dane/slowa-codzienne-e.js',
+  './js/dane/slowa.js',
+  './js/dane/tematy-es.js',
+  './js/dane/warianty.js',
+  './js/dane/zwroty-dodatkowe.js',
+  './js/dane/zwroty.js',
+  './js/egzamin.js',
+  './js/filtry.js',
+  './js/jezyk.js',
+  './js/main.js',
+  './js/mowa.js',
+  './js/odmiana-pl.js',
+  './js/odmiana.js',
+  './js/srs.js',
+  './js/stan.js',
+  './js/tekst.js',
+  './js/tlumaczenie.js',
+  './js/ui/czasowniki-pl.js',
+  './js/ui/czasowniki.js',
+  './js/ui/egzamin.js',
+  './js/ui/karty.js',
+  './js/ui/lista.js',
+  './js/ui/slowka.js',
+  './js/ui/suwak.js',
+  './js/ui/tlumacz-pl.js',
+  './js/ui/tlumacz.js',
+  './js/ui/wspolne.js',
+  './js/ui/wyspa.js',
+  './js/ui/zwroty.js',
+  './manifest.webmanifest',
+  './style.js',
+];
+
+self.addEventListener('install', e => {
+  e.waitUntil(caches.open(PAMIEC).then(c => c.addAll(PLIKI)).then(() => self.skipWaiting()));
+});
+self.addEventListener('activate', e => {
+  e.waitUntil(caches.keys().then(k => Promise.all(k.filter(n => n !== PAMIEC).map(n => caches.delete(n)))).then(() => self.clients.claim()));
+});
+self.addEventListener('fetch', e => {
+  const r = e.request;
+  if (r.method !== 'GET' || new URL(r.url).origin !== self.location.origin) return;   // tłumacz online itp. – bez pośrednictwa
+  e.respondWith(fetch(r).then(odp => {
+    if (odp.ok) { const kopia = odp.clone(); caches.open(PAMIEC).then(c => c.put(r, kopia)); }
+    return odp;
+  }).catch(() => caches.match(r, { ignoreSearch: true }).then(z => z || (r.mode === 'navigate' ? caches.match('./index.html') : Response.error()))));
+});
+// stuknięcie powiadomienia otwiera aplikację
+self.addEventListener('notificationclick', e => {
+  e.notification.close();
+  e.waitUntil(self.clients.matchAll({ type: 'window' }).then(w => (w[0] ? w[0].focus() : self.clients.openWindow('./'))));
+});

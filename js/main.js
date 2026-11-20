@@ -176,6 +176,8 @@ function modalUstawien() {
   const tresc = otworzModal(T('Szybkie ustawienia', 'Ajustes rápidos'), `<div class="cc">
     <div class="cc-blok"><p class="etykieta">${T('Czego się uczysz', 'Qué aprendes')}</p>
       <div class="seg seg--pelny" role="group" aria-label="${T('Język nauki', 'Idioma de estudio')}"><button type="button" data-jezyk="pl" aria-pressed="${!HISP}">🇪🇸 ${T('Hiszpański (dla Polaków)', 'Español (para polacos)')}</button><button type="button" data-jezyk="es" aria-pressed="${HISP}">🇵🇱 ${T('Polski (dla Hiszpanów)', 'Polaco (para hispanohablantes)')}</button></div></div>
+    ${navigator.standalone || matchMedia('(display-mode: standalone)').matches ? '' : `<div class="cc-blok cc-instal"><p class="etykieta">${T('Aplikacja na ekranie głównym', 'App en la pantalla de inicio')}</p>
+      <p class="male">${T('W Safari stuknij <b>Udostępnij</b> → <b>Do ekranu początkowego</b>. Strona otworzy się jak aplikacja: na pełnym ekranie, bez paska Safari i także bez internetu.', 'En Safari toca <b>Compartir</b> → <b>Añadir a pantalla de inicio</b>. Se abrirá como una app: a pantalla completa, sin la barra de Safari y también sin internet.')}</p></div>`}
     <div class="cc-kafle">
       <label class="cc-kafel"><input type="checkbox" id="u-auto" ${u.auto ? 'checked' : ''}><span class="tgl" aria-hidden="true"></span><b>${T('Auto-wymowa', 'Pronunciación automática')}</b><small>${T('nowa karta i odpowiedź', 'tarjeta nueva y respuesta')}</small></label>
       ${HISP ? '' : `<label class="cc-kafel"><input type="checkbox" id="u-vosotros" ${u.bezVosotros ? 'checked' : ''}><span class="tgl" aria-hidden="true"></span><b>Bez „vosotros”</b><small>odmiana jak w Ameryce</small></label>`}
@@ -325,3 +327,5 @@ wyspa = zainicjujWyspe({
   maAkcje: k => k === 'egzamin' || (k === 'lista' ? !!LISTY[stan.ui.zakladka] : stan.ui.zakladka !== 'egzamin'),
 });
 requestAnimationFrame(() => document.body.classList.add('gotowe'));
+// aplikacja na ekranie głównym i praca offline
+if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('sw.js').catch(() => {});
