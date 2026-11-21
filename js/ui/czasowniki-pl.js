@@ -170,7 +170,7 @@ export function zakladkaCzasownikiPl(root, app) {
     const r = sprawdz(wpis, [p.odp]);
     p.zrobione = true;
     const ok = r.wynik !== 'zle';
-    if (ok) D.dobrze++; else D.bledy.push(p);
+    if (ok) D.dobrze++; else { D.bledy.push(p); app.blad('czas:' + p.czas, { nazwa: czasNazwa(p.czas), przyklad: `${wpis} → ${p.odp}`, id: p.v.id }); }
     app.ocen(p.v.id, ocenaZWyniku(r.wynik));
     const w = $('#d-wynik', drill);
     w.hidden = false; w.className = 'wynik wynik--' + (r.wynik === 'dobrze' ? 'ok' : ok ? 'uwaga' : 'zle');

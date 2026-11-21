@@ -942,3 +942,24 @@ html, body { overscroll-behavior-y: none; }
 .modal-tlo { inset: calc(-1 * env(safe-area-inset-top, 0px) - 60px) 0 calc(-1 * env(safe-area-inset-bottom, 0px) - 60px); }
 html { transition: background-color .4s var(--ios); }
 html.przyciemnione { background: #0c0407; }
+
+/* --- plan na dziś, częste błędy, zgłoszenia --- */
+.plan-pasek { display: flex; align-items: center; gap: 10px; width: 100%; margin: 0 0 12px; padding: 10px 14px; border-radius: 18px; color: var(--tekst); text-align: left;
+  border: 1px solid color-mix(in srgb, var(--zloto) 45%, var(--szklo-brzeg)); background: linear-gradient(160deg, rgba(255,255,255,.12), rgba(255,255,255,.02) 60%), var(--pole); }
+.plan-pasek b { font-size: .95rem; }
+.plan-pasek small { color: var(--szary); flex: 1; font-size: .78rem; }
+.plan-dnia .postep { margin: 6px 0 10px; }
+.plan-kroki { list-style: none; margin: 10px 0; padding: 0; display: grid; gap: 8px; }
+.plan-krok { display: grid; grid-template-columns: 36px 1fr auto; align-items: center; gap: 10px; width: 100%; padding: 12px; border-radius: 18px; text-align: left; color: var(--tekst);
+  border: 1px solid var(--szklo-brzeg); background: var(--pole); }
+.plan-krok b { display: block; }
+.plan-krok small { display: block; color: var(--szary); font-size: .8rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.plan-ik { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; background: rgba(255,255,255,.08); font-size: 1.1rem; }
+.plan-kroki .zrobione .plan-krok { opacity: .6; }
+.plan-kroki .zrobione .plan-ik { background: color-mix(in srgb, #4caf7a 70%, transparent); color: #fff; }
+.blad-kat { display: grid !important; gap: 6px; align-items: start !important; padding: 12px 0 !important; }
+.blad-kat p { margin: 0; }
+.blad-prz { display: flex; flex-wrap: wrap; gap: 6px; }
+.blad-prz span { font-size: .78rem; padding: 2px 8px; border-radius: 999px; background: var(--pole); border: 1px solid var(--linia); }
+.blad-kat .btn { justify-self: start; }
+.zglos { display: inline-block; margin-top: 8px; padding: 4px 10px; border-radius: 999px; font-size: .78rem; color: var(--szary); background: none; border: 1px dashed var(--linia); }

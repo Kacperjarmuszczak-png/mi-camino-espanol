@@ -14,36 +14,57 @@ import { zainicjujWyspe } from './ui/wyspa.js';
 import { zakladkaCzasownikiPl } from './ui/czasowniki-pl.js';
 import { zakladkaTlumaczPl } from './ui/tlumacz-pl.js';
 import { zakladkaCwiczenia } from './ui/cwiczenia.js';
-import { widokGramatyki } from './ui/gramatyka.js';
-import { widokMoich } from './ui/moje.js';
 import { pasekXp, widokOdznak, widokTygodnia, htmlTygodnia } from './ui/motywacja.js';
-import { widokDyktanda } from './ui/dyktando.js';
-import { widokUkladania } from './ui/uloz.js';
-import { widokWyzwan } from './ui/wyzwania.js';
-import { widokLekcjiDnia } from './ui/lekcja-dnia.js';
-import { widokRozmowy } from './ui/rozmowa.js';
-import { widokKultury } from './ui/kultura.js';
-import { widokFalszywych } from './ui/falszywi.js';
-import { widokMemory } from './ui/memory.js';
-import { widokWisielca } from './ui/wisielec.js';
-import { widokWykreslanki } from './ui/wykreslanka.js';
-import { widokRodzajnika } from './ui/rodzajnik.js';
-import { widokLiczb } from './ui/liczby.js';
-import { widokShadowingu } from './ui/shadowing.js';
-import { widokAkcentow } from './ui/akcenty-swiata.js';
-import { widokAkcentu } from './ui/gdzie-akcent.js';
-import { widokRodzin, widokSynonimow } from './ui/rodziny.js';
-import { widokWlasnych } from './ui/wlasne.js';
 import { wczytajWlasne } from './wlasne.js';
-import { widokPlanu } from './ui/plan.js';
-import { widokDziennika } from './ui/dziennik.js';
-import { widokRozmowek } from './ui/rozmowki.js';
 import { uruchomObserwatorOdpowiedzi, ustawDzwieki } from './dzwieki.js';
+import { zapiszBlad, ustawTytulyLekcji } from './bledy.js';
+import { stanPlanu, oznaczKrok } from './plan-dnia.js';
+import { pasekPlanu } from './ui/plan-dnia.js';
+import { zglos, listaZgloszen } from './ui/zgloszenia.js';
+import { mylone } from './ui/bledy.js';
+import { nowyStan, DZIEN } from './srs.js';
 import { xpZaOcene, poziomGracza, noweOdznaki } from './postep.js';
 import { HISP, JEZYK, KLUCZ_JEZYKA, t as T, ustawJezyk } from './jezyk.js';
 import { spakuj, rozpakuj, kodQr, ZNACZNIK, MAKS_QR } from './przenoszenie.js';
 import { kalendarz, najdluzszaSeria, liczOpanowane, seriaOpanowanych, najczesciejMylone } from './statystyki.js';
 import { plikIcs, pobierzIcs, plakietkaDostepna, wlaczPlakietke, ustawPlakietke } from './przypomnienia.js';
+
+// Leniwy widok: moduł wczytuje się przy pierwszym otwarciu kafelka; do tego czasu pokazuje „Wczytuję…”.
+function leniwy(laduj, nazwa) {
+  return (el, app, ctx) => {
+    let w = null, czeka = null;
+    el.innerHTML = '<p class="pusto">' + T('Wczytuję…', 'Cargando…') + '</p>';
+    laduj().then(m => { w = m[nazwa](el, app, ctx); if (czeka) w.pokaz(...czeka); }).catch(() => { el.innerHTML = '<p class="pusto">' + T('Nie udało się wczytać. Sprawdź internet i spróbuj ponownie.', 'No se pudo cargar. Revisa la conexión.') + '</p>'; });
+    return { pokaz: (...a) => { if (w) w.pokaz(...a); else czeka = a; }, klawisz: e => (w && w.klawisz ? w.klawisz(e) : false) };
+  };
+}
+// widoki ćwiczeń wczytywane dopiero przy pierwszym otwarciu (szybszy start aplikacji)
+const widokGramatyki = leniwy(() => import('./ui/gramatyka.js'), 'widokGramatyki');
+const widokMoich = leniwy(() => import('./ui/moje.js'), 'widokMoich');
+const widokDyktanda = leniwy(() => import('./ui/dyktando.js'), 'widokDyktanda');
+const widokUkladania = leniwy(() => import('./ui/uloz.js'), 'widokUkladania');
+const widokWyzwan = leniwy(() => import('./ui/wyzwania.js'), 'widokWyzwan');
+const widokLekcjiDnia = leniwy(() => import('./ui/lekcja-dnia.js'), 'widokLekcjiDnia');
+const widokRozmowy = leniwy(() => import('./ui/rozmowa.js'), 'widokRozmowy');
+const widokKultury = leniwy(() => import('./ui/kultura.js'), 'widokKultury');
+const widokFalszywych = leniwy(() => import('./ui/falszywi.js'), 'widokFalszywych');
+const widokMemory = leniwy(() => import('./ui/memory.js'), 'widokMemory');
+const widokWisielca = leniwy(() => import('./ui/wisielec.js'), 'widokWisielca');
+const widokWykreslanki = leniwy(() => import('./ui/wykreslanka.js'), 'widokWykreslanki');
+const widokRodzajnika = leniwy(() => import('./ui/rodzajnik.js'), 'widokRodzajnika');
+const widokLiczb = leniwy(() => import('./ui/liczby.js'), 'widokLiczb');
+const widokShadowingu = leniwy(() => import('./ui/shadowing.js'), 'widokShadowingu');
+const widokAkcentow = leniwy(() => import('./ui/akcenty-swiata.js'), 'widokAkcentow');
+const widokAkcentu = leniwy(() => import('./ui/gdzie-akcent.js'), 'widokAkcentu');
+const widokRodzin = leniwy(() => import('./ui/rodziny.js'), 'widokRodzin');
+const widokSynonimow = leniwy(() => import('./ui/rodziny.js'), 'widokSynonimow');
+const widokWlasnych = leniwy(() => import('./ui/wlasne.js'), 'widokWlasnych');
+const widokPlanu = leniwy(() => import('./ui/plan.js'), 'widokPlanu');
+const widokDziennika = leniwy(() => import('./ui/dziennik.js'), 'widokDziennika');
+const widokRozmowek = leniwy(() => import('./ui/rozmowki.js'), 'widokRozmowek');
+const widokPlanuDnia = leniwy(() => import('./ui/plan-dnia.js'), 'widokPlanuDnia');
+const widokBledow = leniwy(() => import('./ui/bledy.js'), 'widokBledow');
+const widokDele = leniwy(() => import('./ui/dele.js'), 'widokDele');
 
 const stan = wczytaj();
 wczytajWlasne(stan);
@@ -69,6 +90,35 @@ const app = {
   dodajAktywnosc(n) { if (n > 0) { dodajAktywnosc(stan, n); dodajXp(5 * n); app.zapisz(); rysujNaglowek(); sprawdzOdznaki(); } },
   licz(k, n = 1) { stan.licz[k] = (stan.licz[k] || 0) + n; app.zapisz(); sprawdzOdznaki(); },
   rekord(k, v) { if (v > (stan.rekordy[k] || 0)) { stan.rekordy[k] = v; app.zapisz(); sprawdzOdznaki(); return true; } return false; },
+  blad(kat, o) { zapiszBlad(stan, kat, o); app.zapisz(); },
+  koniecSesji() { const P = stanPlanu(stan); if (P.oczekuje === 'karty') { oznaczKrok(stan, 'karty'); P.oczekuje = ''; app.zapisz(); rysujPlan(); } },
+  cwiczBlad(kat) {
+    const otworzKafel = (id, arg) => { pokazZakladke('cwiczenia', { przewin: true }); moduly.cwiczenia.otworz(id, arg); };
+    if (kat === 'slowa') return cwiczListe(mylone(stan).map(id => POD_ID.get(id)).filter(Boolean));
+    if (kat.startsWith('czas:')) { stan.ui.dCzasy = [kat.slice(5)]; stan.ui.cWidok = 'drill'; zainicjowane.delete('czasowniki'); return pokazZakladke('czasowniki', { przewin: true }); }
+    if (kat.startsWith('gram:')) return otworzKafel('gramatyka', kat.slice(5));
+    if (kat === 'ser-estar') return otworzKafel('gramatyka', 'ser-estar');
+    if (kat === 'tilde' || kat === 'rodzajnik' || kat === 'falszywi') return otworzKafel(kat);
+    if (kat === 'akcent' && !HISP) return otworzKafel('tilde');
+    const b = (stan.bledyTyp || {})[kat];
+    const l = b ? b.ids.map(id => POD_ID.get(id)).filter(Boolean) : [];
+    if (l.length) return cwiczListe(l);
+    if (kat === 'rodzajnik') return otworzKafel('rodzajnik');
+  },
+  ustawPoziom(p) { if (!POZIOMY.includes(p)) return; if (stan.ui.zakladka !== 'egzamin') return zmienPoziom(p); stan.ui.poziom = p; app.zapisz(); rysujPoziomy(); rysujInfo(); rysujNaglowek(); zainicjowane.clear(); zainicjowane.add('egzamin'); if (wyspa) wyspa.odswiez(); },
+  // test poziomujący: słowa, czasowniki i zwroty z poziomów poniżej wyniku oznaczamy jako znane (wrócą rzadko, na sprawdzenie)
+  oznaczZnane(poziomy) {
+    const teraz = Date.now(); let n = 0;
+    for (const x of [...SLOWKA, ...CZAS, ...ZWROTY_LISTA]) {
+      if (!poziomy.includes(x.p) || stan.srs[x.id]) continue;
+      const iv = 14 + Math.floor(Math.random() * 45);
+      stan.srs[x.id] = { ...nowyStan(), n: 2, ok: 1, iv, last: teraz, due: teraz + iv * DZIEN };
+      n++;
+    }
+    stan.hist[dzien()] = liczOpanowane(stan.srs);
+    app.zapisz(); app.odswiez();
+    return n;
+  },
   odswiez() { rysujNaglowek(); rysujPoziomy(); rysujInfo(); Object.values(moduly).forEach(m => m.odswiezListe && m.odswiezListe()); },
 };
 // --- XP i odznaki ---
@@ -140,7 +190,9 @@ function modalStatystyk() {
 }
 
 // --- nagłówek: dzisiejszy cel i seria ---
+function rysujPlan() { const el = $('#s-plan'); if (el) el.innerHTML = pasekPlanu(stan); }
 function rysujNaglowek() {
+  rysujPlan();
   const ile = stan.dni[dzien()] || 0, cel = stan.ust.cel, sr = seria(stan);
   $('#dzis-ile').textContent = ile; $('#dzis-cel').textContent = '/' + cel;
   const obw = 2 * Math.PI * 15;
@@ -212,6 +264,9 @@ const IK = d => `<svg viewBox="0 0 24 24">${d}</svg>`;
 const cwiczListe = lista => { if (!lista.length) return; pokazZakladke('slowka', { przewin: true }); moduly.slowka.cwiczListe(lista); };
 const otworzTekst = i => { stan.ui.czTekst = i; stan.ui.zWidok = 'czytanie'; zainicjowane.delete('zwroty'); pokazZakladke('zwroty', { przewin: true }); };
 const KAFELKI = [
+  { id: 'plandnia', grupa: 'dzis', ikona: IK('<circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/>'), n: T('Plan na dziś', 'Plan de hoy'), o: T('Powtórki, nowe słowa, zwrot i ćwiczenie – 5 minut', 'Repasos, palabras nuevas, frase y ejercicio: 5 minutos'), widok: widokPlanuDnia },
+  { id: 'bledy', grupa: 'dzis', ikona: IK('<path d="M12 3 2 20h20z"/><path d="M12 10v4M12 17h.01"/>'), n: T('Częste błędy', 'Errores frecuentes'), o: T('Ćwicz to, w czym się mylisz', 'Practica lo que más fallas'), widok: widokBledow },
+  { id: 'dele', grupa: 'prakt', ukryj: HISP, ikona: IK('<path d="M4 4h16v16H4z"/><path d="M8 9h8M8 13h8M8 17h5"/><path d="M16 2v4M8 2v4"/>'), n: 'DELE', o: 'Format egzaminu A2, B1, B2: czytanie, słuchanie, pisanie', widok: widokDele },
   { id: 'lekcja', grupa: 'dzis', ikona: IK('<circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4M2 12h2m16 0h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>'), n: T('Lekcja dnia', 'Lección del día'), o: T('Słowo, zwrot, reguła i quiz – 3 minuty', 'Palabra, frase, regla y test: 3 minutos'), widok: widokLekcjiDnia },
   { id: 'gramatyka', grupa: 'gram', ukryj: HISP, ikona: IK('<path d="M5 4h10l4 4v12H5z"/><path d="M15 4v4h4M8 12h8M8 16h5"/>'), n: 'Gramatyka', o: '16 lekcji: reguła, przykłady, ćwiczenie', widok: widokGramatyki },
   { id: 'czytanie', grupa: 'mow', ikona: IK('<path d="M4 6c3-1 5-1 8 1 3-2 5-2 8-1v12c-3-1-5-1-8 1-3-2-5-2-8-1z"/><path d="M12 7v12"/>'), n: T('Czytanie', 'Lectura'), o: T('Teksty z tłumaczeniem słów', 'Textos con traducción de palabras'), akcja: () => otworzTekst(stan.ui.czTekst ?? 0) },
@@ -326,6 +381,7 @@ function modalUstawien() {
       <div class="szukaj"><input class="pole" type="time" id="u-godz" value="${esc(u.przyp || '19:00')}" aria-label="${T('Godzina przypomnienia', 'Hora del recordatorio')}"><button type="button" class="btn btn--male" id="u-kal">${T('Dodaj do Kalendarza', 'Añadir al Calendario')}</button></div>
       <p class="male">${T('iPhone będzie codziennie o tej godzinie przypominał o nauce (wydarzenie z alarmem i linkiem do aplikacji).', 'El iPhone te lo recordará cada día a esta hora (evento con alarma y enlace a la app).')}</p>
       ${plakietkaDostepna() ? `<label class="cc-kafel cc-kafel--szeroki"><input type="checkbox" id="u-plak" ${u.plakietka ? 'checked' : ''}><span class="tgl" aria-hidden="true"></span><b>${T('Plakietka na ikonie', 'Globo en el icono')}</b><small>${T('liczba słów do powtórki na ikonie aplikacji', 'número de palabras para repasar en el icono de la app')}</small></label>` : ''}</div>
+    <button type="button" class="btn btn--szeroki" id="u-zgloszenia">⚑ ${T('Zgłoszone błędy', 'Errores avisados')} (${(stan.zgloszenia || []).length})</button>
     <details class="zwin cc-blok"><summary>${T('Styl Liquid Glass', 'Estilo Liquid Glass')}</summary>
       <div class="style-siatka" id="u-style">${window.STYLE.lista.map(s => `<button type="button" data-styl="${s.id}" aria-pressed="${document.documentElement.dataset.styl === s.id}" style="background:radial-gradient(70% 70% at 20% 20%, ${s.plamy[0]}, transparent 70%), radial-gradient(70% 70% at 90% 35%, ${s.plamy[1]}, transparent 70%), radial-gradient(80% 80% at 50% 100%, ${s.plamy[2]}, transparent 70%), ${s.tlo}"><span style="color:${s.tx};background:${s.t === 'd' ? 'rgba(255,255,255,.12)' : 'rgba(255,255,255,.55)'}">${esc(s.n)}</span></button>`).join('')}</div></details>
     <details class="zwin cc-blok"><summary>${T('Kopia zapasowa i reset', 'Copia de seguridad y reinicio')}</summary>
@@ -379,6 +435,7 @@ function modalUstawien() {
     if (t.closest('#u-test')) { app.mowa.powiedz(HISP ? 'Dzień dobry! Ćwiczymy razem język polski?' : 'Hola, me llamo Mónica. ¿Practicamos un poco de español?'); return; }
     const sk = t.closest('[data-skala]'); if (sk) { u.skala = +sk.dataset.skala; app.zapisz(); $$('[data-skala]', tresc).forEach(b => b.setAttribute('aria-pressed', b === sk)); odswiezModuly(); return; }
     const st = t.closest('button[data-styl]'); if (st) { u.styl = window.STYLE.zastosuj(st.dataset.styl).id; app.zapisz(); $$('button[data-styl]', tresc).forEach(b => b.setAttribute('aria-pressed', b === st)); return; }
+    if (t.closest('#u-zgloszenia')) { listaZgloszen(app); return; }
     if (t.closest('#u-eksport')) {
       const blob = new Blob([eksportuj(stan)], { type: 'application/json' });
       const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = HISP ? `polaco-progreso-${dzien()}.json` : `espanol-postepy-${dzien()}.json`;
@@ -537,6 +594,11 @@ if (HISP) {
   [['#z-cwiczenia', 'Práctica'], ['#z-slowka', 'Palabras'], ['#z-egzamin', 'Examen'], ['#z-czasowniki', 'Verbos'], ['#z-zwroty', 'Frases'], ['#z-tlumacz', 'Traductor']].forEach(([s, n]) => $(s).setAttribute('aria-label', n));
 }
 zainicjujZnaki();
+import('./dane/lekcje-gramatyki.js').then(m => ustawTytulyLekcji(m.LEKCJE));
+document.addEventListener('click', e => {
+  const z = e.target.closest('[data-zglos]'); if (z) { zglos(app, POD_ID.get(z.dataset.zglos)); return; }
+  if (e.target.closest('[data-plan-otworz]')) { pokazZakladke('cwiczenia', { przewin: true }); moduly.cwiczenia.otworz('plandnia'); }
+});
 ustawDzwieki(stan.ust.dzwieki !== false);
 uruchomObserwatorOdpowiedzi();
 zainicjujPolysk();
@@ -553,6 +615,20 @@ wyspa = zainicjujWyspe({
 });
 requestAnimationFrame(() => document.body.classList.add('gotowe'));
 sprawdzLinkPrzenoszenia();
+// pierwsze uruchomienie: zacząć od zera czy zrobić test poziomujący?
+if (!stan.ui.powitano && !Object.keys(stan.srs).length && !location.hash) {
+  stan.ui.powitano = 1; app.zapisz();
+  setTimeout(() => {
+    const el = otworzModal(T('Witaj! 👋', '¡Hola! 👋'), `<div class="arkusz">
+      <p>${T('Od czego zaczynasz?', '¿Desde dónde empiezas?')}</p>
+      <button type="button" class="btn btn--akcent btn--szeroki" data-start-zero>${T('Zaczynam od zera (A1)', 'Empiezo desde cero (A1)')}</button>
+      <button type="button" class="btn btn--szeroki" data-start-test>${T('Coś już umiem – test poziomujący', 'Ya sé algo: prueba de nivel')}<small class="male" style="display:block">${T('24 pytania, ok. 5 minut. Ustawi poziom, a łatwiejsze słowa oznaczy jako znane.', '24 preguntas, unos 5 minutos. Ajusta tu nivel y marca como sabidas las palabras más fáciles.')}</small></button></div>`);
+    el.addEventListener('click', e => {
+      if (e.target.closest('[data-start-zero]')) { zamknijModal(); app.ustawPoziom('A1'); }
+      if (e.target.closest('[data-start-test]')) { zamknijModal(); stan.ui.eZakres = 'poziomujacy'; app.zapisz(); zainicjowane.delete('egzamin'); pokazZakladke('egzamin', { przewin: true }); moduly.egzamin.start(); }
+    }, { signal: sygnalModalu() });
+  }, 400);
+}
 window.addEventListener('hashchange', sprawdzLinkPrzenoszenia);
 // aplikacja na ekranie głównym i praca offline
 if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('sw.js').catch(() => {});

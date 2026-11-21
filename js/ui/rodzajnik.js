@@ -34,7 +34,7 @@ export function widokRodzajnika(el, app) {
   function odp(r) {
     if (G.blok) return; G.blok = true; clearInterval(G.timer);
     const w = G.lista[G.nr], ok = r === w.rodzaj;
-    if (ok) G.wynik++; else G.bledy.push(w);
+    if (ok) G.wynik++; else { G.bledy.push(w); app.blad('rodzajnik', { przyklad: w.es, id: w.id }); }
     app.ocen(w.id, ok ? 3 : 1, { bezAktywnosci: false });
     const k = $('[data-rd-karta]', el);
     k.classList.add(ok ? 'ok' : 'zle'); k.querySelector('b').textContent = w.es;

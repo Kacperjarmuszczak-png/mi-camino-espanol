@@ -10,6 +10,7 @@ import { pasuje, czysc, bezZnakow, bezRodzajnika } from '../tekst.js';
 import { szukajWSlowniku, ZRODLO_SLOWNIKA } from '../slownik.js';
 import { dodajWlasne } from '../wlasne.js';
 import { CEL } from '../jezyk.js';
+import { przyciskZgloszenia } from './zgloszenia.js';
 
 /**
  * @param {HTMLElement} root
@@ -43,7 +44,7 @@ export function zakladkaCwiczenia(root, app, cfg) {
     scrollTo({ top: 0 });
   }
   function wroc() { aktywny = null; ui.cwWidok = ''; app.zapisz(); widokEl.hidden = true; hub.hidden = false; rysujHub(); }
-  const ctx = { otworz, wroc, cwicz: l => cfg.cwicz(l) };
+  const ctx = { otworz, wroc, cwicz: l => cfg.cwicz(l), kafel: id => cfg.kafelki.find(k => k.id === id) };
 
   // --- wyszukiwarka globalna ---
   const TEKSTY = HISP ? CZYTANIE_PL : CZYTANIE;
@@ -90,6 +91,7 @@ export function zakladkaCwiczenia(root, app, cfg) {
       <p class="pytanie-sr">${esc(x.es)} ${przyciskGlosu(x.es)}</p><p class="srodek">${esc(x.pl)}</p>
       ${x.przyklad ? `<div class="przyklad"><p class="przyklad-es">${esc(x.przyklad.es.replace(/\*/g, ''))}</p><p class="przyklad-pl">${esc(x.przyklad.pl.replace(/\*/g, ''))}</p></div>` : ''}
       <p class="male">${esc(x.t || '')} · ${x.p}</p>
+      ${przyciskZgloszenia(x.id)}
       <button type="button" class="btn btn--akcent btn--szeroki" data-sz-cwicz>${tr('Ćwicz to słowo', 'Practicar')}</button></div>`);
     el.addEventListener('click', e => { if (e.target.closest('[data-sz-cwicz]')) { zamknijModal(); cfg.cwicz([x]); } }, { signal: sygnalModalu() });
   }

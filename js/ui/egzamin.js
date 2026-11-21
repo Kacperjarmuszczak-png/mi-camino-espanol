@@ -95,6 +95,11 @@ export function zakladkaEgzamin(root, app) {
       const naPoz = POZIOMY.map(p => { const idx = E.pyt.map((q, i) => i).filter(i => E.pyt[i].p === p); const d = idx.filter(i => ok[i]).length; return [p, idx.length ? Math.round(100 * d / idx.length) : 0]; });
       naglowek = `<p>${tr('Szacowany poziom', 'Nivel estimado')}: <b class="duzy-poziom">${sz}</b></p>
         <div class="slupki">${naPoz.map(([p, v]) => `<div class="slupek"><span style="height:${Math.max(4, v)}%"></span><b>${p}</b><small>${v}%</small></div>`).join('')}</div>`;
+      const cel = POZIOMY.includes(sz) ? sz : 'A1', nizsze = POZIOMY.slice(0, POZIOMY.indexOf(cel));
+      naglowek += `<div class="akcje-pion">
+        ${nizsze.length ? `<button type="button" class="btn btn--akcent btn--szeroki" data-eustaw="${cel}" data-eznane="1">${tr(`Ucz się od ${cel} i oznacz ${nizsze.join(', ')} jako znane`, `Aprender desde ${cel} y marcar ${nizsze.join(', ')} como sabido`)}</button>` : ''}
+        <button type="button" class="btn btn--szeroki${nizsze.length ? '' : ' btn--akcent'}" data-eustaw="${cel}">${tr(`Ustaw poziom ${cel}`, `Elegir el nivel ${cel}`)}</button></div>
+        <p class="male">${tr('Znane słowa nie znikną – co jakiś czas wrócą na krótkie sprawdzenie.', 'Las palabras sabidas volverán de vez en cuando para comprobarlas.')}</p>`;
     }
     const typy = Object.keys(TYPY).map(t => { const idx = E.pyt.map((q, i) => i).filter(i => E.pyt[i].typ === t); return idx.length ? [t, idx.filter(i => ok[i]).length, idx.length] : null; }).filter(Boolean);
     const bledy = E.pyt.map((q, i) => [q, i]).filter(([, i]) => !ok[i]);
@@ -128,11 +133,19 @@ export function zakladkaEgzamin(root, app) {
     if (t.closest('[data-ekoniec]')) return raport();
     if (t.closest('[data-ebledne]')) return start(E.bledne);
     if (t.closest('[data-enowy]')) return ekranStartu();
+    const us = t.closest('[data-eustaw]');
+    if (us) {
+      const p = us.dataset.eustaw, n = us.dataset.eznane ? app.oznaczZnane(POZIOMY.slice(0, POZIOMY.indexOf(p))) : 0;
+      app.ustawPoziom(p);
+      us.closest('.akcje-pion').innerHTML = `<p class="tekst-ok srodek"><b>${tr(`Gotowe! Poziom ${p}`, `¡Listo! Nivel ${p}`)}${n ? tr(` · ${n} pozycji oznaczonych jako znane`, ` · ${n} elementos marcados como sabidos`) : ''}.</b></p>`;
+      return;
+    }
   });
   root.addEventListener('change', e => { if (e.target.id === 'e-temat') { ui.eTemat = e.target.value; app.zapisz(); } });
 
   return {
     poziom() { if (!E.trwa) ekranStartu(); },
+    start: () => start(),
     odswiezListe() {},
     klawisz(e) {
       const n = parseInt(e.key, 10);

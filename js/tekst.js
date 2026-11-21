@@ -65,6 +65,8 @@ export function sprawdz(wpis, dobre, opcje = {}) {
   // 2. bez rodzajnika (hiszpański rzeczownik bez el/la)
   for (const d of lista) if (RODZAJNIKI.test(d) && w === bezRodzajnika(d)) return { wynik: 'rodzajnik', wzor: d, akcenty: [] };
   for (const d of lista) if (!RODZAJNIKI.test(d) && RODZAJNIKI.test(w) && bezRodzajnika(w) === d) return { wynik: 'dobrze', wzor: d, akcenty: [] };
+  // 2b. zły rodzajnik (la problema zamiast el problema)
+  for (const d of lista) if (RODZAJNIKI.test(d) && RODZAJNIKI.test(w) && bezZnakow(bezRodzajnika(w)) === bezZnakow(bezRodzajnika(d))) return { wynik: 'zlyRodzajnik', wzor: d, akcenty: [] };
   // 3. tylko akcenty / tylda
   for (const d of lista) {
     for (const [ww, dd] of [[w, d], [bezRodzajnika(w), bezRodzajnika(d)]]) {
@@ -86,7 +88,7 @@ export function komunikat(r, poprawna) {
     switch (r.wynik) {
       case 'dobrze': return `Dobrze! ${poprawna}`;
       case 'akcent': return `Casi: falta un signo diacrítico (ą, ć, ę, ł, ń, ó, ś, ź, ż). Correcto: ${poprawna}`;
-      case 'rodzajnik': return `Bien. Correcto: ${poprawna}`;
+      case 'rodzajnik': case 'zlyRodzajnik': return `Bien. Correcto: ${poprawna}`;
       case 'literowka': return `Casi: una pequeña errata. Correcto: ${poprawna}`;
       default: return `Correcto: ${poprawna}`;
     }
@@ -95,13 +97,14 @@ export function komunikat(r, poprawna) {
     case 'dobrze': return `¡Correcto! ${poprawna}`;
     case 'akcent': return `Prawie: brakuje akcentu lub tyldy. Poprawnie: ${poprawna}`;
     case 'rodzajnik': return `Dobrze, ale zapamiętaj rodzajnik: ${poprawna}`;
+    case 'zlyRodzajnik': return `Prawie: zły rodzajnik. Poprawnie: ${poprawna}`;
     case 'literowka': return `Prawie: drobna literówka. Poprawnie: ${poprawna}`;
     default: return `Poprawnie: ${poprawna}`;
   }
 }
 
 // Zaliczenie i ocena SRS wynikająca z odpowiedzi wpisanej
-export const ocenaZWyniku = w => ({ dobrze: 3, rodzajnik: 2, akcent: 2, literowka: 2, zle: 1 }[w]);
+export const ocenaZWyniku = w => ({ dobrze: 3, rodzajnik: 2, zlyRodzajnik: 2, akcent: 2, literowka: 2, zle: 1 }[w]);
 
 export const tasuj = (a, los = Math.random) => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(los() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
 export const losowy = (a, los = Math.random) => a[Math.floor(los() * a.length)];

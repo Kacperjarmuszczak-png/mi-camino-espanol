@@ -52,6 +52,7 @@ export function widokGramatyki(el, app) {
     Z.odp = true;
     const { q, opcje } = Z.pyt[Z.nr], ok = opcje[i] === q[1][0];
     if (ok) Z.dobrze++;
+    else app.blad(L && L.id === 'ser-estar' ? 'ser-estar' : 'gram:' + (L ? L.id : ''), { przyklad: `${q[0]} → ${q[1][0]}` });
     app.dodajAktywnosc(1);
     el.querySelectorAll('[data-go]').forEach(b => { b.disabled = true; const o = opcje[+b.dataset.go]; if (o === q[1][0]) b.classList.add('ok'); else if (+b.dataset.go === i) b.classList.add('zle'); });
     const w = $('[data-gw]', el); w.hidden = false; w.className = 'wynik wynik--' + (ok ? 'ok' : 'zle');

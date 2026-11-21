@@ -2,6 +2,7 @@
 import { $, esc, IKONY, przyciskGlosu, przyciskGwiazdki, podswietl, bezGwiazdek, wpisZAkcentami, toast, otworzModal, sygnalModalu, kapsulaOpcji } from './wspolne.js';
 import { budujKolejke, poOcenie, status, doPowtorki } from '../srs.js';
 import { sprawdz, komunikat, ocenaZWyniku, tasuj, bezRodzajnika, czysc, warianty, ocenWymowe } from '../tekst.js';
+import { przyciskZgloszenia } from './zgloszenia.js';
 import { rozpoznawanieDostepne, sluchaj, przerwijSluchanie, zakonczSluchanie } from '../rozpoznawanie.js';
 import { kontekstSlowa } from './kontekst-dane.js';
 import { wWariancie, odpowiedziEs } from '../dane/index.js';
@@ -159,6 +160,7 @@ export function silnikKart(root, cfg) {
     }
     if (x.kiedy) h += `<p class="kiedy"><b>Kiedy:</b> ${esc(x.kiedy)}</p>`;
     const notatka = (app.stan.notatki || {})[x.id];
+    h += przyciskZgloszenia(x.id);
     h += `<button type="button" class="notatka${notatka ? ' notatka--jest' : ''}" data-notatka="${esc(x.id)}">📝 ${notatka ? esc(notatka) : tr('Dodaj notatkę (skojarzenie, uwagę)', 'Añadir una nota (truco, comentario)')}</button>`;
     if (x.dialog && x.dialog.length) {
       h += `<div class="dialog">${x.dialog.map(l => `<p class="kwestia kwestia--${l.kto === 'A' ? 'a' : 'b'}"><span>${l.kto}</span>${podswietl(l.tekst)}</p>`).join('')}
@@ -248,6 +250,10 @@ export function silnikKart(root, cfg) {
     const dobre = k === 'es' ? [x.pl] : odpowiedziEs(x);
     const r = niewiem ? { wynik: 'zle', wzor: dobre[0], akcenty: [] } : sprawdz(wpis, dobre);
     const ocena = ocenaZWyniku(r.wynik);
+    if (k !== 'es' && !niewiem) {
+      const kat = { akcent: 'akcent', rodzajnik: 'rodzajnik', zlyRodzajnik: 'rodzajnik', literowka: 'pisownia' }[r.wynik];
+      if (kat) app.blad(kat, { przyklad: `${wpis.trim()} → ${r.wzor}`, id: x.id });
+    }
     pokazWynik(r.wynik !== 'zle', komunikat(r, odpowiedz()) + (r.akcenty.length ? `<br><span class="male">${tr('Twój zapis', 'Lo que escribiste')}: ${wpisZAkcentami(czysc(wpis), r.akcenty)}</span>` : ''), r.wynik === 'dobrze' ? 'ok' : r.wynik === 'zle' ? 'zle' : 'uwaga');
     $('[data-wpis]', obszar).classList.add(r.wynik === 'zle' ? 'zle' : 'ok');
     $('[data-sprawdz]', obszar).textContent = tr('Dalej', 'Siguiente');
@@ -429,6 +435,7 @@ export function silnikKart(root, cfg) {
         <button type="button" class="btn btn--szeroki" data-nowa>${tr('Kolejna sesja', 'Otra sesión')}</button>
       </div></div>`;
     app.odswiez();
+    if (!S.wlasna || S.wlasna.length > 1) app.koniecSesji && app.koniecSesji();
     if (S.ocenione) toast(tr(`Sesja zakończona: ${S.ocenione} odpowiedzi, ${proc}% poprawnych.`, `Sesión terminada: ${S.ocenione} respuestas, ${proc} % correctas.`));
   }
 

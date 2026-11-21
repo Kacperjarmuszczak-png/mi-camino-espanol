@@ -40,7 +40,7 @@ export function widokFalszywych(el, app) {
   function odpowiedz(i) {
     if (Q.odp) return; Q.odp = true;
     const { d, opcje } = Q.pyt[Q.nr], ok = opcje[i] === d.znaczy, pulapka = opcje[i] === bezNaw(d.mylne);
-    if (ok) Q.dobrze++;
+    if (ok) Q.dobrze++; else app.blad('falszywi', { przyklad: `${d.s} = ${d.znaczy}` });
     app.dodajAktywnosc(1);
     el.querySelectorAll('[data-fpo]').forEach(b => { b.disabled = true; const o = opcje[+b.dataset.fpo]; if (o === d.znaczy) b.classList.add('ok'); else if (+b.dataset.fpo === i) b.classList.add('zle'); });
     const w = $('[data-fpw]', el); w.hidden = false; w.className = 'wynik wynik--' + (ok ? 'ok' : 'zle');

@@ -8,6 +8,7 @@ import { t as tr } from '../jezyk.js';
 export function zakladkaSlowka(root, app) {
   const ui = app.stan.ui;
   root.innerHTML = `
+    <div id="s-plan"></div>
     <div id="s-karty"></div>
     <div id="s-lista"></div>`;
   const pulaPoziomu = () => SLOWKA.filter(w => w.p === ui.poziom);

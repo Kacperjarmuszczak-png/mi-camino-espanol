@@ -35,7 +35,7 @@ export function widokAkcentu(el, app) {
   function odp(i) {
     if (G.zrobione) return; G.zrobione = true;
     const x = G.lista[G.nr], a = analizaAkcentu(x.s), ok = i === a.indeks;
-    if (ok) G.dobrze++;
+    if (ok) G.dobrze++; else app.blad('akcent', { przyklad: x.s, id: x.w.id });
     app.ocen(x.w.id, ok ? 3 : 1);
     el.querySelectorAll('[data-ga]').forEach(b => { b.disabled = true; if (+b.dataset.ga === a.indeks) b.classList.add('ok'); else if (+b.dataset.ga === i) b.classList.add('zle'); });
     const w = $('[data-ga-wynik]', el); w.hidden = false; w.className = 'wynik wynik--' + (ok ? 'ok' : 'zle');

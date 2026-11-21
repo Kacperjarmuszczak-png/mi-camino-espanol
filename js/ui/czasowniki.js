@@ -185,7 +185,8 @@ export function zakladkaCzasowniki(root, app) {
     }
     p.zrobione = true;
     const ok = r.wynik !== 'zle';
-    if (ok) D.dobrze++; else D.bledy.push(p);
+    if (ok) D.dobrze++; else { D.bledy.push(p); app.blad('czas:' + p.czas, { nazwa: czasNazwa(p.czas), przyklad: `${wpis} → ${p.odp}`, id: p.v.id }); }
+    if (r.wynik === 'akcent') app.blad('akcent', { przyklad: `${wpis} → ${p.odp}` });
     app.ocen(p.v.id, ocenaZWyniku(r.wynik));
     const msg = r.wynik === 'rodzajnik' && zwrotny(p.v) ? `Dobrze, ale pamiętaj o zaimku: ${p.odp}` : komunikat(r, p.odp);
     const pelne = zdanie(p, p.odp);

@@ -1,6 +1,6 @@
 // Service worker: aplikacja działa offline i można ją dodać do ekranu głównego.
 // Strategia „najpierw sieć”: online zawsze najnowsza wersja z GitHub Pages, bez sieci – ostatnia zapisana kopia.
-const WERSJA = '7f48067f42';
+const WERSJA = 'b7a9a34e98';
 const PAMIEC = 'espanol-' + WERSJA;
 const PLIKI = [
   './',
@@ -13,10 +13,12 @@ const PLIKI = [
   './js/akcent.js',
   './js/analiza-pl.js',
   './js/analiza.js',
+  './js/bledy.js',
   './js/cwiczenia-logika.js',
   './js/dane/czasowniki.js',
   './js/dane/czytanie-pl.js',
   './js/dane/czytanie.js',
+  './js/dane/dele.js',
   './js/dane/falszywi.js',
   './js/dane/funkcyjne.js',
   './js/dane/gramatyka.js',
@@ -52,6 +54,7 @@ const PLIKI = [
   './js/mowa.js',
   './js/odmiana-pl.js',
   './js/odmiana.js',
+  './js/plan-dnia.js',
   './js/plan.js',
   './js/postep.js',
   './js/przenoszenie.js',
@@ -65,10 +68,12 @@ const PLIKI = [
   './js/tekst.js',
   './js/tlumaczenie.js',
   './js/ui/akcenty-swiata.js',
+  './js/ui/bledy.js',
   './js/ui/cwiczenia.js',
   './js/ui/czasowniki-pl.js',
   './js/ui/czasowniki.js',
   './js/ui/czytanie.js',
+  './js/ui/dele.js',
   './js/ui/dyktando.js',
   './js/ui/dziennik.js',
   './js/ui/egzamin.js',
@@ -85,6 +90,7 @@ const PLIKI = [
   './js/ui/memory.js',
   './js/ui/moje.js',
   './js/ui/motywacja.js',
+  './js/ui/plan-dnia.js',
   './js/ui/plan.js',
   './js/ui/przypadki.js',
   './js/ui/pula.js',
@@ -104,6 +110,7 @@ const PLIKI = [
   './js/ui/wykreslanka.js',
   './js/ui/wyspa.js',
   './js/ui/wyzwania.js',
+  './js/ui/zgloszenia.js',
   './js/ui/zwroty.js',
   './js/wlasne.js',
   './manifest.webmanifest',
