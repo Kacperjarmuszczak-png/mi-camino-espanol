@@ -1,5 +1,6 @@
 // Wisielec: zgadnij słowo po literze; podpowiedzią jest tłumaczenie. 7 pomyłek = koniec.
 import { esc } from './wspolne.js';
+import { dzwiekOdpowiedzi } from '../dzwieki.js';
 import { losowy, bezZnakow } from '../tekst.js';
 import { HISP, t as tr } from '../jezyk.js';
 import { slowaGry, pierwszeZnaczenie } from './gry-pula.js';
@@ -29,7 +30,7 @@ export function widokWisielca(el, app) {
   function litera(c) {
     if (G.koniec || G.zgadniete.has(c)) return;
     G.zgadniete.add(c);
-    if (![...G.slowo].some(x => klucz(x) === c)) G.bledy++;
+    if (![...G.slowo].some(x => klucz(x) === c)) { G.bledy++; dzwiekOdpowiedzi('zle'); } else dzwiekOdpowiedzi('ok');
     if (odkryte()) { G.koniec = true; app.ocen(G.w.id, G.bledy <= 2 ? 3 : 2); app.mowa.powiedz(G.w.es); return rysuj(tr('Brawo! 🎉', '¡Bravo! 🎉')); }
     if (G.bledy >= 7) { G.koniec = true; app.ocen(G.w.id, 1); app.mowa.powiedz(G.w.es); return rysuj(tr('Tym razem się nie udało', 'Esta vez no')); }
     rysuj();

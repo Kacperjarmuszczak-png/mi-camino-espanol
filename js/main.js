@@ -38,6 +38,7 @@ import { wczytajWlasne } from './wlasne.js';
 import { widokPlanu } from './ui/plan.js';
 import { widokDziennika } from './ui/dziennik.js';
 import { widokRozmowek } from './ui/rozmowki.js';
+import { uruchomObserwatorOdpowiedzi, ustawDzwieki } from './dzwieki.js';
 import { xpZaOcene, poziomGracza, noweOdznaki } from './postep.js';
 import { HISP, JEZYK, KLUCZ_JEZYKA, t as T, ustawJezyk } from './jezyk.js';
 import { spakuj, rozpakuj, kodQr, ZNACZNIK, MAKS_QR } from './przenoszenie.js';
@@ -306,6 +307,7 @@ function modalUstawien() {
       <p class="male">${T('W Safari stuknij <b>Udostępnij</b> → <b>Do ekranu początkowego</b>. Strona otworzy się jak aplikacja: na pełnym ekranie, bez paska Safari i także bez internetu.', 'En Safari toca <b>Compartir</b> → <b>Añadir a pantalla de inicio</b>. Se abrirá como una app: a pantalla completa, sin la barra de Safari y también sin internet.')}</p></div>`}
     <div class="cc-kafle">
       <label class="cc-kafel"><input type="checkbox" id="u-auto" ${u.auto ? 'checked' : ''}><span class="tgl" aria-hidden="true"></span><b>${T('Auto-wymowa', 'Pronunciación automática')}</b><small>${T('nowa karta i odpowiedź', 'tarjeta nueva y respuesta')}</small></label>
+      <label class="cc-kafel"><input type="checkbox" id="u-dzwieki" ${u.dzwieki !== false ? 'checked' : ''}><span class="tgl" aria-hidden="true"></span><b>${T('Dźwięki odpowiedzi', 'Sonidos de respuesta')}</b><small>${T('dobrze / źle', 'bien / mal')}</small></label>
       ${HISP ? '' : `<label class="cc-kafel"><input type="checkbox" id="u-vosotros" ${u.bezVosotros ? 'checked' : ''}><span class="tgl" aria-hidden="true"></span><b>Bez „vosotros”</b><small>odmiana jak w Ameryce</small></label>`}
     </div>
     ${suwakZakres({ id: 'u-tempo', min: 0.6, max: 1.4, krok: 0.05, wartosc: u.tempo || 1, format: fTempo, etykieta: T('Tempo lektora', 'Velocidad de la voz') })}
@@ -343,6 +345,7 @@ function modalUstawien() {
   tresc.addEventListener('change', e => {
     if (e.target.id === 'u-vosotros') { u.bezVosotros = e.target.checked; app.zapisz(); odswiezModuly(); }
     if (e.target.id === 'u-auto') { u.auto = e.target.checked; app.zapisz(); }
+    if (e.target.id === 'u-dzwieki') { u.dzwieki = e.target.checked; ustawDzwieki(u.dzwieki); app.zapisz(); if (u.dzwieki) import('./dzwieki.js').then(m => m.dzwiekOdpowiedzi('ok')); }
     if (e.target.id === 'u-godz' && e.target.value) { u.przyp = e.target.value; app.zapisz(); }
     if (e.target.id === 'u-plak') {
       const pole = e.target;
@@ -534,6 +537,8 @@ if (HISP) {
   [['#z-cwiczenia', 'Práctica'], ['#z-slowka', 'Palabras'], ['#z-egzamin', 'Examen'], ['#z-czasowniki', 'Verbos'], ['#z-zwroty', 'Frases'], ['#z-tlumacz', 'Traductor']].forEach(([s, n]) => $(s).setAttribute('aria-label', n));
 }
 zainicjujZnaki();
+ustawDzwieki(stan.ust.dzwieki !== false);
+uruchomObserwatorOdpowiedzi();
 zainicjujPolysk();
 stan.hist[dzien()] = liczOpanowane(stan.srs);
 rysujNaglowek(); rysujPoziomy(); rysujInfo();

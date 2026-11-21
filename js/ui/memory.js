@@ -1,5 +1,6 @@
 // Gra Memory: odkryj dwie karty i znajdź pary słowo – tłumaczenie. Liczy ruchy i czas, zapisuje rekord.
 import { esc } from './wspolne.js';
+import { dzwiekOdpowiedzi } from '../dzwieki.js';
 import { tasuj } from '../tekst.js';
 import { t as tr } from '../jezyk.js';
 import { slowaGry, pierwszeZnaczenie } from './gry-pula.js';
@@ -29,10 +30,10 @@ export function widokMemory(el, app) {
       G.ruchy++;
       const [a, b] = G.odkryte.map(j => G.karty[j]);
       if (a.para === b.para && a.jez !== b.jez) {
-        a.ok = b.ok = true; G.odkryte = []; G.znalezione++;
+        a.ok = b.ok = true; G.odkryte = []; G.znalezione++; dzwiekOdpowiedzi('ok');
         app.ocen(a.w.id, 3);
         if (G.znalezione === 6) return koniec();
-      } else { G.blok = true; setTimeout(() => { G.odkryte = []; G.blok = false; rysuj(); }, 900); }
+      } else { dzwiekOdpowiedzi('zle'); G.blok = true; setTimeout(() => { G.odkryte = []; G.blok = false; rysuj(); }, 900); }
     }
     rysuj();
   }
