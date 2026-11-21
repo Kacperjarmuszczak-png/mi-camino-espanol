@@ -32,6 +32,7 @@ export const nowyStanAplikacji = () => ({
   rozmowy: {},            // ukończone scenki rozmowy
   wlasne: [],             // własne słówka [{ es, pl, p }]
   notatki: {},            // id elementu → notatka użytkownika
+  dziennik: {},           // 'RRRR-MM-DD' → { tekst, wynik }
   ust: domyslneUstawienia(),
   ui: { poziom: 'A1', zakladka: 'slowka', tryb: 'fiszka', kier: 'es', temat: '' },
 });

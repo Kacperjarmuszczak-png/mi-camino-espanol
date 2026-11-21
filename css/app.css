@@ -935,3 +935,4 @@ html, body { overscroll-behavior-y: none; }
 .wl-form { display: grid; gap: 8px; }
 .notatka { justify-self: start; border: 1px dashed var(--linia); background: none; color: var(--szary); padding: 8px 12px; border-radius: 12px; font-size: .86rem; text-align: left; }
 .notatka--jest { border-style: solid; border-color: color-mix(in srgb, var(--zloto) 45%, transparent); color: var(--tekst); background: var(--pole); }
+.rk-duze { font: 700 clamp(1.8rem, 9vw, 2.8rem)/1.25 var(--font-tytul); text-align: center; padding: 24px 8px; overflow-wrap: anywhere; }

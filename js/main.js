@@ -35,6 +35,9 @@ import { widokAkcentu } from './ui/gdzie-akcent.js';
 import { widokRodzin, widokSynonimow } from './ui/rodziny.js';
 import { widokWlasnych } from './ui/wlasne.js';
 import { wczytajWlasne } from './wlasne.js';
+import { widokPlanu } from './ui/plan.js';
+import { widokDziennika } from './ui/dziennik.js';
+import { widokRozmowek } from './ui/rozmowki.js';
 import { xpZaOcene, poziomGracza, noweOdznaki } from './postep.js';
 import { HISP, JEZYK, KLUCZ_JEZYKA, t as T, ustawJezyk } from './jezyk.js';
 import { spakuj, rozpakuj, kodQr, ZNACZNIK, MAKS_QR } from './przenoszenie.js';
@@ -225,6 +228,9 @@ const KAFELKI = [
   { id: 'tilde', grupa: 'gram', ukryj: HISP, ikona: IK('<path d="M7 18 12 6l5 12M9 14h6M13 3l2-2"/>'), n: 'Gdzie akcent?', o: 'Zasady tildy i ćwiczenie', widok: widokAkcentu },
   { id: 'rodziny', grupa: 'gram', ukryj: HISP, ikona: IK('<circle cx="12" cy="5" r="2.5"/><circle cx="5" cy="18" r="2.5"/><circle cx="12" cy="18" r="2.5"/><circle cx="19" cy="18" r="2.5"/><path d="M12 7.5v8M12 11H5v4.5M12 11h7v4.5"/>'), n: 'Rodziny wyrazów', o: 'trabajar → trabajo → trabajador', widok: widokRodzin },
   { id: 'synonimy', grupa: 'gram', ukryj: HISP, ikona: IK('<path d="M4 9h12l-3-3M20 15H8l3 3"/>'), n: 'Synonimy i antonimy', o: 'empezar = comenzar, rápido ↔ lento', widok: widokSynonimow },
+  { id: 'plan', grupa: 'dzis', ikona: IK('<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>'), n: T('Plan nauki', 'Plan de estudio'), o: T('Cel, np. B1 do czerwca', 'Meta, p. ej. B1 para junio'), widok: widokPlanu },
+  { id: 'dziennik', grupa: 'mow', ikona: IK('<path d="M6 3h11a2 2 0 0 1 2 2v16l-4-2-4 2-4-2-3 2V5a2 2 0 0 1 2-2z"/><path d="M8 8h8M8 12h6"/>'), n: T('Dziennik', 'Diario'), o: T('Kilka zdań dziennie ze sprawdzeniem', 'Unas frases al día con corrección'), widok: widokDziennika },
+  { id: 'rozmowki', grupa: 'prakt', ikona: IK('<path d="M12 21s-7-5.5-7-11a7 7 0 0 1 14 0c0 5.5-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/>'), n: T('Rozmówki podróżne', 'Guía de viaje'), o: T('Lotnisko, hotel, apteka, nagłe wypadki', 'Aeropuerto, hotel, farmacia, emergencias'), widok: widokRozmowek },
   { id: 'wlasne', grupa: 'dzis', ikona: IK('<path d="M12 5v14M5 12h14"/><rect x="3" y="3" width="18" height="18" rx="4"/>'), n: T('Własne słówka', 'Mis palabras'), o: T('Dodaj swoje słowa do powtórek', 'Añade tus palabras a los repasos'), widok: widokWlasnych },
   { id: 'falszywi', grupa: 'gram', ikona: IK('<path d="M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18z"/><path d="M8 9.5c.5-1 1.5-1.5 2-1.5M14 8c.5 0 1.5.5 2 1.5M8.5 15.5c2-1.5 5-1.5 7 0"/>'), n: T('Fałszywi przyjaciele', 'Falsos amigos'), o: T('Embarazada to nie „zawstydzona”', '«Cena» no es la cena'), widok: widokFalszywych },
   { id: 'kultura', grupa: 'prakt', ukryj: HISP, ikona: IK('<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/>'), n: 'Kultura', o: 'Hiszpania i Ameryka Łacińska: zwyczaje i słówka', widok: widokKultury },

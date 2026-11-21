@@ -1,6 +1,6 @@
 // Service worker: aplikacja działa offline i można ją dodać do ekranu głównego.
 // Strategia „najpierw sieć”: online zawsze najnowsza wersja z GitHub Pages, bez sieci – ostatnia zapisana kopia.
-const WERSJA = '93122f7d60';
+const WERSJA = 'e9f4ed07b5';
 const PAMIEC = 'espanol-' + WERSJA;
 const PLIKI = [
   './',
@@ -26,6 +26,7 @@ const PLIKI = [
   './js/dane/przyklady-2.js',
   './js/dane/przyklady.js',
   './js/dane/rodziny.js',
+  './js/dane/rozmowki.js',
   './js/dane/rozmowy.js',
   './js/dane/slowa-codzienne-a.js',
   './js/dane/slowa-codzienne-b.js',
@@ -49,6 +50,7 @@ const PLIKI = [
   './js/mowa.js',
   './js/odmiana-pl.js',
   './js/odmiana.js',
+  './js/plan.js',
   './js/postep.js',
   './js/przenoszenie.js',
   './js/przypadki.js',
@@ -65,6 +67,7 @@ const PLIKI = [
   './js/ui/czasowniki.js',
   './js/ui/czytanie.js',
   './js/ui/dyktando.js',
+  './js/ui/dziennik.js',
   './js/ui/egzamin.js',
   './js/ui/falszywi.js',
   './js/ui/gdzie-akcent.js',
@@ -79,11 +82,13 @@ const PLIKI = [
   './js/ui/memory.js',
   './js/ui/moje.js',
   './js/ui/motywacja.js',
+  './js/ui/plan.js',
   './js/ui/przypadki.js',
   './js/ui/pula.js',
   './js/ui/rodzajnik.js',
   './js/ui/rodziny.js',
   './js/ui/rozmowa.js',
+  './js/ui/rozmowki.js',
   './js/ui/shadowing.js',
   './js/ui/slowka.js',
   './js/ui/suwak.js',
