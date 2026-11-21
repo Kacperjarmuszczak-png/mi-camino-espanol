@@ -10,6 +10,7 @@ import { KULTURA } from './kultura.js';
 import { SLOWA_CZESTE } from './slowa-czeste.js';
 import { PRZYKLADY } from './przyklady.js';
 import { PRZYKLADY_2 } from './przyklady-2.js';
+import { PRZYKLADY_3 } from './przyklady-3.js';
 import { WARIANTY, RODZAJ_WYJATKI, MNOGA } from './warianty.js';
 import { ZWROTY } from './zwroty.js';
 import { ZWROTY_DODATKOWE } from './zwroty-dodatkowe.js';
@@ -59,7 +60,7 @@ export function liczbaMnoga(es) {
 }
 
 function przyklad(es) {
-  const p = (Object.hasOwn(PRZYKLADY, es) && PRZYKLADY[es]) || (Object.hasOwn(PRZYKLADY_2, es) && PRZYKLADY_2[es]);
+  const p = (Object.hasOwn(PRZYKLADY, es) && PRZYKLADY[es]) || (Object.hasOwn(PRZYKLADY_2, es) && PRZYKLADY_2[es]) || (Object.hasOwn(PRZYKLADY_3, es) && PRZYKLADY_3[es]);
   if (!p) return null;
   const [e, pl] = p.split('|');
   return { es: e, pl };
