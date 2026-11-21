@@ -2,7 +2,7 @@
 import { $, esc, IKONY, przyciskGlosu, przyciskGwiazdki, podswietl, bezGwiazdek, wpisZAkcentami, toast, otworzModal, sygnalModalu, kapsulaOpcji } from './wspolne.js';
 import { budujKolejke, poOcenie, status, doPowtorki } from '../srs.js';
 import { sprawdz, komunikat, ocenaZWyniku, tasuj, bezRodzajnika, czysc, warianty, ocenWymowe } from '../tekst.js';
-import { rozpoznawanieDostepne, sluchaj, przerwijSluchanie } from '../rozpoznawanie.js';
+import { rozpoznawanieDostepne, sluchaj, przerwijSluchanie, zakonczSluchanie } from '../rozpoznawanie.js';
 import { kontekstSlowa } from './kontekst-dane.js';
 import { wWariancie, odpowiedziEs } from '../dane/index.js';
 import { t as tr, HISP, CEL } from '../jezyk.js';
@@ -348,18 +348,19 @@ export function silnikKart(root, cfg) {
         <div class="karta-narzedzia">${przyciskiGlosu(x)}</div>
       </div>
       <button type="button" class="mikrofon" data-mikrofon aria-label="${tr('Powiedz na głos', 'Dilo en voz alta')}">${IKONA_MIK}</button>
-      <p class="male srodek" data-mow-info>${tr('Stuknij mikrofon i powiedz słowo na głos.', 'Toca el micrófono y di la palabra en voz alta.')}</p>
+      <p class="male srodek" data-mow-info>${tr('Stuknij mikrofon, poczekaj na sygnał i powiedz słowo. Słuchanie skończy się samo.', 'Toca el micrófono, espera la señal y di la palabra. La escucha termina sola.')}</p>
       <div class="wynik" data-wynik hidden></div>
       <div class="szczegoly" data-szcz hidden>${szczegoly(x)}</div>`;
   }
   async function nagrywaj() {
     if (S.karta.odpowiedziano) return dalej();
     const { x } = S.karta, przycisk = $('[data-mikrofon]', obszar), info = $('[data-mow-info]', obszar);
-    if (!przycisk || przycisk.classList.contains('slucha')) { przerwijSluchanie(); return; }
+    if (!przycisk) return;
+    if (przycisk.classList.contains('slucha')) { zakonczSluchanie(); return; }
     app.mowa.stop();
     przycisk.classList.add('slucha'); info.textContent = tr('Słucham…', 'Escuchando…');
     try {
-      const alt = await sluchaj(jezykMowy());
+      const alt = await sluchaj(jezykMowy(), { oczekiwane: odpowiedziEs(x) });
       const o = ocenWymowe(alt, odpowiedziEs(x));
       S.karta.proby++;
       const w = $('[data-wynik]', obszar);

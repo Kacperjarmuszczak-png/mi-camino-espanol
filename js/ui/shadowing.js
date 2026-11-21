@@ -36,7 +36,7 @@ export function widokShadowingu(el, app) {
       }
       info().textContent = tr('🎙️ Teraz Ty!', '🎙️ ¡Ahora tú!');
       try {
-        const alt = await sluchaj(jezyk());
+        const alt = await sluchaj(jezyk(), { oczekiwane: [z.es] });
         const o = ocenWymowe(alt, [z.es]);
         info().textContent = '';
         wynik(`<div class="wynik wynik--${o.proc >= 85 ? 'ok' : o.proc >= 60 ? 'uwaga' : 'zle'}"><p><b>${o.proc}%</b> · ${o.proc >= 85 ? tr('świetnie!', '¡muy bien!') : o.proc >= 60 ? tr('prawie', 'casi') : tr('spróbuj jeszcze raz', 'inténtalo otra vez')}</p><p class="male">${tr('Usłyszałem', 'He oído')}: „${esc(o.slyszane)}”</p><p class="drill-pelne">${esc(z.es)}</p></div>`, o.proc);

@@ -2,7 +2,7 @@
 import { $, esc, przyciskGlosu, IKONY } from './wspolne.js';
 import { ROZMOWY } from '../dane/rozmowy.js';
 import { ocenWymowe } from '../tekst.js';
-import { rozpoznawanieDostepne, sluchaj, przerwijSluchanie } from '../rozpoznawanie.js';
+import { rozpoznawanieDostepne, sluchaj, przerwijSluchanie, zakonczSluchanie } from '../rozpoznawanie.js';
 
 const MIK = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 14.5a3.5 3.5 0 0 0 3.5-3.5V5.5a3.5 3.5 0 1 0-7 0V11a3.5 3.5 0 0 0 3.5 3.5zm6-3.5h-1.6a4.4 4.4 0 0 1-8.8 0H6a6 6 0 0 0 5.2 5.9V20H9v1.6h6V20h-2.2v-3.1A6 6 0 0 0 18 11z"/></svg>';
 
@@ -55,7 +55,7 @@ export function widokRozmowy(el, app) {
   }
   async function mikrofon() {
     const b = $('[data-rz-mik]', el), info = $('[data-rz-info]', el);
-    if (b.classList.contains('slucha')) { przerwijSluchanie(); return; }
+    if (b.classList.contains('slucha')) { zakonczSluchanie(); return; }
     app.mowa.stop(); b.classList.add('slucha'); info.textContent = 'Słucham…';
     try { ocen(await sluchaj(app.stan.ust.wariant === 'latam' ? 'es-MX' : 'es-ES')); }
     catch (e) { const i = $('[data-rz-info]', el); if (i) i.textContent = e.message === 'zgoda' ? 'Brak dostępu do mikrofonu – możesz też wpisać odpowiedź.' : e.message === 'cisza' ? 'Nic nie usłyszałem. Spróbuj jeszcze raz albo wpisz.' : ''; }
