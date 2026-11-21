@@ -56,9 +56,11 @@ export function budujKolejke(ids, stany, { teraz = Date.now(), nowych = 10, rozm
     else reszta.push(id);
   }
   zalegle.sort((a, b) => stany[a].due - stany[b].due);
-  // nowe w losowej kolejności, żeby nie zawsze te same pierwsze słowa z tematu
-  for (let i = nowe.length - 1; i > 0; i--) { const j = Math.floor(los() * (i + 1)); [nowe[i], nowe[j]] = [nowe[j], nowe[i]]; }
-  const wynik = [], n = nowe.slice(0, nowych);
+  // nowe wg kolejności bazowej (od najbardziej podstawowych: powitania, rodzina, liczby…),
+  // tasowane tylko w małym oknie z początku listy, żeby sesja nie była monotonna
+  const okno = nowe.slice(0, Math.ceil(nowych * 1.5));
+  for (let i = okno.length - 1; i > 0; i--) { const j = Math.floor(los() * (i + 1)); [okno[i], okno[j]] = [okno[j], okno[i]]; }
+  const wynik = [], n = okno.slice(0, nowych);
   let zi = 0, ni = 0;
   while (wynik.length < rozmiar && (zi < zalegle.length || ni < n.length)) {
     for (let k = 0; k < 3 && zi < zalegle.length && wynik.length < rozmiar; k++) wynik.push(zalegle[zi++]);

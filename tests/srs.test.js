@@ -64,6 +64,13 @@ test('kolejka: najpierw zaległe (najstarsze), potem nowe wplatane; limit rozmia
   assert.equal(budujKolejke(['x', 'y', 'z'], {}, { teraz: T0, nowych: 10, rozmiar: 2 }).length, 2);
 });
 
+test('kolejka: nowe słowa najpierw z początku listy (podstawowe)', () => {
+  const ids = Array.from({ length: 100 }, (_, i) => 'w' + i);
+  const k = budujKolejke(ids, {}, { teraz: T0, nowych: 10, rozmiar: 10 });
+  assert.equal(k.length, 10);
+  assert.ok(k.every(id => +id.slice(1) < 15));
+});
+
 test('kolejka: gdy nic nie czeka, trening najdawniej ćwiczonych', () => {
   const stany = { a: { ...nowyStan(), ok: 1, n: 3, iv: 30, due: T0 + 9 * DZIEN, last: T0 - 5 }, b: { ...nowyStan(), ok: 1, n: 3, iv: 30, due: T0 + 9 * DZIEN, last: T0 - 50 } };
   assert.deepEqual(budujKolejke(['a', 'b'], stany, { teraz: T0 }), ['b', 'a']);
