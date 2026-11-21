@@ -4,6 +4,7 @@ import { $, esc, przyciskGlosu, przyciskGwiazdki, zamknijModal } from './wspolne
 import { utworzAnalizatorPl } from '../analiza-pl.js';
 import { tlumaczOnline } from '../tlumaczenie.js';
 import { SLOWKA, ZWROTY_LISTA } from '../dane/index.js';
+import { szukajWSlowniku } from '../slownik.js';
 
 const PRZYKLADY = {
   pl: ['Gdzie jest najbliższa apteka?', 'Chciałbym zamówić kawę z mlekiem.', 'Jutro idę do pracy autobusem.', 'Czy możesz mówić wolniej?', 'Wczoraj byłam w kinie z przyjaciółmi.'],
@@ -48,7 +49,19 @@ export function zakladkaTlumaczPl(root, app) {
       : kier() === 'pl' ? 'Sin traducción en línea: solo el análisis palabra por palabra (sin internet).' : 'Sin traducción en línea no se puede pasar del español al polaco.';
   }
 
+  async function uzupelnij(a) {
+    for (const [i, w] of a.slowa.entries()) {
+      if (w.znany) continue;
+      const r = await szukajWSlowniku(w.t, 'pl');
+      if (!r || ostatnia !== a) continue;
+      Object.assign(w, { znany: true, typ: 'diccionario general', es: r.tlum.slice(0, 3).join(', '), haslo: r.haslo });
+      a.nieznane--;
+      const chip = wynikEl.querySelector(`[data-ts="${i}"]`);
+      if (chip) { chip.classList.remove('typ-nz'); chip.classList.add('typ-in'); chip.querySelector('small').textContent = w.es.slice(0, 40); }
+    }
+  }
   function rysujAnalize(a, naglowek = '') {
+    setTimeout(() => uzupelnij(a), 0);
     ostatnia = a;
     const znane = a.slowa.length - a.nieznane;
     wynikEl.innerHTML = `${naglowek}
@@ -85,13 +98,13 @@ export function zakladkaTlumaczPl(root, app) {
     try {
       const t = await tlumaczOnline(tekst, z, z === 'pl' ? 'es' : 'pl', { sygnal: kontroler.signal });
       const karta = `<div class="tlumaczenie"><p class="etykieta">${z === 'pl' ? 'En español' : 'En polaco'}</p><p class="tlumaczenie-tekst">${esc(t)}</p>${z === 'es' ? przyciskGlosu(t) : ''}<p class="male">Traducción automática (MyMemory). El análisis de palabras viene del diccionario de la aplicación.</p></div>`;
-      if (z === 'pl') { const l = $('.tlumaczenie', wynikEl); if (l) l.outerHTML = karta; }
+      if (z === 'pl') { const l = $('.tlumaczenie.ladowanie', wynikEl); if (l) l.outerHTML = karta; }
       else rysujAnalize(analizuj(t), karta);
       app.dodajAktywnosc(1);
     } catch (e) {
       if (e.name === 'AbortError') return;
       const info = `<div class="tlumaczenie tlumaczenie--blad"><p><b>Traducción completa no disponible.</b> ${esc(BLEDY[e.rodzaj] || '')}</p></div>`;
-      const l = $('.tlumaczenie', wynikEl); if (l) l.outerHTML = info; else wynikEl.insertAdjacentHTML('afterbegin', info);
+      const l = $('.tlumaczenie.ladowanie', wynikEl); if (l) l.outerHTML = info; else wynikEl.insertAdjacentHTML('afterbegin', info);
     }
   }
 

@@ -335,6 +335,7 @@ function modalUstawien() {
       </div>
       <div id="u-reset-potw" hidden class="ostrzezenie"><p>${T('<b>Na pewno?</b> Usuniesz wszystkie powtórki, wyniki egzaminów i serię dni. Tego nie da się cofnąć (chyba że masz eksport).', '<b>¿Seguro?</b> Se borrarán todos los repasos, resultados de exámenes y la racha. No se puede deshacer (salvo que tengas una copia).')}</p>
         <div class="akcje-poziom"><button type="button" class="btn btn--niebezpieczny" id="u-reset-tak">${T('Tak, wyzeruj', 'Sí, borrar')}</button><button type="button" class="btn" id="u-reset-nie">${T('Anuluj', 'Cancelar')}</button></div></div></details>
+    <p class="male srodek">${T('Pakiet „Częste słowa” (ok. 3300 najczęściej używanych słów) powstał na podstawie WikDict / Wikisłownika (licencja CC BY-SA) i został ręcznie sprawdzony.', 'El paquete «Palabras frecuentes» (unas 3300 palabras de uso habitual) se basa en WikDict / Wikcionario (licencia CC BY-SA) y fue revisado a mano.')}</p>
     <p class="male srodek">${T('Postęp zapisuje się tylko na tym urządzeniu. Skróty: spacja, 1–4, Enter, ← →, ? (pomoc).', 'El progreso se guarda solo en este dispositivo. Atajos: espacio, 1–4, Enter, ← →, ? (ayuda).')}</p>
   </div>`);
   podlaczZakres($('#u-tempo', tresc), fTempo, (v, koniec) => { u.tempo = v; app.zapisz(); if (koniec) app.mowa.powiedz(T('Esta es la velocidad de lectura.', 'Tak brzmi to tempo czytania.')); });

@@ -7,6 +7,7 @@ import { SLOWA_CODZIENNE_D } from './slowa-codzienne-d.js';
 import { SLOWA_CODZIENNE_E } from './slowa-codzienne-e.js';
 import { SLOWA_ZAAWANSOWANE } from './slowa-zaawansowane.js';
 import { KULTURA } from './kultura.js';
+import { SLOWA_CZESTE } from './slowa-czeste.js';
 import { PRZYKLADY } from './przyklady.js';
 import { PRZYKLADY_2 } from './przyklady-2.js';
 import { WARIANTY, RODZAJ_WYJATKI, MNOGA } from './warianty.js';
@@ -31,7 +32,7 @@ export const OPIS_POZIOMU = {
 // słówka z notatek o kulturze: temat „Kultura: …”
 const PAKIET_KULTURA = {};
 for (const k of KULTURA) { (PAKIET_KULTURA[k.p] ||= {})['Kultura: ' + k.t] = k.slowa; TEMATY_ES['Kultura: ' + k.t] = 'Cultura: ' + k.tEs; }
-const PAKIETY_SLOW = [SLOWA, SLOWA_CODZIENNE_A, SLOWA_CODZIENNE_B, SLOWA_CODZIENNE_C, SLOWA_CODZIENNE_D, SLOWA_CODZIENNE_E, SLOWA_ZAAWANSOWANE, PAKIET_KULTURA];
+const PAKIETY_SLOW = [SLOWA, SLOWA_CODZIENNE_A, SLOWA_CODZIENNE_B, SLOWA_CODZIENNE_C, SLOWA_CODZIENNE_D, SLOWA_CODZIENNE_E, SLOWA_ZAAWANSOWANE, PAKIET_KULTURA, SLOWA_CZESTE];
 const PAKIETY_ZWROTOW = [ZWROTY];
 
 const ROD = { el: 'm', la: 'f', los: 'mpl', las: 'fpl' };
@@ -39,7 +40,7 @@ const AKC = { á: 'a', é: 'e', í: 'i', ó: 'o', ú: 'u' };
 
 // Liczba mnoga z reguł; null, gdy reguła byłaby niepewna (wtedy nic nie pokazujemy).
 export function liczbaMnoga(es) {
-  if (MNOGA[es]) return MNOGA[es];
+  if (Object.hasOwn(MNOGA, es)) return MNOGA[es];
   const m = es.match(/^(el|la) ([^ ]+)( .+)?$/);
   if (!m) return null;
   const [, rodz, slowo, reszta = ''] = m;
@@ -58,7 +59,7 @@ export function liczbaMnoga(es) {
 }
 
 function przyklad(es) {
-  const p = PRZYKLADY[es] || PRZYKLADY_2[es];
+  const p = (Object.hasOwn(PRZYKLADY, es) && PRZYKLADY[es]) || (Object.hasOwn(PRZYKLADY_2, es) && PRZYKLADY_2[es]);
   if (!p) return null;
   const [e, pl] = p.split('|');
   return { es: e, pl };
@@ -80,8 +81,8 @@ for (const pakiet of PAKIETY_SLOW) {
         }
         widziane.add(id);
         const art = (es.match(/^(el|la|los|las) /) || [])[1];
-        const rodzaj = RODZAJ_WYJATKI[es] || (art ? ROD[art] : null);
-        const w = WARIANTY[es];
+        const rodzaj = (Object.hasOwn(RODZAJ_WYJATKI, es) && RODZAJ_WYJATKI[es]) || (art ? ROD[art] : null);
+        const w = Object.hasOwn(WARIANTY, es) ? WARIANTY[es] : null;
         SLOWKA.push({
           id, typ: 'slowo', es, pl, p, t,
           rodzaj, mnoga: art === 'el' || art === 'la' ? liczbaMnoga(es) : null,
@@ -142,6 +143,8 @@ export const odpowiedziEs = w => {
 // Pole „es” elementu zawsze zawiera tekst w języku, którego się uczymy (tu: po polsku), a „pl” – tłumaczenie
 // w języku użytkownika (tu: po hiszpańsku). Dzięki temu silnik kart, listy i egzamin działają bez zmian.
 const zamien = (tablica, nowe) => { tablica.splice(0, tablica.length, ...nowe); };
+const CZESTE_ES = { 'Częste rzeczowniki': 'Sustantivos frecuentes', 'Częste czasowniki': 'Verbos frecuentes', 'Częste przymiotniki': 'Adjetivos frecuentes', 'Częste przysłówki': 'Adverbios frecuentes', 'Inne częste słowa': 'Otras palabras frecuentes' };
+const tematCzestyEs = t => t.replace(/^(Częste rzeczowniki|Częste czasowniki|Częste przymiotniki|Częste przysłówki|Inne częste słowa)/, m => CZESTE_ES[m]);
 if (HISP) {
   Object.assign(OPIS_POZIOMU, OPIS_POZIOMU_ES);
   const slowa = new Map();
@@ -163,7 +166,7 @@ if (HISP) {
       if (!g.przyklad && w.przyklad) g.przyklad = { es: w.przyklad.pl, pl: w.przyklad.es };
       continue;
     }
-    slowa.set(k, { id: 'p:' + k, typ: 'slowo', es: k, pl: w.es, p: w.p, t: TEMATY_ES[w.t] || w.t, rodzaj: null, mnoga: null,
+    slowa.set(k, { id: 'p:' + k, typ: 'slowo', es: k, pl: w.es, p: w.p, t: (Object.hasOwn(TEMATY_ES, w.t) && TEMATY_ES[w.t]) || tematCzestyEs(w.t), rodzaj: null, mnoga: null,
       przyklad: w.przyklad ? { es: w.przyklad.pl, pl: w.przyklad.es } : null, latam: null });
   }
   zamien(SLOWKA, [...slowa.values()]);

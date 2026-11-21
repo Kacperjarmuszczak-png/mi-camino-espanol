@@ -7,6 +7,9 @@ import { LEKCJE } from '../dane/lekcje-gramatyki.js';
 import { CZYTANIE } from '../dane/czytanie.js';
 import { CZYTANIE_PL } from '../dane/czytanie-pl.js';
 import { pasuje, czysc, bezZnakow, bezRodzajnika } from '../tekst.js';
+import { szukajWSlowniku, ZRODLO_SLOWNIKA } from '../slownik.js';
+import { dodajWlasne } from '../wlasne.js';
+import { CEL } from '../jezyk.js';
 
 /**
  * @param {HTMLElement} root
@@ -62,7 +65,24 @@ export function zakladkaCwiczenia(root, app, cfg) {
       + grupa(tr('Czasowniki', 'Verbos'), cz, x => `<li><button type="button" class="lista-tekst" data-szv="${esc(x.inf)}"><b>${esc(x.es)}</b><span>${esc(x.pl)} <i>· ${x.p}</i></span></button>${przyciskGlosu(x.es)}</li>`)
       + grupa(tr('Teksty', 'Textos'), tek, x => `<li><button type="button" class="lista-tekst" data-szt="${x.i}"><b>${x.p}</b><span>${esc(x.tekst.slice(0, 90))}…</span></button></li>`)
       + grupa(tr('Gramatyka', 'Gramática'), lek, l => `<li><button type="button" class="lista-tekst" data-szl="${l.id}"><b>${esc(l.t)}</b><span>${l.p}</span></button></li>`);
-    wyn.innerHTML = html || `<p class="pusto">${tr('Nic nie znaleziono.', 'No se encontró nada.')}</p>`;
+    wyn.innerHTML = `<div data-sz-slownik></div>` + (html || `<p class="pusto" data-sz-pusto>${tr('Nic nie znaleziono w materiałach aplikacji.', 'No se encontró nada en los materiales.')}</p>`);
+    // słownik aplikacji (z formami odmienionymi): w języku nauki i – gdy nic – w języku użytkownika
+    const zap = q.trim();
+    if (/^[\p{L}]+$/u.test(zap)) {
+      (async () => {
+        let r = await szukajWSlowniku(zap, CEL), odwr = false;
+        if (!r) { r = await szukajWSlowniku(zap, CEL === 'es' ? 'pl' : 'es'); odwr = !!r; }
+        const box = $('[data-sz-slownik]', root);
+        if (!r || !box || $('#cw-q', root).value.trim() !== zap) return;
+        const cel = odwr ? r.tlum[0] : r.haslo, moj = odwr ? r.haslo : r.tlum.slice(0, 3).join(', ');
+        box.innerHTML = `<p class="etykieta">${tr('Słownik ogólny', 'Diccionario general')}</p><div class="tlumaczenie tlumaczenie--slownik">
+          <p class="tlumaczenie-tekst">${esc(odwr ? r.haslo : r.haslo)} → ${esc(r.tlum.join(', '))} ${przyciskGlosu(cel)}</p>
+          ${r.opis ? `<p class="male">${esc(r.opis)}: ${esc(r.haslo)}</p>` : ''}${r.przybl ? `<p class="male">${tr('Przybliżone przez angielski', 'Aproximado vía inglés')}${r.ang ? ` (${esc(r.ang)})` : ''}.</p>` : ''}
+          <button type="button" class="btn btn--male" data-sz-dodaj="${esc(cel)}|${esc(moj)}">+ ${tr('Dodaj do moich słówek', 'Añadir a mis palabras')}</button>
+          <p class="male">${tr('Źródło', 'Fuente')}: ${ZRODLO_SLOWNIKA}</p></div>`;
+        const p = $('[data-sz-pusto]', root); if (p) p.remove();
+      })();
+    }
     wyn.hidden = false; kafle.hidden = true;
   }
   function pokazPozycje(x) {
@@ -83,6 +103,8 @@ export function zakladkaCwiczenia(root, app, cfg) {
     const v = t.closest('[data-szv]'); if (v) return app.otworzCzasownik(v.dataset.szv);
     const tx = t.closest('[data-szt]'); if (tx) return cfg.otworzTekst(+tx.dataset.szt);
     const l = t.closest('[data-szl]'); if (l) return otworz('gramatyka', l.dataset.szl);
+    const d = t.closest('[data-sz-dodaj]');
+    if (d) { const [es, pl] = d.dataset.szDodaj.split('|'); const x = dodajWlasne(app.stan, { es, pl, p: app.stan.ui.poziom }); app.zapisz(); app.odswiez(); d.disabled = true; d.textContent = x ? '✓ ' + tr('Dodano', 'Añadida') : tr('Już na liście', 'Ya está en la lista'); }
   });
 
   return {

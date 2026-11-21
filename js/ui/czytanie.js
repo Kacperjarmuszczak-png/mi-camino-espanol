@@ -7,6 +7,7 @@ import { analizuj } from '../analiza.js';
 import { utworzAnalizatorPl } from '../analiza-pl.js';
 import { HISP, t as tr } from '../jezyk.js';
 import { tasuj, czysc } from '../tekst.js';
+import { szukajWSlowniku } from '../slownik.js';
 
 const TEKSTY = HISP ? CZYTANIE_PL : CZYTANIE;
 let analizatorPl = null;
@@ -97,6 +98,14 @@ export function widokCzytania(el, app) {
       dymek.innerHTML = `<b>${esc(w.dataset.cz)}</b>${d && d.haslo && czysc(d.haslo) !== czysc(w.dataset.cz) ? ` <span class="male">→ ${esc(d.haslo)}</span>` : ''}
         <span>${d && d.tlum ? esc(d.tlum) : tr('brak w słowniku', 'no está en el diccionario')}</span>${d && d.opis ? `<small>${esc(d.opis)}</small>` : ''}`;
       app.mowa.powiedz(w.dataset.cz);
+      if (!d || !d.tlum) {
+        const slowo = w.dataset.cz;
+        szukajWSlowniku(slowo, HISP ? 'pl' : 'es').then(r => {
+          if (!r || !w.classList.contains('aktywne')) return;
+          slownik.set(czysc(slowo), { tlum: r.tlum.slice(0, 3).join(', '), haslo: r.haslo, opis: r.opis || tr('słownik ogólny', 'diccionario general') });
+          dymek.innerHTML = `<b>${esc(slowo)}</b>${czysc(r.haslo) !== czysc(slowo) ? ` <span class="male">→ ${esc(r.haslo)}</span>` : ''}<span>${esc(r.tlum.slice(0, 3).join(', '))}</span><small>${esc(r.opis || tr('słownik ogólny', 'diccionario general'))}</small>`;
+        });
+      }
     }
   });
   return {
