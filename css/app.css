@@ -937,3 +937,8 @@ html, body { overscroll-behavior-y: none; }
 .notatka--jest { border-style: solid; border-color: color-mix(in srgb, var(--zloto) 45%, transparent); color: var(--tekst); background: var(--pole); }
 .rk-duze { font: 700 clamp(1.8rem, 9vw, 2.8rem)/1.25 var(--font-tytul); text-align: center; padding: 24px 8px; overflow-wrap: anywhere; }
 .slowo-chip.z-slownika { border-style: dashed; }
+
+/* przy otwartym arkuszu: przyciemnienie sięga też pod pasek stanu i pod dolny pasek (bez ostrej krawędzi) */
+.modal-tlo { inset: calc(-1 * env(safe-area-inset-top, 0px) - 60px) 0 calc(-1 * env(safe-area-inset-bottom, 0px) - 60px); }
+html { transition: background-color .4s var(--ios); }
+html.przyciemnione { background: #0c0407; }

@@ -38,6 +38,14 @@ export function toast(tekst) {
 let poZamknieciu = null, ostatniFokus = null, kontrolerModalu = null, chowanie = 0;
 // Sygnał bieżącego arkusza: słuchacze dodane z { signal: sygnalModalu() } znikają przy zamknięciu / następnym otwarciu.
 export const sygnalModalu = () => kontrolerModalu.signal;
+// Pasek stanu i dolny pasek Safari biorą kolor z theme-color / tła strony, więc przy otwartym arkuszu
+// przyciemniamy je razem z tłem – inaczej u góry i na dole widać ostrą krawędź jaśniejszego koloru.
+const KOLOR_TLA = '#14070b', KOLOR_PRZYCIEMNIONY = '#0c0407';   // --tlo i --tlo przykryte czernią 40%
+function przyciemnijPaski(tak) {
+  document.documentElement.classList.toggle('przyciemnione', tak);
+  const m = document.querySelector('meta[name="theme-color"]');
+  if (m) m.setAttribute('content', tak ? KOLOR_PRZYCIEMNIONY : KOLOR_TLA);
+}
 export function otworzModal(tytul, html, { naZamkniecie } = {}) {
   if (poZamknieciu) { const f = poZamknieciu; poZamknieciu = null; f(); }   // np. odłóż przeniesiony element na miejsce
   if (kontrolerModalu) kontrolerModalu.abort();
@@ -49,6 +57,7 @@ export function otworzModal(tytul, html, { naZamkniecie } = {}) {
   $('#modal-tresc').innerHTML = html;
   $('.modal-okno', m).style.transform = '';
   m.hidden = false;
+  przyciemnijPaski(true);
   requestAnimationFrame(() => m.classList.add('otwarty'));
   poZamknieciu = naZamkniecie || null;
   setTimeout(() => $('#modal-zamknij').focus({ preventScroll: true }), 30);
@@ -58,6 +67,7 @@ export function zamknijModal() {
   const m = $('#modal');
   if (m.hidden) return;
   m.classList.remove('otwarty');
+  przyciemnijPaski(false);
   if (kontrolerModalu) kontrolerModalu.abort();
   if (poZamknieciu) { const f = poZamknieciu; poZamknieciu = null; f(); }
   clearTimeout(chowanie);
